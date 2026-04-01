@@ -1,0 +1,93 @@
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: code_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  mongodb:
+    image: mongo:6
+    container_name: code_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: code_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/codeReview
+      - REDIS_URL=redis://redis:6379
+      - WORKER_URL=http://worker:8000
+      - JWT_SECRET=supersecuresecret
+      - JWT_REFRESH_SECRET=superrefreshsecret
+      - ACCESS_TOKEN_EXPIRE=15m
+      - REFRESH_TOKEN_EXPIRE=7d
+    depends_on:
+      - mongodb
+      - worker
+      - redis
+
+  worker:
+    build:
+      context: ../worker
+      dockerfile: Dockerfile
+    container_name: code_worker
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/codeReview
+      - OLLAMA_URL=http://ollama:11434/api/generate
+      - OLLAMA_MODEL=llama3.2
+      - OLLAMA_CONNECT_TIMEOUT=10
+      - OLLAMA_READ_TIMEOUT=300
+      - OLLAMA_MAX_RETRIES=2
+      - OLLAMA_RETRY_BACKOFF_SECONDS=2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - mongodb
+      - ollama
+      - ollama-model-init
+
+  redis:
+    image: redis:7
+    container_name: code_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  ollama:
+    image: ollama/ollama
+    container_name: code_ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  ollama-model-init:
+    image: ollama/ollama
+    container_name: code_ollama_model_init
+    restart: "no"
+    depends_on:
+      - ollama
+    entrypoint: ["/bin/sh", "-c"]
+    command: "sleep 8 && OLLAMA_HOST=http://ollama:11434 ollama pull llama3.2"
+
+volumes:
+  mongo_data:
+  ollama_data:
