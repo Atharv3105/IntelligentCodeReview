@@ -8,9 +8,14 @@ function parseToken(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     return {
-      id: payload.id,
-      name: payload.name,
-      role: payload.role
+      id:       payload.id,
+      name:     payload.name,
+      role:     payload.role,
+      // College identity fields (null for public users)
+      prn:      payload.prn      || null,
+      division: payload.division || null,
+      year:     payload.year     || null,
+      branch:   payload.branch   || null
     };
   } catch {
     return null;
@@ -19,7 +24,7 @@ function parseToken(token) {
 
 export default function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("accessToken"));
-  const [user, setUser] = useState(parseToken(token));
+  const [user, setUser]   = useState(parseToken(token));
 
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
@@ -30,12 +35,19 @@ export default function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem("accessToken");
+    api.post("/auth/logout").catch(() => {});
     setToken(null);
     setUser(null);
   };
 
+  // Convenience role helpers
+  const isTeacher  = user?.role === "teacher" || user?.role === "admin";
+  const isAdmin    = user?.role === "admin";
+  const isStudent  = user?.role === "student";
+  const isCollege  = !!user?.prn; // has a PRN = college student
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isTeacher, isAdmin, isStudent, isCollege }}>
       {children}
     </AuthContext.Provider>
   );

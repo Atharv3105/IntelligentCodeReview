@@ -16,6 +16,9 @@ connectDB();
 // start the queue processor (requires Redis configured)
 require("./jobProcessor");
 
+// start the exam lifecycle scheduler (auto live/end transitions + auto-submit)
+require("./services/examScheduler.service");
+
 const app = express();
 const server = http.createServer(app);
 
@@ -78,6 +81,8 @@ app.use("/api/problems", require("./routes/problem.routes"));
 app.use("/api/submissions", require("./routes/submission.routes"));
 app.use("/api/leaderboard", require("./routes/leaderboard.routes"));
 app.use("/api/analytics", require("./routes/analytics.routes"));
+app.use("/api/exams",     require("./routes/exam.routes"));
+app.use("/api/roster",    require("./routes/roster.routes"));
 
 app.use(errorHandler);
 

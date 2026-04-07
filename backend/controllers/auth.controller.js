@@ -12,7 +12,7 @@ const logger = require("../utils/logger");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, prn, division, year, branch } = req.body;
     logger.info(`register attempt for ${email}`);
 
     // basic validation
@@ -22,6 +22,12 @@ exports.register = async (req, res) => {
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "User already exists" });
+
+    // If PRN provided, check it's not already taken
+    if (prn) {
+      const prnExists = await User.findOne({ prn });
+      if (prnExists) return res.status(400).json({ message: "PRN already registered" });
+    }
 
     const hashed = await bcrypt.hash(password, 10);
     const token = crypto.randomBytes(32).toString("hex");
@@ -34,7 +40,12 @@ exports.register = async (req, res) => {
       email,
       password: hashed,
       verificationToken: isLocalDev ? null : token,
-      isVerified: isLocalDev
+      isVerified: isLocalDev,
+      // College identity fields (null if not provided by public users)
+      prn:      prn      || null,
+      division: division || null,
+      year:     year     || null,
+      branch:   branch   || null
     });
 
     if (isLocalDev) {
@@ -46,7 +57,6 @@ exports.register = async (req, res) => {
       await sendVerificationEmail(user, token);
     } catch (emailErr) {
       logger.warn("Verification email failed:", emailErr);
-      // don't block registration, just inform user
       return res.status(500).json({ message: "Registered but failed to send verification email" });
     }
 
@@ -116,6 +126,7 @@ exports.login = async (req, res) => {
   const match = await bcrypt.compare(password, user.password);
   if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
+  // Payload includes role + college identity so frontend knows context without extra API call
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 

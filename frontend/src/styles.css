@@ -387,6 +387,21 @@ a {
   border-color: rgba(148, 163, 184, 0.2) !important;
 }
 
+/* ── Shared input/select base style used by exam & teacher panel forms ── */
+.input-base {
+  background: color-mix(in srgb, var(--bg-elevated) 90%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color var(--transition-fast);
+  outline: none;
+}
+.input-base:focus {
+  border-color: color-mix(in srgb, var(--primary) 70%, transparent);
+}
+
 @media (max-width: 768px) {
   .container-custom {
     width: min(1180px, 100% - 1.2rem);
