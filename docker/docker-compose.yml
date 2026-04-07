@@ -1,8 +1,6 @@
 services:
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: techieatharv2026/codereview-frontend:latest
     container_name: code_frontend
     restart: always
     ports:
@@ -20,9 +18,7 @@ services:
       - mongo_data:/data/db
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: techieatharv2026/codereview-backend:latest
     container_name: code_backend
     restart: always
     ports:
@@ -41,9 +37,7 @@ services:
       - redis
 
   worker:
-    build:
-      context: ../worker
-      dockerfile: Dockerfile
+    image: techieatharv2026/codereview-worker:latest
     container_name: code_worker
     restart: always
     ports:
