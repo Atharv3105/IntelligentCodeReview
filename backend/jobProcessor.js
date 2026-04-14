@@ -33,6 +33,7 @@ submissionQueue.process(async (job) => {
     submission.status = "Completed";
     submission.result = result;
     submission.grade = result.grade; // Percentage (0-100)
+    submission.plagiarismScore = result.plagiarism;
     submission.feedback = result.feedback;
     await submission.save();
 
@@ -81,6 +82,7 @@ submissionQueue.process(async (job) => {
           title: submission.problemId.title,
           studentName: user.name,
           grade: submission.grade,
+          plagiarism: submission.plagiarismScore,
           status: 'success',
           timestamp: new Date()
         });

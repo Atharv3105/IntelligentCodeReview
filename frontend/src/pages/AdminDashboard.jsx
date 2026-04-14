@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import { Badge } from "../components/ui/Badge";
 import { SocketContext } from "../context/SocketContext";
 import { 
   Users, Activity, TrendingUp, Monitor, Flame, 
@@ -26,10 +28,22 @@ export default function AdminDashboard() {
   const [studentDetails, setStudentDetails] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [heatmapFilter, setHeatmapFilter] = useState("total"); // 'total', 'easy', 'medium', 'hard'
+  const [assessments, setAssessments] = useState([]);
+  const [allProblems, setAllProblems] = useState([]);
+  const [attempts, setAttempts] = useState([]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     fetchAdminData();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "assessments") {
+      api.get("/assessments/admin/all").then(res => setAssessments(res.data));
+      api.get("/problems?limit=1000").then(res => setAllProblems(res.data.problems || []));
+      api.get("/assessments/admin/attempts").then(res => setAttempts(res.data));
+    }
+  }, [activeTab]);
 
   const fetchAdminData = () => {
     api.get("/analytics/admin")
@@ -41,10 +55,10 @@ export default function AdminDashboard() {
   const stats = useMemo(() => {
     if (!data) return [];
     return [
-      { title: "Total Submissions", value: data.totalSubmissions || 0, tone: "cyan", icon: <Activity className="h-4 w-4" /> },
-      { title: "Average Grade", value: (data.avgGrade || 0).toFixed(1), tone: "green", icon: <TrendingUp className="h-4 w-4" /> },
-      { title: "Success Rate", value: `${(data.successRate || 0).toFixed(0)}%`, tone: "purple", icon: <Monitor className="h-4 w-4" /> },
-      { title: "Active Students", value: data.activeUsers || 0, tone: "orange", icon: <Users className="h-4 w-4" /> }
+      { title: "Total Submissions", value: data?.totalSubmissions || 0, tone: "cyan", icon: <Activity className="h-4 w-4" /> },
+      { title: "Average Grade", value: (data?.avgGrade || 0).toFixed(1), tone: "green", icon: <TrendingUp className="h-4 w-4" /> },
+      { title: "Success Rate", value: `${(data?.successRate || 0).toFixed(0)}%`, tone: "purple", icon: <Monitor className="h-4 w-4" /> },
+      { title: "Active Students", value: data?.activeUsers || 0, tone: "orange", icon: <Users className="h-4 w-4" /> }
     ];
   }, [data]);
 
@@ -52,7 +66,7 @@ export default function AdminDashboard() {
     if (!data || !data.heatmap) return [];
     const today = new Date();
     const result = [];
-    const maxVal = data.maxActivity[heatmapFilter] || 1;
+    const maxVal = data?.maxActivity?.[heatmapFilter] || 1;
 
     for (let i = 364; i >= 0; i--) {
       const d = new Date();
@@ -69,6 +83,38 @@ export default function AdminDashboard() {
     }
     return result;
   }, [data, heatmapFilter]);
+
+  const getHeatmapColor = () => {
+    switch(heatmapFilter) {
+      case 'easy': return 'rgba(74, 222, 128'; // Green
+      case 'medium': return 'rgba(250, 204, 21'; // Yellow
+      case 'hard': return 'rgba(248, 113, 113'; // Red
+      default: return 'rgba(74, 222, 128'; // Total Green
+    }
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex h-screen items-center justify-center font-mono text-gray-500 uppercase tracking-widest text-xs">
+          Synchronizing Admin Intelligence...
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!data && activeTab !== "assessments") {
+    return (
+      <Layout>
+        <div className="flex h-screen flex-col items-center justify-center gap-4">
+          <AlertTriangle className="h-12 w-12 text-red-500" />
+          <h2 className="text-xl font-black uppercase text-white tracking-tighter">Analytics Engine Offline</h2>
+          <p className="text-sm text-gray-500">The server encountered an error (500) while fetching analytics.</p>
+          <Button onClick={fetchAdminData} className="mt-4 bg-white/5 text-white hover:bg-white/10">Retry Connection</Button>
+        </div>
+      </Layout>
+    );
+  }
 
   const handleStudentClick = async (studentId) => {
     setDetailLoading(true);
@@ -95,23 +141,6 @@ export default function AdminDashboard() {
     a.click();
   };
 
-  const getHeatmapColor = () => {
-    switch(heatmapFilter) {
-      case 'easy': return 'rgba(74, 222, 128'; // Green
-      case 'medium': return 'rgba(250, 204, 21'; // Yellow
-      case 'hard': return 'rgba(248, 113, 113'; // Red
-      default: return 'rgba(74, 222, 128'; // Total Green
-    }
-  };
-
-  if (loading) {
-    return (
-      <Layout>
-        <div className="flex min-h-screen items-center justify-center text-gray-400 font-mono">INITIALIZING TEACHER HUB...</div>
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
       <section className="section-padding">
@@ -121,7 +150,7 @@ export default function AdminDashboard() {
             <h1 className="text-hero mb-2 text-3xl font-black">Admin Command Center</h1>
           </div>
           <div className="flex gap-2 rounded-xl bg-gray-900/60 p-1.5 shadow-inner backdrop-blur-md">
-            {["overview", "leaderboard"].map(tab => (
+            {["overview", "leaderboard", "assessments"].map(tab => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -207,7 +236,7 @@ export default function AdminDashboard() {
                   </div>
                 </Card>
               </>
-            ) : (
+            ) : activeTab === "leaderboard" ? (
               /* Leaderboard with CSV Export */
               <Card className="overflow-hidden border-white/5 bg-gray-900/40">
                 <div className="flex items-center justify-between bg-gray-800/20 p-6 border-b border-white/5">
@@ -267,6 +296,116 @@ export default function AdminDashboard() {
                   </table>
                 </div>
               </Card>
+            ) : (
+                /* ASSESSMENT HUB RENDERING */
+                <div className="space-y-8">
+                    {/* Assessments Section */}
+                    <Card className="p-8 border-white/5 bg-gray-900/40">
+                        <div className="flex justify-between items-center mb-8">
+                            <div>
+                                <h2 className="text-xl font-black uppercase tracking-tighter text-white">Test Architect</h2>
+                                <p className="text-xs text-gray-500 font-mono tracking-tighter italic">Schedule and manage secure exams</p>
+                            </div>
+                            <Button 
+                                onClick={() => setIsCreateModalOpen(true)}
+                                className="bg-accent-green text-gray-950 hover:bg-green-400 text-[10px] font-black uppercase"
+                            >
+                                Create Test
+                            </Button>
+                        </div>
+                        <div className="space-y-4">
+                            {assessments.map(a => (
+                                <div key={a._id} className="flex justify-between items-center bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center font-black text-xs text-accent-green">{a.duration}M</div>
+                                        <div>
+                                            <div className="font-bold text-white">{a.title}</div>
+                                            <div className="text-[10px] text-gray-500 uppercase font-black">
+                                                {new Date(a.startTime).toLocaleDateString()} • {a.type} • {a.problems?.length || 0} PROBLEMS
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {(() => {
+                                            const now = new Date();
+                                            const start = new Date(a.startTime);
+                                            const end = new Date(a.endTime);
+                                            if (now < start) return <Badge color="yellow">UPCOMING</Badge>;
+                                            if (now > end) return <Badge color="red">EXPIRED</Badge>;
+                                            return <Badge color="green">ACTIVE</Badge>;
+                                        })()}
+                                        <button 
+                                            onClick={async () => {
+                                                if(confirm('Permanently decommission this test?')) {
+                                                    try {
+                                                        await api.delete(`/assessments/admin/${a._id}`);
+                                                        api.get("/assessments/admin/all").then(res => setAssessments(res.data));
+                                                    } catch (err) {
+                                                        alert("Decommission failed: " + err.message);
+                                                    }
+                                                }
+                                            }}
+                                            className="p-2 hover:bg-red-500/10 rounded-lg text-gray-700 hover:text-red-500 transition-all"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {assessments.length === 0 && <div className="text-center py-10 text-gray-600 font-mono text-xs italic">No tests architected yet.</div>}
+                        </div>
+                    </Card>
+
+                    {/* Security Audit Feed */}
+                    <Card className="p-8 border-white/5 bg-gray-900/40 relative overflow-hidden">
+                         <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <AlertTriangle className="h-20 w-20 text-red-500" />
+                         </div>
+                         <h3 className="text-xs font-black uppercase text-red-500 tracking-widest mb-6">Security Auditor</h3>
+                         <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                            {attempts.map(att => (
+                                <div key={att._id} className={`p-4 rounded-xl border transition-all ${att.violations?.length > 0 ? 'bg-red-500/5 border-red-500/20' : 'bg-white/[0.03] border-white/5'}`}>
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div>
+                                            <div className="font-bold text-white text-sm">{att.userId?.name}</div>
+                                            <div className="text-[9px] font-mono text-gray-500">{att.assessmentId?.title} • {att.assessmentId?.type}</div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {att.assessmentId?.type === 'DOCUMENT' && att.submissionFile && (
+                                                <Button size="sm" variant="ghost" onClick={() => window.open(`${api.defaults.baseURL}/uploads/assessments/${att.submissionFile}`)} className="text-[9px] h-6 px-2 bg-accent-green/10 text-accent-green">Download</Button>
+                                            )}
+                                            {att.violations?.length > 0 && <Badge color="red">{att.violations.length} VIOLATIONS</Badge>}
+                                        </div>
+                                    </div>
+                                    {att.violations?.length > 0 && (
+                                        <div className="text-[9px] text-red-400 mt-2 font-mono space-y-1">
+                                            {att.violations.slice(0, 2).map((v, i) => (
+                                                <div key={i}>• {v.type} at {new Date(v.timestamp).toLocaleTimeString()}</div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {att.status === 'Submitted' && (
+                                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
+                                            <span className="text-[9px] text-gray-500 uppercase font-black">Score: {att.grade || 0}%</span>
+                                            <input 
+                                                type="number" 
+                                                placeholder="Grade" 
+                                                className="bg-black/40 border border-white/10 rounded px-2 py-0.5 text-[10px] w-14 text-white hover:border-accent-green transition-all"
+                                                onBlur={(e) => {
+                                                    api.put(`/assessments/admin/attempts/${att._id}/grade`, { grade: e.target.value })
+                                                       .then(() => {
+                                                            const newAttempts = attempts.map(a => a._id === att._id ? { ...a, grade: e.target.value } : a);
+                                                            setAttempts(newAttempts);
+                                                       });
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                         </div>
+                    </Card>
+                </div>
             )}
           </div>
 
@@ -290,7 +429,12 @@ export default function AdminDashboard() {
                       className="border-b border-white/5 pb-4 last:border-0"
                       >
                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-[9px] font-black text-accent-green uppercase border border-accent-green/30 px-1.5 rounded">Success</span>
+                            <div className="flex gap-2 items-center">
+                                <span className="text-[9px] font-black text-accent-green uppercase border border-accent-green/30 px-1.5 rounded">Success</span>
+                                {res.plagiarism !== undefined && res.plagiarism < 0.1 && (
+                                    <span className="text-[8px] font-black text-red-500 uppercase animate-pulse">Critical Similarity</span>
+                                )}
+                            </div>
                             <span className="text-[9px] font-mono text-gray-600">JUST NOW</span>
                          </div>
                          <div className="text-sm font-black text-white truncate">Problem #{res.problemNumber || '?'}</div>
@@ -316,12 +460,12 @@ export default function AdminDashboard() {
                        <div key={diff}>
                           <div className="flex justify-between text-[11px] mb-1.5 uppercase font-black">
                             <span className="text-gray-500">{diff}</span>
-                            <span className="text-white font-mono">{data.problemStats?.[diff] || 0}</span>
+                            <span className="text-white font-mono">{data?.problemStats?.[diff] || 0}</span>
                           </div>
                           <div className="h-1 rounded-full bg-white/5 overflow-hidden">
                              <motion.div 
                                initial={{ width: 0 }}
-                               animate={{ width: `${Math.min(((data.problemStats?.[diff] || 0) / (data.totalSubmissions || 1)) * 100, 100)}%` }}
+                               animate={{ width: `${Math.min(((data?.problemStats?.[diff] || 0) / (data?.totalSubmissions || 1)) * 100, 100)}%` }}
                                className={`h-full ${diff === 'easy' ? 'bg-accent-green' : diff === 'medium' ? 'bg-yellow-500' : 'bg-red-500'}`}
                              />
                           </div>
@@ -410,9 +554,19 @@ export default function AdminDashboard() {
                                    <div className="text-sm font-black text-white truncate">#{s.problemId?.problemNumber} {s.problemId?.title}</div>
                                    <div className="text-[10px] text-gray-500 font-mono mt-0.5 uppercase tracking-tighter">{new Date(s.createdAt).toLocaleString()}</div>
                                 </div>
-                                <div className="text-right">
-                                   <div className={`text-xl font-black ${s.grade >= 70 ? 'text-accent-green' : 'text-red-500'}`}>{s.grade}%</div>
-                                   <div className="text-[9px] text-gray-600 uppercase font-black">Score</div>
+                                <div className="text-right flex flex-col items-end gap-1">
+                                    <div className="flex items-center gap-2">
+                                        {s.plagiarismScore !== undefined && s.plagiarismScore !== null && (
+                                            <Badge 
+                                                color={s.plagiarismScore < 0.1 ? 'red' : s.plagiarismScore < 0.5 ? 'orange' : 'green'}
+                                                className="text-[8px] px-1 py-0 h-4 uppercase font-black"
+                                            >
+                                                {s.plagiarismScore < 0.1 ? '!!! PLAGIARISM' : s.plagiarismScore < 0.5 ? 'SIMILAR' : 'ORIGINAL'}
+                                            </Badge>
+                                        )}
+                                        <div className={`text-xl font-black ${s.grade >= 70 ? 'text-accent-green' : 'text-red-500'}`}>{s.grade}%</div>
+                                    </div>
+                                    <div className="text-[9px] text-gray-600 uppercase font-black">Score</div>
                                 </div>
                              </div>
                            )) : (
@@ -427,6 +581,16 @@ export default function AdminDashboard() {
           </div>
         )}
       </AnimatePresence>
+
+      <CreateAssessmentModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+        problems={allProblems}
+        onSuccess={() => {
+            api.get("/assessments/admin/all").then(res => setAssessments(res.data));
+            setIsCreateModalOpen(false);
+        }}
+      />
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
@@ -445,4 +609,223 @@ export default function AdminDashboard() {
       `}</style>
     </Layout>
   );
+}
+
+function CreateAssessmentModal({ isOpen, onClose, problems, onSuccess }) {
+    const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState("");
+    const [formData, setFormData] = useState({
+        title: "",
+        description: "",
+        type: "",
+        startTime: "",
+        endTime: "",
+        duration: 30,
+        externalUrl: "",
+        selectedProblems: []
+    });
+
+    if (!isOpen) return null;
+
+    const filteredProblems = problems.filter(p => 
+        p.title.toLowerCase().includes(search.toLowerCase()) || 
+        p.problemNumber.toString().includes(search)
+    );
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        try {
+            await api.post("/assessments", {
+                ...formData,
+                problems: formData.selectedProblems
+            });
+            onSuccess();
+            // Reset form
+            setFormData({ title: "", description: "", type: "", startTime: "", endTime: "", duration: 30, externalUrl: "", selectedProblems: [] });
+            setStep(1);
+        } catch (err) {
+            alert("Failed to create test: " + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleProblem = (id) => {
+        const selected = formData.selectedProblems.includes(id)
+            ? formData.selectedProblems.filter(pId => pId !== id)
+            : [...formData.selectedProblems, id];
+        setFormData({ ...formData, selectedProblems: selected });
+    };
+
+    return (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4">
+            <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-full max-w-2xl bg-gray-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
+            >
+                <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                    <h2 className="text-xl font-black uppercase tracking-tighter text-white">Architect New Test</h2>
+                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-all text-gray-500"><X className="h-5 w-5"/></button>
+                </div>
+
+                <div className="p-8">
+                    {step === 1 ? (
+                        <div className="space-y-6">
+                            <h3 className="text-xs font-black uppercase text-accent-green tracking-[0.3em]">Phase 1: Deployment Method</h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                {[
+                                    { id: 'MCQ', name: 'Google Form (MCQ)', desc: 'Redirect students to an actual Google Form securely.', icon: <Monitor className="h-5 w-5"/> },
+                                    { id: 'DOCUMENT', name: 'Document Submission', desc: 'Students upload a PDF/DOC/Report for manual review.', icon: <Download className="h-5 w-5"/> },
+                                    { id: 'CODING', name: 'Coding Challenge', desc: 'Select problems from your specialized DB.', icon: <Flame className="h-5 w-5"/> }
+                                ].map(t => (
+                                    <button 
+                                        key={t.id}
+                                        onClick={() => { setFormData({...formData, type: t.id}); setStep(2); }}
+                                        className="flex items-center gap-6 p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-accent-green/30 transition-all text-left group"
+                                    >
+                                        <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-accent-green transition-all">
+                                            {t.icon}
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-white text-lg">{t.name}</div>
+                                            <div className="text-xs text-gray-500 font-mono tracking-tighter">{t.desc}</div>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    ) : step === 2 ? (
+                        <div className="space-y-6">
+                            <h3 className="text-xs font-black uppercase text-accent-green tracking-[0.3em]">Phase 2: Test Parameters</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-gray-500">Test Title</label>
+                                    <input 
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent-green outline-none" 
+                                        placeholder="Internal Hackathon 2024"
+                                        value={formData.title}
+                                        onChange={(e) => setFormData({...formData, title: e.target.value})}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-gray-500">Duration (Minutes)</label>
+                                    <input 
+                                        type="number"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent-green outline-none" 
+                                        value={formData.duration}
+                                        onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-gray-500">Starts At</label>
+                                    <input 
+                                        type="datetime-local"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent-green outline-none" 
+                                        value={formData.startTime}
+                                        onChange={(e) => setFormData({...formData, startTime: e.target.value})}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-gray-500">Ends At</label>
+                                    <input 
+                                        type="datetime-local"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent-green outline-none" 
+                                        value={formData.endTime}
+                                        onChange={(e) => setFormData({...formData, endTime: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-between pt-6 border-t border-white/5">
+                                <Button variant="ghost" onClick={() => setStep(1)} className="text-gray-500 font-bold uppercase text-[10px]">Back</Button>
+                                <Button onClick={() => setStep(3)} className="bg-white text-black font-black uppercase text-[10px]">Next Phase</Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <h3 className="text-xs font-black uppercase text-accent-green tracking-[0.3em]">Phase 3: {formData.type} Connection</h3>
+                            
+                            {formData.type === 'MCQ' && (
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-accent-green/10 border border-accent-green/20 rounded-2xl flex items-center gap-4">
+                                        <Monitor className="h-8 w-8 text-accent-green"/>
+                                        <div>
+                                            <div className="text-sm font-bold text-white">Google Form Integration</div>
+                                            <div className="text-[10px] text-gray-500 font-mono tracking-tighter">Please paste the URL of your Google Form below.</div>
+                                        </div>
+                                        <Button 
+                                            size="sm" 
+                                            variant="outline" 
+                                            className="ml-auto text-[9px] border-accent-green/50 text-accent-green"
+                                            onClick={() => window.open('https://forms.new', '_blank')}
+                                        >
+                                            Create New Form
+                                        </Button>
+                                    </div>
+                                    <input 
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent-green outline-none font-mono text-sm" 
+                                        placeholder="https://docs.google.com/forms/d/..."
+                                        value={formData.externalUrl}
+                                        onChange={(e) => setFormData({...formData, externalUrl: e.target.value})}
+                                    />
+                                </div>
+                            )}
+
+                            {formData.type === 'DOCUMENT' && (
+                                <div className="p-10 border border-dashed border-white/10 rounded-3xl bg-white/[0.01] text-center">
+                                    <Download className="h-10 w-10 text-gray-700 mx-auto mb-4"/>
+                                    <h4 className="font-bold text-gray-300">Document Submission Mode</h4>
+                                    <p className="text-xs text-gray-600 font-mono mt-2">Students will be prompted to upload their finalized report or document. Proctoring will remain active during the entire session.</p>
+                                </div>
+                            )}
+
+                            {formData.type === 'CODING' && (
+                                <div className="space-y-4">
+                                    <div className="relative">
+                                        <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                                        <input 
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:border-accent-green outline-none" 
+                                            placeholder="Search Problems by Name or Number..."
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                                        {filteredProblems.map(p => (
+                                            <div 
+                                                key={p._id}
+                                                onClick={() => toggleProblem(p._id)}
+                                                className={`p-4 rounded-xl border transition-all cursor-pointer flex justify-between items-center ${formData.selectedProblems.includes(p._id) ? 'bg-accent-green/10 border-accent-green/50 shadow-lg shadow-accent-green/5' : 'bg-white/[0.02] border-white/5 hover:border-white/20'}`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="font-mono text-[9px] text-gray-500">#{p.problemNumber}</span>
+                                                    <span className="font-bold text-sm text-gray-200">{p.title}</span>
+                                                </div>
+                                                {formData.selectedProblems.includes(p._id) && <CheckCircle className="h-4 w-4 text-accent-green" />}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="text-[10px] font-black uppercase text-accent-green tracking-widest text-right">
+                                        {formData.selectedProblems.length} Problems Selected
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="flex justify-between pt-6 border-t border-white/5">
+                                <Button variant="ghost" onClick={() => setStep(2)} className="text-gray-500 font-bold uppercase text-[10px]">Back</Button>
+                                <Button 
+                                    onClick={handleSubmit} 
+                                    disabled={loading}
+                                    className="bg-accent-green text-gray-950 font-black uppercase text-[10px] shadow-xl shadow-accent-green/20"
+                                >
+                                    {loading ? "Synching..." : "Initiate Deployment"}
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+        </div>
+    );
 }

@@ -47,7 +47,7 @@ exports.getLeaderboard = async (req, res) => {
           solvedCount: { $size: "$solvedProblems" }
         }
       },
-      { $sort: { avgGrade: -1 } },
+      { $sort: { solvedCount: -1, avgGrade: -1 } },
       { $skip: skip },
       { $limit: limit }
     ];

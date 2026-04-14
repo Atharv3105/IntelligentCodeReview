@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const http = require("http");
@@ -12,6 +13,13 @@ const errorHandler = require("./middleware/error.middleware");
 const logger = require("./utils/logger");
 
 connectDB();
+
+// Pre-load all models to avoid MissingSchemaError during population
+require("./models/User");
+require("./models/Problem");
+require("./models/Submission");
+require("./models/Assessment");
+require("./models/Attempt");
 
 // start the queue processor (requires Redis configured)
 require("./jobProcessor");
@@ -36,6 +44,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(cookieParser());
 
 // Rate Limiting
@@ -78,6 +87,7 @@ app.use("/api/problems", require("./routes/problem.routes"));
 app.use("/api/submissions", require("./routes/submission.routes"));
 app.use("/api/leaderboard", require("./routes/leaderboard.routes"));
 app.use("/api/analytics", require("./routes/analytics.routes"));
+app.use("/api/assessments", require("./routes/assessment.routes"));
 
 app.use(errorHandler);
 

@@ -14,6 +14,8 @@ import ProblemPage from "./pages/ProblemPage";
 import MySubmissions from "./pages/MySubmissions";
 import Leaderboard from "./pages/Leaderboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AssessmentDashboard from "./pages/AssessmentDashboard";
+import TestEnvironment from "./pages/TestEnvironment";
 
 export default function App() {
   return (
@@ -68,6 +70,24 @@ export default function App() {
                   element={
                     <ProtectedRoute>
                       <Leaderboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/assessments"
+                  element={
+                    <ProtectedRoute>
+                      <AssessmentDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/assessment/:id"
+                  element={
+                    <ProtectedRoute>
+                      <TestEnvironment />
                     </ProtectedRoute>
                   }
                 />

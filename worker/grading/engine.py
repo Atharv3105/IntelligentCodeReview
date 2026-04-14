@@ -37,7 +37,9 @@ def calculate_grade(exec_result, ast_result, quality_result, plagiarism_score):
     quality_score = max(0, min(100, quality_score))  # Clamp to 0-100
 
     # Plagiarism penalty (0-25)
-    plagiarism_penalty = min(plagiarism_score * 25, 25) if plagiarism_score else 0
+    # distance 0.0 = identical (penalty 25)
+    # distance > 2.5 = unique (penalty 0)
+    plagiarism_penalty = max(0, 25 - (plagiarism_score * 10)) if plagiarism_score is not None else 0
 
     # Weighted calculation with configurable weights
     final = (

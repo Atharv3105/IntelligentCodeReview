@@ -60,7 +60,9 @@ exports.getAdminStats = async (req, res) => {
 
     successfulSubmissions.forEach(sub => {
       const date = sub.createdAt.toISOString().split('T')[0];
-      const diff = sub.problemId?.difficulty?.toLowerCase() || 'easy';
+      const diff = (sub.problemId && typeof sub.problemId === 'object' && sub.problemId.difficulty) 
+                   ? sub.problemId.difficulty.toLowerCase() 
+                   : 'easy';
       
       if (!heatmap[date]) {
         heatmap[date] = { total: 0, easy: 0, medium: 0, hard: 0 };
@@ -76,7 +78,9 @@ exports.getAdminStats = async (req, res) => {
 
     // 4. Difficulty Breakdown
     const problemStats = allSubmissions.reduce((acc, curr) => {
-      const d = curr.problemId?.difficulty?.toLowerCase() || 'easy';
+      const d = (curr.problemId && typeof curr.problemId === 'object' && curr.problemId.difficulty)
+                ? curr.problemId.difficulty.toLowerCase()
+                : 'easy';
       acc[d] = (acc[d] || 0) + 1;
       return acc;
     }, {});
@@ -99,7 +103,7 @@ exports.getAdminStats = async (req, res) => {
     });
   } catch (err) {
     console.error("Admin monitoring stats error:", err);
-    res.status(500).json({ message: "Failed to fetch admin monitoring data." });
+    res.status(500).json({ message: "Failed to fetch admin monitoring data.", error: err.message });
   }
 };
 

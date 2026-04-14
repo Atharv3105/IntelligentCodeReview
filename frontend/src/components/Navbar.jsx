@@ -14,6 +14,7 @@ export default function Navbar() {
   const navItems = [
     { path: "/dashboard", label: "Dashboard" },
     { path: "/problems", label: "Problems" },
+    { path: "/assessments", label: "Tests" },
     { path: "/submissions", label: "My Submissions" },
     { path: "/leaderboard", label: "Leaderboard" },
     ...(user?.role === "admin" ? [{ path: "/admin", label: "Admin" }] : [])
