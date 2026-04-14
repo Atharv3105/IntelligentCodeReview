@@ -81,8 +81,8 @@ app.use("/api/analytics", require("./routes/analytics.routes"));
 
 app.use(errorHandler);
 
-server.listen(process.env.PORT, () =>
-  logger.info(`Server running on port ${process.env.PORT}`)
+server.listen(process.env.PORT || 5050, "0.0.0.0", () =>
+  logger.info(`Server running on port ${process.env.PORT || 5050}`)
 );
 
 // catch unhandled promise rejections so the process doesn't die unexpectedly

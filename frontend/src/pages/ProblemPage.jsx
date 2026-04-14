@@ -21,7 +21,7 @@ const tabs = [
 
 export default function ProblemPage() {
   const { id } = useParams();
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext) || {};
   const { isDark } = useContext(ThemeContext);
 
   const [problem, setProblem] = useState(null);
@@ -261,7 +261,11 @@ export default function ProblemPage() {
                 {result.feedback?.optimized_version && (
                   <div>
                     <h3 className="mb-3 text-lg font-semibold">Optimized Version</h3>
-                    <CodeDiffView original={code} improved={result.feedback?.optimized_version || ""} />
+                    <CodeDiffView 
+                      key={result.feedback?.optimized_version?.slice(0, 50) || 'default'} 
+                      original={code} 
+                      improved={result.feedback?.optimized_version || ""} 
+                    />
                   </div>
                 )}
               </div>

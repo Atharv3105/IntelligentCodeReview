@@ -37,7 +37,9 @@ services:
       - redis
 
   worker:
-    image: techieatharv2026/codereview-worker:latest
+    build:
+      context: ../worker
+      dockerfile: Dockerfile
     container_name: code_worker
     restart: always
     ports:

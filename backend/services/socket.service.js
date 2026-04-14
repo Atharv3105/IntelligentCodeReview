@@ -30,3 +30,7 @@ exports.initialize = (serverIO) => {
 exports.emitSubmissionUpdate = (id, data) => {
   if (io) io.to(id.toString()).emit("submissionUpdate", data);
 };
+
+exports.emitGlobalWin = (data) => {
+  if (io) io.emit("liveWin", data);
+};

@@ -4,8 +4,8 @@
   "description": "Root workspace to run frontend, backend and worker services together",
   "scripts": {
     "install:all": "npm install --prefix frontend && npm install --prefix backend",
-    "dev:services": "docker compose -f docker/docker-compose.yml up mongodb redis ollama -d",
-    "start:backend": "npm run dev --prefix backend",
+    "dev:services": "docker compose -f docker/docker-compose.yml up mongodb redis ollama worker --build -d",
+    "start:backend": "cd backend && node server.js",
     "start:frontend": "npm run dev --prefix frontend",
     "dev": "npm run dev:services && node ./scripts/dev.js"
   },

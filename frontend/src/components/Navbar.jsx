@@ -12,6 +12,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
+    { path: "/dashboard", label: "Dashboard" },
     { path: "/problems", label: "Problems" },
     { path: "/submissions", label: "My Submissions" },
     { path: "/leaderboard", label: "Leaderboard" },

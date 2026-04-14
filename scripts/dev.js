@@ -1,38 +1,54 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
+/**
+ * dev.js - Zero-Guesswork Environment Handler for Windows
+ * Instead of relying on the system PATH to find 'node' or 'concurrently',
+ * we use absolute paths and the currently running node instance.
+ */
+
 const env = { ...process.env };
+env.WORKER_URL = 'http://localhost:8000';
+
+// Use the absolute path to the current node executable
+const nodePath = process.execPath;
+const nodeDir = path.dirname(nodePath);
 
 if (process.platform === 'win32') {
-  let systemRoot = env.SYSTEMROOT || env.WINDIR || 'C:\Windows';
-  systemRoot = systemRoot.replace(/\//g, '\\');
-  if (/^[A-Za-z]:[^\\]/.test(systemRoot)) {
-    systemRoot = `${systemRoot.slice(0, 2)}\\${systemRoot.slice(2)}`;
-  }
-
+  const systemRoot = env.SystemRoot || env.windir || 'C:\\Windows';
   const system32 = path.join(systemRoot, 'System32');
   const powershell = path.join(system32, 'WindowsPowerShell', 'v1.0');
 
-  const normalizedPath = (env.PATH || '')
-    .split(';')
-    .map((p) => p.trim())
-    .filter(Boolean)
-    .map((p) => p.toLowerCase());
-
-  const pathAdditions = [];
-  if (!normalizedPath.includes(system32.toLowerCase())) pathAdditions.push(system32);
-  if (!normalizedPath.includes(systemRoot.toLowerCase())) pathAdditions.push(systemRoot);
-  if (!normalizedPath.includes(powershell.toLowerCase())) pathAdditions.push(powershell);
-
-  env.PATH = [...pathAdditions, env.PATH].filter(Boolean).join(';');
-  env.COMSPEC = env.COMSPEC || path.join(system32, 'cmd.exe');
+  // Explicitly inject the folder containing node.exe into the PATH
+  const pathAdditions = [nodeDir, system32, systemRoot, powershell];
+  env.PATH = [...pathAdditions, (env.PATH || '')].filter(Boolean).join(';');
+  
+  // Set COMSPEC to cmd.exe in System32 for stability
+  env.COMSPEC = path.join(system32, 'cmd.exe');
 }
 
-const concurrentlyPath = path.join(__dirname, '..', 'node_modules', '.bin', process.platform === 'win32' ? 'concurrently.cmd' : 'concurrently');
+// Find the JS entry point for concurrently to skip the .cmd wrapper hell
+const concurrentlyJs = path.join(
+  __dirname, 
+  '..', 
+  'node_modules', 
+  'concurrently', 
+  'dist', 
+  'bin', 
+  'concurrently.js'
+);
+
 const args = ['npm run start:backend', 'npm run start:frontend'];
 
-const spawnCommand = process.platform === 'win32' ? (env.COMSPEC || 'cmd.exe') : concurrentlyPath;
-const spawnArgs = process.platform === 'win32' ? ['/c', concurrentlyPath, ...args] : args;
+console.log('--- Starting IntelliCode (Absolute Path Mode) ---');
+console.log(`Node Exec: ${nodePath}`);
+console.log('Environment: Windows paths stabilized.');
+
+/**
+ * Launch node.exe directly on concurrently.js
+ */
+const spawnCommand = nodePath;
+const spawnArgs = [concurrentlyJs, ...args];
 
 const child = spawn(spawnCommand, spawnArgs, {
   env,

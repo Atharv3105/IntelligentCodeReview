@@ -6,6 +6,7 @@ export const SocketContext = createContext();
 
 export default function SocketProvider({ children }) {
   const { token } = useContext(AuthContext);
+  const [results, setResults] = useState([]);
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -21,11 +22,15 @@ export default function SocketProvider({ children }) {
     };
     const s = io("/", options);
     setSocket(s);
+    s.on("liveWin", (win) => {
+      setResults(prev => [win, ...prev].slice(0, 15));
+    });
+
     return () => s.close();
   }, [token]);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={{ socket, results }}>
       {children}
     </SocketContext.Provider>
   );
