@@ -19,13 +19,21 @@ const tabs = [
   { id: "testcases", label: "Test Cases" }
 ];
 
+const LANGUAGES = [
+  { id: "python", label: "Python 3", monaco: "python" },
+  { id: "java", label: "Java 17", monaco: "java" },
+  { id: "cpp", label: "C++ 17", monaco: "cpp" },
+  { id: "javascript", label: "JavaScript", monaco: "javascript" }
+];
+
 export default function ProblemPage() {
   const { id } = useParams();
   const { socket } = useContext(SocketContext) || {};
   const { isDark } = useContext(ThemeContext);
 
   const [problem, setProblem] = useState(null);
-  const [code, setCode] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("python");
+  const [codes, setCodes] = useState({ python: "", java: "", cpp: "", javascript: "" });
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState("");
   const [result, setResult] = useState(null);
@@ -37,7 +45,14 @@ export default function ProblemPage() {
   useEffect(() => {
     api.get(`/problems/${id}`).then((res) => {
       setProblem(res.data);
-      setCode(res.data.starterCode || "");
+      // Initialize codes with starter code from backend or defaults
+      const backendStarter = res.data.starterCode || {};
+      setCodes({
+        python: backendStarter.python || "def solution():\n    pass",
+        java: backendStarter.java || "public class Solution {\n    public static void main(String[] args) {\n    }\n}",
+        cpp: backendStarter.cpp || "#include <iostream>\nusing namespace std;\n\nint main() {\n    return 0;\n}",
+        javascript: backendStarter.javascript || "function solution() {\n}"
+      });
     });
   }, [id]);
 
@@ -131,7 +146,11 @@ export default function ProblemPage() {
       setStage("QUEUED");
       setSubmissionError("");
 
-      const res = await api.post("/submissions", { problemId: id, code });
+      const res = await api.post("/submissions", { 
+        problemId: id, 
+        code: codes[selectedLanguage], 
+        language: selectedLanguage 
+      });
       const submissionId = res.data.submissionId;
 
       if (socket) socket.emit("joinSubmission", submissionId);
@@ -263,8 +282,9 @@ export default function ProblemPage() {
                     <h3 className="mb-3 text-lg font-semibold">Optimized Version</h3>
                     <CodeDiffView 
                       key={result.feedback?.optimized_version?.slice(0, 50) || 'default'} 
-                      original={code} 
+                      original={codes[selectedLanguage]} 
                       improved={result.feedback?.optimized_version || ""} 
+                      language={selectedLanguage}
                     />
                   </div>
                 )}
@@ -274,8 +294,19 @@ export default function ProblemPage() {
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="rounded-full bg-green-400/15 px-3 py-1 text-sm font-medium text-accent-green">Python 3</span>
-              <Button variant="outline" onClick={() => setCode(problem.starterCode || "")}>Reset</Button>
+              <select 
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className="bg-gray-900/60 text-accent-green px-3 py-1.5 rounded-lg border border-white/10 text-sm font-bold focus:outline-none"
+              >
+                {LANGUAGES.map(lang => (
+                  <option key={lang.id} value={lang.id}>{lang.label}</option>
+                ))}
+              </select>
+              <Button variant="outline" size="sm" onClick={() => {
+                const starter = problem.starterCode?.[selectedLanguage] || "";
+                setCodes(prev => ({ ...prev, [selectedLanguage]: starter }));
+              }}>Reset</Button>
             </div>
 
             <Card className="overflow-hidden p-0">
@@ -283,9 +314,9 @@ export default function ProblemPage() {
                 <Editor
                   height="100%"
                   theme={monacoTheme}
-                  defaultLanguage="python"
-                  value={code}
-                  onChange={(v) => setCode(v || "")}
+                  language={LANGUAGES.find(l => l.id === selectedLanguage)?.monaco}
+                  value={codes[selectedLanguage]}
+                  onChange={(v) => setCodes(prev => ({ ...prev, [selectedLanguage]: v || "" }))}
                   options={{
                     fontSize: 14,
                     minimap: { enabled: false },
@@ -299,7 +330,7 @@ export default function ProblemPage() {
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex-1">{progress > 0 && <SubmissionProgress progress={progress} stage={stage} />}</div>
-              <Button onClick={submit} disabled={!code}>Submit Solution</Button>
+              <Button onClick={submit} disabled={!codes[selectedLanguage]}>Submit Solution</Button>
             </div>
           </div>
         </div>

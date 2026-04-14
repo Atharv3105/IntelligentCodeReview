@@ -9,7 +9,7 @@ exports.callWorker = async (submission) => {
 
   // add job to queue, with automatic retries; do not wait here
   const job = await submissionQueue.add(
-    { submissionId: submission._id, code: submission.code },
+    { submissionId: submission._id, code: submission.code, language: submission.language },
     { attempts: 3, backoff: 5000 }
   );
 

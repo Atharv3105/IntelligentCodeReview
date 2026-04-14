@@ -18,10 +18,11 @@ submissionQueue.process(async (job) => {
 
     socketService.emitSubmissionUpdate(submissionId, { stage: "EVALUATING_CODE", progress: 30 });
 
-    // 2. Call FastAPI Worker with problem test cases
+    // 2. Call FastAPI Worker with language and test cases
     const response = await axios.post(`${process.env.WORKER_URL}/analyze`, {
       submissionId: submissionId,
       code: code,
+      language: submission.language || "python",
       problemTitle: problem.title,
       testCases: problem.testCases || []
     });

@@ -9,7 +9,15 @@ const problemSchema = new mongoose.Schema({
   concept: { type: String, default: "General", index: true },
   collections: [{ type: String, index: true }], // e.g. ["Blind75", "Neetcode150"]
   tags: [{ type: String }],
-  starterCode: { type: String, default: "def solution():\n    pass" },
+  starterCode: { 
+    type: Object, 
+    default: {
+      python: "def solution():\n    pass",
+      java: "public class Solution {\n    public static void main(String[] args) {\n        // Your code here\n    }\n}",
+      cpp: "#include <iostream>\nusing namespace std;\n\nint main() {\n    return 0;\n}",
+      javascript: "function solution() {\n    // Your code here\n}"
+    } 
+  },
   hints: [{ type: String }],
   testCases: [
     {

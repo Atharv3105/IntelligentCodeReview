@@ -6,7 +6,7 @@ import { Card } from "../components/ui/Card";
 import { SocketContext } from "../context/SocketContext";
 import { 
   Users, Activity, TrendingUp, Monitor, Flame, 
-  BarChart, Download, X, Eye, Clock, CheckCircle, AlertTriangle, Filter
+  BarChart, Download, X, Eye, Clock, CheckCircle, AlertTriangle, Filter, Trophy
 } from "lucide-react";
 
 const statGradientMap = {
@@ -428,7 +428,7 @@ export default function AdminDashboard() {
         )}
       </AnimatePresence>
 
-      <style jsx>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 5px;
         }

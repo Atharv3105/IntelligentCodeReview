@@ -128,7 +128,12 @@ async function seed() {
             concept: concept,
             tags: tags,
             collections: collections,
-            starterCode: "def solution():\n    # Implement here\n    pass",
+            starterCode: {
+              python: "def solution():\n    # Implement here\n    pass",
+              java: "public class Solution {\n    public static void main(String[] args) {\n        // Implement here\n    }\n}",
+              cpp: "#include <iostream>\nusing namespace std;\n\nint main() {\n    // Implement here\n    return 0;\n}",
+              javascript: "function solution() {\n    // Implement here\n}"
+            },
           },
           upsert: true
         }
