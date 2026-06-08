@@ -20,7 +20,7 @@ export default function SocketProvider({ children }) {
       reconnectionAttempts: 5,
       reconnectionDelay: 2000
     };
-    const s = io("/", options);
+    const s = io(import.meta.env.VITE_API_URL || "/", options);
     setSocket(s);
     s.on("liveWin", (win) => {
       setResults(prev => [win, ...prev].slice(0, 15));

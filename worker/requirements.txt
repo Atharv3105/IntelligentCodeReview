@@ -7,3 +7,4 @@ radon
 faiss-cpu
 numpy
 requests
+groq

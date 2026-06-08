@@ -13,6 +13,15 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 
+// Safely convert any AI response value to a renderable string
+const safeStr = (val) => {
+  if (val === null || val === undefined) return "";
+  if (typeof val === "string") return val;
+  if (typeof val === "number" || typeof val === "boolean") return String(val);
+  if (Array.isArray(val)) return val.map(safeStr).join(", ");
+  return JSON.stringify(val);
+};
+
 const tabs = [
   { id: "description", label: "Description" },
   { id: "hints", label: "Hints" },
@@ -253,14 +262,14 @@ export default function ProblemPage() {
 
                 <Card>
                   <h3 className="mb-2 text-lg font-semibold">Code Explanation</h3>
-                  <p className="leading-relaxed text-gray-300">{result.feedback?.explanation || "No explanation available."}</p>
+                  <p className="leading-relaxed text-gray-300">{safeStr(result.feedback?.explanation) || "No explanation available."}</p>
                 </Card>
 
                 <Card>
                   <h3 className="mb-3 text-lg font-semibold">Complexity Summary</h3>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Time: {result.feedback?.time_complexity || complexitySummary?.estimated || "N/A"}</div>
-                    <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Space: {result.feedback?.space_complexity || "N/A"}</div>
+                    <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Time: {safeStr(result.feedback?.time_complexity) || safeStr(complexitySummary?.estimated) || "N/A"}</div>
+                    <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Space: {safeStr(result.feedback?.space_complexity) || "N/A"}</div>
                     <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Loops: {complexitySummary?.loops ?? "N/A"}</div>
                     <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Recursion: {complexitySummary?.recursion ? "Detected" : "Not Detected"}</div>
                   </div>
@@ -271,7 +280,7 @@ export default function ProblemPage() {
                   <ul className="space-y-2">
                     {(result.feedback?.recommended_improvements || ["No recommendations available."]).map((item, idx) => (
                       <li key={idx} className="rounded-lg bg-gray-800/50 p-3 text-sm text-gray-300">
-                        {item}
+                        {safeStr(item)}
                       </li>
                     ))}
                   </ul>
