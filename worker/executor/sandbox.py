@@ -5,7 +5,7 @@ import uuid
 from core.config import EXEC_TIMEOUT
 from core.logger import log
 
-client = docker.from_env()
+# Docker client will be initialized lazily inside execute_code
 
 # Internal path inside the worker container
 INTERNAL_SANDBOX_DIR = "/sandbox"
@@ -36,6 +36,12 @@ LANGUAGE_CONFIG = {
 }
 
 def execute_code(code: str, language: str = "python"):
+    try:
+        client = docker.from_env()
+    except Exception as e:
+        log(f"Docker client initialization failed: {str(e)}")
+        return {"output": "", "error": "Code execution sandbox unavailable in cloud mode."}
+
     config = LANGUAGE_CONFIG.get(language, LANGUAGE_CONFIG["python"])
     
     session_id = str(uuid.uuid4())
