@@ -1,10 +1,11 @@
 import subprocess
 import os
 import uuid
+import tempfile
 from core.logger import log
 
-# Internal path inside the worker container
-INTERNAL_SANDBOX_DIR = "/sandbox"
+# Use system temp directory for compatibility with cloud environments
+INTERNAL_SANDBOX_DIR = os.path.join(tempfile.gettempdir(), "code_review_sandbox")
 
 def analyze_quality(code: str, language: str = "python"):
     # Radon and other static tools are currently Python-only in this setup
