@@ -39,8 +39,20 @@ app.use((req, res, next) => {
   next();
 });
 
+const getCorsOrigin = () => {
+  const corsOrigin = process.env.CORS_ORIGIN;
+  if (!corsOrigin || corsOrigin === "*") {
+    return true; // Reflect request origin to support credentials
+  }
+  const origins = corsOrigin.split(",").map((orig) => {
+    let o = orig.trim();
+    return o.endsWith("/") ? o.slice(0, -1) : o;
+  });
+  return origins.includes("*") ? true : origins;
+};
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim()) : true,
+  origin: getCorsOrigin(),
   credentials: true
 }));
 app.use(express.json());
