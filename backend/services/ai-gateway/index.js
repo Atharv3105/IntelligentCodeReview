@@ -231,28 +231,41 @@ class AIGateway {
   // ── Domain-Specific Methods ──────────────────────────────────────────────
 
   async generateQuestion({ topic, difficulty, role, experience, language, questionType, userId }) {
-    const systemPrompt = `You are an expert technical interviewer and problem designer. 
-Generate a ${questionType} question for a ${role} candidate with ${experience} experience level.
-The question should be about ${topic} at ${difficulty} difficulty.
-Generate appropriate starter code in ${language || "python"}.
-Include test cases, hints, expected complexity, and an evaluation rubric.`;
+    // Use compact schema for short_answer / theory questions to avoid truncation
+    const isTheory = questionType === "short_answer" || questionType === "theory" || questionType === "conceptual";
 
-    const userPrompt = `Generate a ${difficulty} ${questionType} question about ${topic}.
-Return a JSON object with this exact structure:
+    const systemPrompt = `You are an expert technical interviewer. Generate a ${questionType} question for a ${role || "Software Engineer"} candidate with ${experience || "Fresher"} experience level on the topic: ${topic} at ${difficulty} difficulty. Respond ONLY with a valid JSON object — no markdown, no extra text.`;
+
+    const userPrompt = isTheory
+      ? `Generate a ${difficulty} theoretical/conceptual question about "${topic}" for a technical interview.
+
+Return ONLY this JSON (fill in the values, keep it concise):
 {
   "type": "${questionType}",
-  "title": "descriptive title",
-  "description": "full problem description with examples",
+  "title": "Question title here",
+  "description": "The full question text here",
   "difficulty": "${difficulty}",
   "topics": ["${topic}"],
-  "constraints": ["constraint 1"],
-  "examples": [{"input": "...", "output": "...", "explanation": "..."}],
-  "edgeCases": ["edge case description"],
-  "starterCode": {"${language || "python"}": "starter code"},
-  "expectedComplexity": {"time": "O(n)", "space": "O(n)"},
-  "hints": ["hint 1 - concept", "hint 2 - approach", "hint 3 - implementation"],
-  "evaluationRubric": [{"criterion": "correctness", "weight": 40}, {"criterion": "efficiency", "weight": 30}],
-  "testCases": [{"input": "...", "expectedOutput": "...", "isHidden": false}]
+  "hints": ["hint 1", "hint 2"],
+  "keyPoints": ["key point to cover in answer"],
+  "sampleAnswer": "A concise model answer"
+}`
+      : `Generate a ${difficulty} coding problem about "${topic}" for a technical interview. Language: ${language || "python"}.
+
+Return ONLY this JSON:
+{
+  "type": "coding",
+  "title": "Problem title",
+  "description": "Full problem statement with input/output examples",
+  "difficulty": "${difficulty}",
+  "topics": ["${topic}"],
+  "constraints": ["1 <= n <= 10^5"],
+  "hints": ["hint 1", "hint 2"],
+  "starterCode": {"${language || "python"}": "# Write your solution here\\ndef solution():\\n    pass"},
+  "expectedComplexity": {"time": "O(n)", "space": "O(1)"},
+  "testCases": [
+    {"input": "example input", "expectedOutput": "expected output", "isHidden": false}
+  ]
 }`;
 
     return this.generateStructured({
@@ -260,7 +273,8 @@ Return a JSON object with this exact structure:
       userPrompt,
       userId,
       requestType: "question_generation",
-      promptVersion: "v1.0",
+      promptVersion: "v2.0",
+      maxTokens: isTheory ? 2048 : 4096,
     });
   }
 
