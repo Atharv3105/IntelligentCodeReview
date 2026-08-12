@@ -33,11 +33,6 @@ function AuthAwareRedirect({ children }) {
   return children;
 }
 
-// Wrap protected page in AppShell
-function Shell({ children }) {
-  return <AppShell>{children}</AppShell>;
-}
-
 function AppRoutes() {
   return (
     <Routes>
@@ -46,21 +41,23 @@ function AppRoutes() {
       <Route path="/login"    element={<AuthAwareRedirect><Login /></AuthAwareRedirect>} />
       <Route path="/register" element={<AuthAwareRedirect><Register /></AuthAwareRedirect>} />
 
-      {/* ── Protected (each wrapped in ProtectedRoute + AppShell) ── */}
-      <Route path="/dashboard"   element={<ProtectedRoute><Shell><Dashboard /></Shell></ProtectedRoute>} />
-      <Route path="/problems"    element={<ProtectedRoute><Shell><ProblemList /></Shell></ProtectedRoute>} />
-      <Route path="/problem/:id" element={<ProtectedRoute><Shell><ProblemPage /></Shell></ProtectedRoute>} />
-      <Route path="/sql"         element={<ProtectedRoute><Shell><SQLLab /></Shell></ProtectedRoute>} />
-      <Route path="/interviews"  element={<ProtectedRoute><Shell><InterviewSession /></Shell></ProtectedRoute>} />
-      <Route path="/mock-tests"  element={<ProtectedRoute><Shell><MockTestArena /></Shell></ProtectedRoute>} />
-      <Route path="/career"      element={<ProtectedRoute><Shell><CareerHub /></Shell></ProtectedRoute>} />
-      <Route path="/subjects"    element={<ProtectedRoute><Shell><SubjectPractice /></Shell></ProtectedRoute>} />
-      <Route path="/analytics"   element={<ProtectedRoute><Shell><AnalyticsPage /></Shell></ProtectedRoute>} />
-      <Route path="/submissions" element={<ProtectedRoute><Shell><MySubmissions /></Shell></ProtectedRoute>} />
-      <Route path="/leaderboard" element={<ProtectedRoute><Shell><Leaderboard /></Shell></ProtectedRoute>} />
-      <Route path="/profile"     element={<ProtectedRoute><Shell><Profile /></Shell></ProtectedRoute>} />
-      <Route path="/settings"    element={<ProtectedRoute><Shell><Settings /></Shell></ProtectedRoute>} />
-      <Route path="/admin"       element={<ProtectedRoute><Shell><AdminDashboard /></Shell></ProtectedRoute>} />
+      {/* ── Protected Persistent Layout ── */}
+      <Route element={<ProtectedRoute><AppShell /></ProtectedRoute>}>
+        <Route path="/dashboard"   element={<Dashboard />} />
+        <Route path="/problems"    element={<ProblemList />} />
+        <Route path="/problem/:id" element={<ProblemPage />} />
+        <Route path="/sql"         element={<SQLLab />} />
+        <Route path="/interviews"  element={<InterviewSession />} />
+        <Route path="/mock-tests"  element={<MockTestArena />} />
+        <Route path="/career"      element={<CareerHub />} />
+        <Route path="/subjects"    element={<SubjectPractice />} />
+        <Route path="/analytics"   element={<AnalyticsPage />} />
+        <Route path="/submissions" element={<MySubmissions />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/profile"     element={<Profile />} />
+        <Route path="/settings"    element={<Settings />} />
+        <Route path="/admin"       element={<AdminDashboard />} />
+      </Route>
 
       {/* ── Fallback ── */}
       <Route path="*" element={<Navigate to="/login" replace />} />

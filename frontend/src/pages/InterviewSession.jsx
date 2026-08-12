@@ -35,6 +35,10 @@ export default function InterviewSession() {
   useEffect(() => {
     async function initInterview() {
       setLoading(true);
+      setSession(null);
+      setCurrentQuestion(null);
+      setReport(null);
+      setTranscript([]);
       try {
         const createRes = await api.post("/interviews", {
           type: typeParam,
@@ -44,13 +48,23 @@ export default function InterviewSession() {
           questionCount: 5,
         });
 
-        const sess = createRes.data.session;
-        setSession(sess);
+        const newSession = createRes.data.session;
+        setSession(newSession);
 
-        const startRes = await api.post(`/interviews/${sess.id}/start`);
-        setSession(startRes.data.session);
+        const startRes = await api.post(`/interviews/${newSession.id}/start`);
+        setCurrentQuestion(startRes.data.question);
+        setQuestionMeta({
+          questionIndex: startRes.data.questionIndex,
+          totalQuestions: startRes.data.totalQuestions,
+        });
 
-        fetchCurrentQuestion(sess.id);
+        setTranscript([
+          {
+            role: "assistant",
+            text: `Welcome to your ${typeParam} interview session. I am your AI interviewer. Let's begin with the first question.`,
+            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          },
+        ]);
       } catch (err) {
         console.error("Failed to initialize interview:", err);
       } finally {

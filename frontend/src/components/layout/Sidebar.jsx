@@ -71,7 +71,13 @@ export function Sidebar({ collapsed, onToggle }) {
     practice: true, interviews: true, assessments: false, career: false, insights: false,
   });
 
-  const isActive = (path) => location.pathname === path || (location.pathname + location.search) === path;
+  const isActive = (path) => {
+    const fullPath = location.pathname + location.search;
+    if (path.includes("?")) {
+      return fullPath === path;
+    }
+    return location.pathname === path && (!location.search || location.pathname === "/dashboard" || location.pathname === "/problems" || location.pathname === "/sql");
+  };
 
   return (
     <motion.aside

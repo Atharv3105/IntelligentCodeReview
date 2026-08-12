@@ -258,10 +258,18 @@ html, body, #root {
 .live-dot::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -3px;
   border-radius: 50%;
-  background: #10b981;
-  animation: pulse-ring 2s ease-out infinite;
+  background: rgba(16,185,129,0.4);
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+/* ══════════════════════════════════════════════════════════
+   NAVBAR ACTIVE STATE
+══════════════════════════════════════════════════════════ */
+.nav-active-bg {
+  background: var(--brand-blue-light);
+  border: 1px solid var(--brand-blue-glow);
 }
 
 /* ══════════════════════════════════════════════════════════

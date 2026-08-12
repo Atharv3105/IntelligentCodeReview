@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Clock, CheckCircle2, ChevronRight, SlidersHorizontal, AlertCircle } from "lucide-react";
 import api from "../services/api";
 import { Card } from "../components/ui/Card";
@@ -6,6 +7,9 @@ import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 
 export default function MockTestArena() {
+  const [searchParams] = useSearchParams();
+  const modeParam = searchParams.get("mode");
+
   const [activeTest, setActiveTest] = useState(null);
   const [attempt, setAttempt] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -17,7 +21,11 @@ export default function MockTestArena() {
   // Configuration
   const [role, setRole] = useState("Software Engineer");
   const [duration, setDuration] = useState(30);
-  const [isAdaptive, setIsAdaptive] = useState(true);
+  const [isAdaptive, setIsAdaptive] = useState(modeParam === "adaptive");
+
+  useEffect(() => {
+    setIsAdaptive(modeParam === "adaptive");
+  }, [modeParam]);
 
   const handleStartTest = async () => {
     setLoading(true);

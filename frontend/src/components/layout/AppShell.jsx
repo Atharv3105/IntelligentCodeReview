@@ -1,23 +1,11 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, Outlet } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import CommandPalette from "../CommandPalette";
 
-const pageVariants = {
-  initial: { opacity: 0, y: 10 },
-  enter: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -6 },
-};
-
-const pageTransition = {
-  type: "tween",
-  ease: [0.4, 0, 0.2, 1],
-  duration: 0.26,
-};
-
-export function AppShell({ children }) {
+export function AppShell() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -41,22 +29,20 @@ export function AppShell({ children }) {
         <TopBar onOpenSearch={() => setSearchOpen(true)} />
 
         {/* Page Content */}
-        <AnimatePresence mode="wait">
-          <motion.main
-            key={location.pathname + location.search}
-            variants={pageVariants}
-            initial="initial"
-            animate="enter"
-            exit="exit"
-            transition={pageTransition}
-            className="flex-1 p-6 md:p-8 overflow-y-auto"
-            style={{ background: "var(--bg-app)" }}
+        <main
+          className="flex-1 p-6 md:p-8 overflow-y-auto"
+          style={{ background: "var(--bg-app)" }}
+        >
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-6xl mx-auto"
           >
-            <div className="max-w-6xl mx-auto">
-              {children}
-            </div>
-          </motion.main>
-        </AnimatePresence>
+            <Outlet />
+          </motion.div>
+        </main>
       </div>
 
       {/* Command Palette */}

@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import api from "../services/api";
 import { Button } from "../components/ui/Button";
 
 export default function SubjectPractice() {
-  const [subject, setSubject] = useState("DBMS");
+  const [searchParams] = useSearchParams();
+  const topicParam = searchParams.get("topic");
+
+  const [subject, setSubject] = useState(topicParam || "DBMS");
   const [difficulty, setDifficulty] = useState("medium");
   const [question, setQuestion] = useState(null);
   const [userAnswer, setUserAnswer] = useState("");
@@ -13,6 +17,16 @@ export default function SubjectPractice() {
   const [error, setError] = useState("");
 
   const subjects = ["DBMS", "Operating Systems", "Computer Networks", "OOP", "System Design"];
+
+  useEffect(() => {
+    if (topicParam && subjects.includes(topicParam)) {
+      setSubject(topicParam);
+      setQuestion(null);
+      setUserAnswer("");
+      setEvaluation(null);
+      setError("");
+    }
+  }, [topicParam]);
 
   const handleGenerateQuestion = async () => {
     setLoading(true);

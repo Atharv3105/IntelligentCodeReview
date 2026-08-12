@@ -8,7 +8,14 @@ import { Badge } from "../components/ui/Badge";
 
 export default function CareerHub() {
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "coach");
+  const tabParam = searchParams.get("tab") || "coach";
+  const [activeTab, setActiveTab] = useState(tabParam);
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   // Coach State
   const [coachQuestion, setCoachQuestion] = useState("");
