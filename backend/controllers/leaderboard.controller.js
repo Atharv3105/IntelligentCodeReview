@@ -1,62 +1,46 @@
-const Submission = require("../models/Submission");
+// ============================================================================
+// Leaderboard Controller — Prisma/PostgreSQL
+// ============================================================================
 
-exports.getLeaderboard = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
-    const skip = (page - 1) * limit;
+const prisma = require("../config/prisma");
+const { asyncHandler } = require("../middleware/error.middleware");
 
-    const pipeline = [
-      {
-        $match: {
-          grade: { $type: "number" },
-          status: "Completed"
-        }
-      },
-      {
-        $group: {
-          _id: "$userId",
-          avgGrade: { $avg: "$grade" },
-          totalSubmissions: { $sum: 1 },
-          bestGrade: { $max: "$grade" },
-          solvedProblems: { $addToSet: "$problemId" }
-        }
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "_id",
-          as: "user"
-        }
-      },
-      {
-        $unwind: {
-          path: "$user",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          userId: "$_id",
-          username: { $ifNull: ["$user.displayName", "$user.name", "Anonymous"] },
-          avgGrade: { $round: ["$avgGrade", 2] },
-          bestGrade: 1,
-          totalSubmissions: 1,
-          solvedCount: { $size: "$solvedProblems" }
-        }
-      },
-      { $sort: { solvedCount: -1, avgGrade: -1 } },
-      { $skip: skip },
-      { $limit: limit }
-    ];
+exports.getLeaderboard = asyncHandler(async (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(Math.max(1, parseInt(req.query.limit) || 50), 100);
+  const skip = (page - 1) * limit;
 
-    const leaderboard = await Submission.aggregate(pipeline);
+  // Aggregate user statistics using Prisma raw query for performance
+  const leaderboardRaw = await prisma.$queryRaw`
+    SELECT 
+      u.id AS "userId",
+      u.name AS "username",
+      u.email AS "email",
+      p."xp" AS "xp",
+      p."streakCount" AS "streakCount",
+      p."level" AS "level",
+      COUNT(DISTINCT s."problemId")::int AS "solvedCount",
+      ROUND(AVG(s.grade)::numeric, 2)::float AS "avgGrade",
+      COUNT(s.id)::int AS "totalSubmissions"
+    FROM "User" u
+    LEFT JOIN "UserProfile" p ON u.id = p."userId"
+    LEFT JOIN "Submission" s ON u.id = s."userId" AND s.status = 'completed' AND s.grade IS NOT NULL
+    WHERE u.role = 'student'
+    GROUP BY u.id, u.name, u.email, p.xp, p."streakCount", p.level
+    ORDER BY "solvedCount" DESC, "avgGrade" DESC NULLS LAST, p.xp DESC NULLS LAST
+    LIMIT ${limit} OFFSET ${skip};
+  `;
 
-    res.json(leaderboard);
-  } catch (error) {
-    console.error("Leaderboard Error:", error);
-    res.status(500).json({ message: "Failed to fetch leaderboard." });
-  }
-};
+  const totalCount = await prisma.user.count({ where: { role: "student" } });
+
+  res.json({
+    success: true,
+    leaderboard: leaderboardRaw,
+    pagination: {
+      total: totalCount,
+      page,
+      limit,
+      pages: Math.ceil(totalCount / limit),
+    },
+  });
+});

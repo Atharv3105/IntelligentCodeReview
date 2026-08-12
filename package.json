@@ -1,10 +1,13 @@
 {
-  "name": "code-review-app",
-  "version": "1.0.0",
-  "description": "Root workspace to run frontend, backend and worker services together",
+  "name": "ai-interview-intelligence-platform",
+  "version": "2.0.0",
+  "description": "Local-first AI Technical Interview & Career Preparation Platform",
   "scripts": {
     "install:all": "npm install --prefix frontend && npm install --prefix backend",
-    "dev:services": "docker compose -f docker/docker-compose.yml up mongodb redis ollama worker --build -d",
+    "dev:services": "docker compose -f docker/docker-compose.yml up postgres redis judge0 --build -d",
+    "db:generate": "npm run prisma:generate --prefix backend",
+    "db:migrate": "npm run prisma:migrate --prefix backend",
+    "db:seed": "npm run prisma:seed --prefix backend",
     "start:backend": "cd backend && node server.js",
     "start:frontend": "npm run dev --prefix frontend",
     "dev": "npm run dev:services && node ./scripts/dev.js"

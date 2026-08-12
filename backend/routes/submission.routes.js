@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const protect = require("../middleware/auth.middleware");
 const controller = require("../controllers/submission.controller");
+const protect = require("../middleware/auth.middleware");
 
 router.post("/", protect, controller.createSubmission);
 router.get("/my", protect, controller.getMySubmissions);

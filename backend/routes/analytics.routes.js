@@ -1,25 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/analytics.controller");
-const auth = require("../middleware/auth.middleware");
+const protect = require("../middleware/auth.middleware");
+const authorize = require("../middleware/role.middleware");
 
-// Student analytics
-router.get("/dashboard", auth, controller.getDashboardStats);
-
-// Admin / Teacher analytics
-router.get("/admin", auth, (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: "Access denied. Admins only." });
-  }
-  next();
-}, controller.getAdminStats);
-
-// GET specific student details (Admin only)
-router.get("/student/:id", auth, (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: "Access denied. Admins only." });
-  }
-  next();
-}, controller.getStudentDetails);
+router.get("/dashboard", protect, controller.getDashboardStats);
+router.get("/skills", protect, controller.getSkillGraph);
+router.get("/admin", protect, authorize("admin"), controller.getAdminStats);
+router.get("/student/:id", protect, authorize("admin"), controller.getStudentDetails);
 
 module.exports = router;

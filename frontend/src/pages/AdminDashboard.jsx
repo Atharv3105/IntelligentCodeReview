@@ -95,24 +95,20 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex h-screen items-center justify-center font-mono text-gray-500 uppercase tracking-widest text-xs">
-          Synchronizing Admin Intelligence...
-        </div>
-      </Layout>
+      <div className="py-20 text-center text-xs text-slate-400">
+        Synchronizing Admin Intelligence...
+      </div>
     );
   }
 
   if (!data && activeTab !== "assessments") {
     return (
-      <Layout>
-        <div className="flex h-screen flex-col items-center justify-center gap-4">
-          <AlertTriangle className="h-12 w-12 text-red-500" />
-          <h2 className="text-xl font-black uppercase text-white tracking-tighter">Analytics Engine Offline</h2>
-          <p className="text-sm text-gray-500">The server encountered an error (500) while fetching analytics.</p>
-          <Button onClick={fetchAdminData} className="mt-4 bg-white/5 text-white hover:bg-white/10">Retry Connection</Button>
-        </div>
-      </Layout>
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <AlertTriangle className="h-12 w-12 text-rose-500" />
+        <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Analytics Engine Offline</h2>
+        <p className="text-xs text-slate-500">Unable to load admin analytics statistics.</p>
+        <Button onClick={fetchAdminData} variant="outline" className="mt-2">Retry Connection</Button>
+      </div>
     );
   }
 
@@ -142,8 +138,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <Layout>
-      <section className="section-padding">
+    <div className="space-y-6">
         {/* Header */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
@@ -475,7 +470,6 @@ export default function AdminDashboard() {
              </Card>
           </div>
         </div>
-      </section>
 
       {/* Student Profile Modal */}
       <AnimatePresence>
@@ -607,7 +601,7 @@ export default function AdminDashboard() {
           background: rgba(255, 255, 255, 0.1);
         }
       `}</style>
-    </Layout>
+    </div>
   );
 }
 

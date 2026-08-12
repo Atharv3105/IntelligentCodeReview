@@ -1,131 +1,168 @@
-const User = require("../models/User");
-const Submission = require("../models/Submission");
+// ============================================================================
+// Analytics Controller — Prisma/PostgreSQL
+// ============================================================================
 
-exports.getDashboardStats = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id)
-      .populate("solvedProblems", "title category");
+const prisma = require("../config/prisma");
+const { asyncHandler } = require("../middleware/error.middleware");
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+exports.getDashboardStats = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
-    const categoryStats = {};
-    user.solvedProblems.forEach(prob => {
-      const cat = prob.category || "General";
-      categoryStats[cat] = (categoryStats[cat] || 0) + 1;
-    });
+  const [profile, skills, recentSubmissions, recentInterviews, totalSolved, totalInterviews, recentActivities] = await Promise.all([
+    prisma.userProfile.findUnique({ where: { userId } }),
+    prisma.userSkill.findMany({ where: { userId }, include: { skill: true }, orderBy: { mastery: "desc" } }),
+    prisma.submission.findMany({
+      where: { userId, status: "completed" },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: { problem: { select: { title: true, difficulty: true } } },
+    }),
+    prisma.interviewSession.findMany({
+      where: { userId, state: "completed" },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: { report: { select: { overallScore: true } } },
+    }),
+    prisma.submission.count({
+      where: { userId, status: "completed", NOT: { passedTests: null }, passedTests: { equals: prisma.submission.fields?.totalTests } },
+    }),
+    prisma.interviewSession.count({ where: { userId, state: "completed" } }),
+    prisma.activity.findMany({ where: { userId }, orderBy: { date: "desc" }, take: 30 }),
+  ]);
 
-    const recentSubmissions = await Submission.find({ userId: req.user.id })
-      .populate("problemId", "title difficulty")
-      .sort({ createdAt: -1 })
-      .limit(5);
+  // Calculate readiness score from skills
+  const readinessScore = skills.length > 0
+    ? Math.round(skills.reduce((sum, s) => sum + s.mastery, 0) / skills.length)
+    : 0;
 
-    res.json({
-      streak: user.streakCount || 0,
-      totalSolved: user.solvedProblems.length,
-      activityLog: user.activityLog || [], 
-      categoryStats,
-      recentSubmissions
-    });
-  } catch (err) {
-    console.error("Dashboard stats error:", err);
-    res.status(500).json({ message: "Failed to fetch dashboard stats" });
-  }
-};
+  // Skill breakdown by category
+  const skillsByCategory = {};
+  skills.forEach((s) => {
+    const cat = s.skill.category;
+    if (!skillsByCategory[cat]) skillsByCategory[cat] = [];
+    skillsByCategory[cat].push({ name: s.skill.name, mastery: s.mastery, confidence: s.confidence });
+  });
 
-exports.getAdminStats = async (req, res) => {
-  try {
-    // 1. Core Platform Stats
-    const totalSubmissions = await Submission.countDocuments();
-    const activeUsers = await User.countDocuments({ role: 'student', "solvedProblems.0": { $exists: true } });
-    
-    const allSubmissions = await Submission.find({})
-      .select('grade createdAt problemId')
-      .populate('problemId', 'difficulty');
-      
-    const successfulSubmissions = allSubmissions.filter(s => (s.grade || 0) >= 70);
-    const avgGrade = allSubmissions.length > 0 
-      ? allSubmissions.reduce((acc, curr) => acc + (curr.grade || 0), 0) / allSubmissions.length 
-      : 0;
+  // Activity heatmap (last 365 days)
+  const heatmap = {};
+  recentActivities.forEach((a) => {
+    const date = a.date.toISOString().split("T")[0];
+    heatmap[date] = (heatmap[date] || 0) + 1;
+  });
 
-    // 2. Teacher Monitoring: Top Streaks
-    const topStreaks = await User.find({ role: 'student' }, 'name streakCount email')
-      .sort({ streakCount: -1 })
-      .limit(20);
+  // Recommendations based on weaknesses
+  const weakSkills = skills.filter((s) => s.mastery < 50).sort((a, b) => a.mastery - b.mastery).slice(0, 3);
+  const recommendations = weakSkills.map((s) => ({
+    skill: s.skill.name,
+    category: s.skill.category,
+    mastery: s.mastery,
+    suggestion: `Practice more ${s.skill.name} problems to improve from ${Math.round(s.mastery)}%.`,
+  }));
 
-    // 3. Granular Class-wide Heatmap (Total + By Difficulty)
-    const heatmap = {}; // Format: { "YYYY-MM-DD": { total: 0, easy: 0, medium: 0, hard: 0 } }
-    let maxActivity = { total: 0, easy: 0, medium: 0, hard: 0 };
-
-    successfulSubmissions.forEach(sub => {
-      const date = sub.createdAt.toISOString().split('T')[0];
-      const diff = (sub.problemId && typeof sub.problemId === 'object' && sub.problemId.difficulty) 
-                   ? sub.problemId.difficulty.toLowerCase() 
-                   : 'easy';
-      
-      if (!heatmap[date]) {
-        heatmap[date] = { total: 0, easy: 0, medium: 0, hard: 0 };
-      }
-      
-      heatmap[date].total++;
-      heatmap[date][diff]++;
-
-      // Track max for dynamic scaling
-      if (heatmap[date].total > maxActivity.total) maxActivity.total = heatmap[date].total;
-      if (heatmap[date][diff] > maxActivity[diff]) maxActivity[diff] = heatmap[date][diff];
-    });
-
-    // 4. Difficulty Breakdown
-    const problemStats = allSubmissions.reduce((acc, curr) => {
-      const d = (curr.problemId && typeof curr.problemId === 'object' && curr.problemId.difficulty)
-                ? curr.problemId.difficulty.toLowerCase()
-                : 'easy';
-      acc[d] = (acc[d] || 0) + 1;
-      return acc;
-    }, {});
-
-    res.json({
-      totalSubmissions,
-      activeUsers,
-      avgGrade,
-      successRate: allSubmissions.length > 0 ? (successfulSubmissions.length / allSubmissions.length) * 100 : 0,
-      topStreaks,
+  res.json({
+    success: true,
+    dashboard: {
+      readinessScore,
+      streak: profile?.streakCount || 0,
+      xp: profile?.xp || 0,
+      level: profile?.level || 1,
+      totalSolved,
+      totalInterviews,
+      skills: skillsByCategory,
+      recentSubmissions,
+      recentInterviews,
       heatmap,
-      maxActivity,
-      problemStats,
-      newSubmissionsToday: await Submission.countDocuments({ 
-        createdAt: { $gte: new Date().setHours(0,0,0,0) } 
-      }),
-      newUsersToday: await User.countDocuments({ 
-        createdAt: { $gte: new Date().setHours(0,0,0,0) } 
-      })
+      recommendations,
+    },
+  });
+});
+
+exports.getAdminStats = asyncHandler(async (req, res) => {
+  const [totalUsers, totalSubmissions, totalInterviews, aiUsageToday, recentUsers] = await Promise.all([
+    prisma.user.count(),
+    prisma.submission.count(),
+    prisma.interviewSession.count(),
+    prisma.aIUsage.aggregate({
+      where: { createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
+      _sum: { totalTokens: true, estimatedCost: true },
+      _count: true,
+    }),
+    prisma.user.findMany({ orderBy: { createdAt: "desc" }, take: 10, select: { id: true, name: true, email: true, role: true, createdAt: true } }),
+  ]);
+
+  const avgGrade = await prisma.submission.aggregate({
+    where: { status: "completed", NOT: { grade: null } },
+    _avg: { grade: true },
+  });
+
+  res.json({
+    success: true,
+    stats: {
+      totalUsers,
+      totalSubmissions,
+      totalInterviews,
+      avgGrade: Math.round((avgGrade._avg.grade || 0) * 100) / 100,
+      aiUsageToday: {
+        requests: aiUsageToday._count,
+        tokens: aiUsageToday._sum.totalTokens || 0,
+        estimatedCost: Math.round((aiUsageToday._sum.estimatedCost || 0) * 10000) / 10000,
+      },
+      recentUsers,
+    },
+  });
+});
+
+exports.getSkillGraph = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  const skills = await prisma.userSkill.findMany({
+    where: { userId },
+    include: { skill: true },
+    orderBy: { mastery: "desc" },
+  });
+
+  // Group by category
+  const graph = {};
+  skills.forEach((s) => {
+    const cat = s.skill.category;
+    if (!graph[cat]) graph[cat] = { category: cat, overallMastery: 0, skills: [] };
+    graph[cat].skills.push({
+      name: s.skill.name,
+      mastery: Math.round(s.mastery),
+      confidence: s.confidence,
+      attempts: s.attempts,
+      lastPracticed: s.lastPracticed,
     });
-  } catch (err) {
-    console.error("Admin monitoring stats error:", err);
-    res.status(500).json({ message: "Failed to fetch admin monitoring data.", error: err.message });
+  });
+
+  // Calculate category averages
+  Object.values(graph).forEach((cat) => {
+    cat.overallMastery = Math.round(cat.skills.reduce((sum, s) => sum + s.mastery, 0) / cat.skills.length);
+  });
+
+  res.json({ success: true, skillGraph: Object.values(graph) });
+});
+
+exports.getStudentDetails = asyncHandler(async (req, res) => {
+  const student = await prisma.user.findUnique({
+    where: { id: req.params.id },
+    select: {
+      id: true, name: true, email: true,
+      profile: true,
+      skills: { include: { skill: true }, orderBy: { mastery: "desc" } },
+    },
+  });
+
+  if (!student) {
+    return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Student not found." } });
   }
-};
 
-exports.getStudentDetails = async (req, res) => {
-  try {
-    const student = await User.findById(req.params.id)
-      .select('name email streakCount solvedProblems activityLog')
-      .populate('solvedProblems', 'title category difficulty problemNumber');
-    
-    if (!student) return res.status(404).json({ message: "Student not found" });
+  const submissions = await prisma.submission.findMany({
+    where: { userId: student.id },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+    include: { problem: { select: { title: true, difficulty: true } } },
+  });
 
-    const submissions = await Submission.find({ userId: student._id })
-      .populate('problemId', 'title difficulty problemNumber')
-      .sort({ createdAt: -1 })
-      .limit(50);
-
-    res.json({
-      student,
-      submissions
-    });
-  } catch (err) {
-    console.error("Get student details error:", err);
-    res.status(500).json({ message: "Failed to fetch student details" });
-  }
-};
+  res.json({ success: true, student, submissions });
+});

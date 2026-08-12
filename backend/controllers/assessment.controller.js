@@ -1,192 +1,251 @@
-const Assessment = require("../models/Assessment");
-const Attempt = require("../models/Attempt");
-const mongoose = require("mongoose");
-const path = require("path");
+// ============================================================================
+// Assessment Controller — Prisma/PostgreSQL
+// ============================================================================
+
+const prisma = require("../config/prisma");
+const { asyncHandler } = require("../middleware/error.middleware");
 
 // --- Admin Controllers ---
 
-exports.createAssessment = async (req, res) => {
-  try {
-    const assessment = await Assessment.create({
-      ...req.body,
-      createdBy: req.user.id
-    });
-    res.status(201).json(assessment);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to create assessment", error: err.message });
-  }
-};
+exports.createAssessment = asyncHandler(async (req, res) => {
+  const { title, description, type, startTime, endTime, duration, externalUrl, settings, problemIds } = req.body;
 
-exports.getAllAssessments = async (req, res) => {
-  try {
-    const assessments = await Assessment.find()
-      .populate("problems")
-      .sort({ createdAt: -1 });
-    res.json(assessments);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch assessments", error: err.message });
-  }
-};
+  const assessment = await prisma.assessment.create({
+    data: {
+      title,
+      description: description || null,
+      type: type || "CODING",
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
+      duration: parseInt(duration),
+      externalUrl: externalUrl || null,
+      settings: settings || { allowCopy: false, enforceFullScreen: true, maxTabSwitches: 3 },
+      createdBy: req.user.id,
+      questions: problemIds && Array.isArray(problemIds) ? {
+        create: problemIds.map((probId, idx) => ({
+          problemId: probId,
+          questionType: "coding",
+          orderIndex: idx,
+        })),
+      } : undefined,
+    },
+    include: { questions: true },
+  });
 
-exports.getAllAttempts = async (req, res) => {
-  try {
-    const attempts = await Attempt.find()
-      .populate("userId", "name email")
-      .populate("assessmentId", "title type")
-      .sort({ createdAt: -1 });
-    res.json(attempts);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch audit data", error: err.message });
-  }
-};
+  res.status(201).json({ success: true, assessment });
+});
 
-exports.gradeAttempt = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { grade } = req.body;
-    
-    const attempt = await Attempt.findByIdAndUpdate(id, { grade }, { new: true });
-    if (!attempt) return res.status(404).json({ message: "Attempt not found" });
-    
-    res.json({ message: "Grade updated successfully", attempt });
-  } catch (err) {
-    res.status(500).json({ message: "Failed to update grade", error: err.message });
-  }
-};
+exports.getAllAssessments = asyncHandler(async (req, res) => {
+  const assessments = await prisma.assessment.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      questions: true,
+      _count: { select: { attempts: true } },
+    },
+  });
+
+  res.json({ success: true, assessments });
+});
+
+exports.getAllAttempts = asyncHandler(async (req, res) => {
+  const attempts = await prisma.assessmentAttempt.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      user: { select: { id: true, name: true, email: true } },
+      assessment: { select: { id: true, title: true, type: true } },
+    },
+  });
+
+  res.json({ success: true, attempts });
+});
+
+exports.gradeAttempt = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { grade, feedback } = req.body;
+
+  const attempt = await prisma.assessmentAttempt.update({
+    where: { id },
+    data: {
+      grade: parseFloat(grade),
+      feedback: feedback || undefined,
+      status: "submitted",
+    },
+  });
+
+  res.json({ success: true, message: "Grade updated successfully", attempt });
+});
 
 // --- Student Controllers ---
 
-exports.getActiveAssessments = async (req, res) => {
-  try {
-    const now = new Date();
-    // Allow a 12-hour buffer for "active" tests to stay visible even if clock or timezone differs slightly
-    // Also ensures upcoming tests (startTime > now) are fetched.
-    const assessments = await Assessment.find({
-      endTime: { $gt: new Date(now.getTime() - 12 * 60 * 60 * 1000) }
-    }).sort({ startTime: 1 }).lean();
-    
-    // Attach attempt status/grade if exists for the student
-    const assessmentsWithAttempts = await Promise.all(assessments.map(async (a) => {
-      const attempt = await Attempt.findOne({ userId: req.user.id, assessmentId: a._id });
-      return {
-        ...a,
-        myAttempt: attempt ? { status: attempt.status, grade: attempt.grade } : null
-      };
-    }));
+exports.getActiveAssessments = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
 
-    res.json(assessmentsWithAttempts);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch active tests", error: err.message });
+  const assessments = await prisma.assessment.findMany({
+    where: {
+      endTime: { gt: twelveHoursAgo },
+    },
+    orderBy: { startTime: "asc" },
+    include: {
+      questions: true,
+    },
+  });
+
+  // Attach attempt status for current student
+  const attempts = await prisma.assessmentAttempt.findMany({
+    where: {
+      userId: req.user.id,
+      assessmentId: { in: assessments.map((a) => a.id) },
+    },
+  });
+
+  const attemptMap = new Map(attempts.map((att) => [att.assessmentId, att]));
+
+  const assessmentsWithAttempts = assessments.map((a) => {
+    const attempt = attemptMap.get(a.id);
+    return {
+      ...a,
+      myAttempt: attempt ? { status: attempt.status, grade: attempt.grade, id: attempt.id } : null,
+    };
+  });
+
+  res.json({ success: true, assessments: assessmentsWithAttempts });
+});
+
+exports.startAttempt = asyncHandler(async (req, res) => {
+  const { assessmentId } = req.params;
+
+  const assessment = await prisma.assessment.findUnique({ where: { id: assessmentId } });
+  if (!assessment) {
+    return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Test not found." } });
   }
-};
 
-exports.startAttempt = async (req, res) => {
-  try {
-    const { assessmentId } = req.params;
-    const assessment = await Assessment.findById(assessmentId);
-    if (!assessment) return res.status(404).json({ message: "Test not found" });
-    
-    const now = new Date();
-    if (now < assessment.startTime || now > assessment.endTime) {
-      return res.status(403).json({ message: "Test is not currently active" });
+  const now = new Date();
+  if (now < assessment.startTime || now > assessment.endTime) {
+    return res.status(403).json({ success: false, error: { code: "INACTIVE", message: "Test is not currently active." } });
+  }
+
+  let attempt = await prisma.assessmentAttempt.findUnique({
+    where: { userId_assessmentId: { userId: req.user.id, assessmentId } },
+  });
+
+  if (attempt) {
+    if (attempt.status === "submitted" || attempt.status === "timed_out") {
+      return res.status(403).json({ success: false, error: { code: "ALREADY_SUBMITTED", message: "You have already submitted this test." } });
     }
+    return res.json({ success: true, attempt });
+  }
 
-    let attempt = await Attempt.findOne({ userId: req.user.id, assessmentId });
-    if (attempt) {
-      if (attempt.status === "Submitted") {
-        return res.status(403).json({ message: "You have already submitted this test" });
-      }
-      return res.json(attempt);
-    }
+  const expiresAt = new Date(now.getTime() + assessment.duration * 60 * 1000);
 
-    attempt = await Attempt.create({
+  attempt = await prisma.assessmentAttempt.create({
+    data: {
       userId: req.user.id,
       assessmentId,
-      startTime: now,
-      status: "In-Progress"
-    });
+      startedAt: now,
+      expiresAt,
+      status: "in_progress",
+    },
+  });
 
-    res.status(201).json(attempt);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to start test", error: err.message });
+  res.status(201).json({ success: true, attempt });
+});
+
+exports.logViolation = asyncHandler(async (req, res) => {
+  const { id: attemptId } = req.params;
+  const { type, details } = req.body;
+
+  const attempt = await prisma.assessmentAttempt.findUnique({
+    where: { id: attemptId },
+    include: { assessment: true },
+  });
+
+  if (!attempt) {
+    return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Attempt not found." } });
   }
-};
 
-exports.logViolation = async (req, res) => {
-  try {
-    const { id: attemptId } = req.params;
-    const { type, details } = req.body;
+  const currentViolations = Array.isArray(attempt.violations) ? attempt.violations : [];
+  const newViolations = [...currentViolations, { type, details, timestamp: new Date() }];
+  const newCount = attempt.violationCount + 1;
 
-    const attempt = await Attempt.findByIdAndUpdate(
-      attemptId,
-      { $push: { violations: { type, details, timestamp: new Date() } } },
-      { new: true }
-    );
+  const settings = attempt.assessment?.settings || {};
+  const maxTabSwitches = settings.maxTabSwitches || 3;
+  let newStatus = attempt.status;
 
-    if (!attempt) return res.status(404).json({ message: "Attempt not found" });
-
-    const assessment = await Assessment.findById(attempt.assessmentId);
-    if (assessment && attempt.violations.length >= (assessment.settings?.maxTabSwitches || 3)) {
-        attempt.status = "Flagged";
-        await attempt.save();
-    }
-
-    res.json({ message: "Violation logged", violationCount: attempt.violations.length });
-  } catch (err) {
-    res.status(500).json({ message: "Failed to log violation", error: err.message });
+  if (newCount >= maxTabSwitches) {
+    newStatus = "flagged";
   }
-};
 
-exports.uploadDocument = async (req, res) => {
-  try {
-    const { id: attemptId } = req.params;
-    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+  const updated = await prisma.assessmentAttempt.update({
+    where: { id: attemptId },
+    data: {
+      violations: newViolations,
+      violationCount: newCount,
+      status: newStatus,
+    },
+  });
 
-    const attempt = await Attempt.findById(attemptId);
-    if (!attempt) return res.status(404).json({ message: "Attempt not found" });
+  // Log integrity event
+  await prisma.integrityEvent.create({
+    data: {
+      userId: req.user.id,
+      eventType: type,
+      sessionId: attemptId,
+      sessionType: "assessment",
+      details: { details, totalViolations: newCount },
+    },
+  });
 
-    attempt.submissionFile = req.file.filename;
-    attempt.status = "Submitted";
-    attempt.endTime = new Date();
-    await attempt.save();
+  res.json({ success: true, message: "Violation logged", violationCount: updated.violationCount, status: updated.status });
+});
 
-    res.json({ message: "Document uploaded successfully", filename: req.file.filename });
-  } catch (err) {
-    res.status(500).json({ message: "Upload failed", error: err.message });
+exports.uploadDocument = asyncHandler(async (req, res) => {
+  const { id: attemptId } = req.params;
+  if (!req.file) {
+    return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "No file uploaded." } });
   }
-};
 
-exports.submitAssessment = async (req, res) => {
-  try {
-    const { id: attemptId } = req.params;
-    const { isExternalSubmitted } = req.body;
-
-    const attempt = await Attempt.findById(attemptId);
-    if (!attempt) return res.status(404).json({ message: "Attempt not found" });
-
-    if (isExternalSubmitted !== undefined) {
-      attempt.isExternalSubmitted = isExternalSubmitted;
-    }
-    
-    attempt.endTime = new Date();
-    attempt.status = "Submitted";
-    await attempt.save();
-
-    res.json({ message: "Assessment submitted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: "Submission failed", error: err.message });
+  const attempt = await prisma.assessmentAttempt.findUnique({ where: { id: attemptId } });
+  if (!attempt) {
+    return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Attempt not found." } });
   }
-};
 
-exports.deleteAssessment = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Assessment.findByIdAndDelete(id);
-    // Also cleanup attempts for this assessment
-    await Attempt.deleteMany({ assessmentId: id });
-    res.json({ message: "Assessment deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: "Failed to delete assessment", error: err.message });
+  const updated = await prisma.assessmentAttempt.update({
+    where: { id: attemptId },
+    data: {
+      submissionFile: req.file.filename,
+      status: "submitted",
+      completedAt: new Date(),
+    },
+  });
+
+  res.json({ success: true, message: "Document uploaded successfully", filename: req.file.filename });
+});
+
+exports.submitAssessment = asyncHandler(async (req, res) => {
+  const { id: attemptId } = req.params;
+  const { isExternalSubmitted, answers } = req.body;
+
+  const attempt = await prisma.assessmentAttempt.findUnique({ where: { id: attemptId } });
+  if (!attempt) {
+    return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Attempt not found." } });
   }
-};
 
+  await prisma.assessmentAttempt.update({
+    where: { id: attemptId },
+    data: {
+      isExternalSubmitted: isExternalSubmitted !== undefined ? isExternalSubmitted : attempt.isExternalSubmitted,
+      answers: answers || attempt.answers,
+      completedAt: new Date(),
+      status: "submitted",
+    },
+  });
+
+  res.json({ success: true, message: "Assessment submitted successfully." });
+});
+
+exports.deleteAssessment = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  await prisma.assessment.delete({ where: { id } });
+  res.json({ success: true, message: "Assessment deleted successfully." });
+});

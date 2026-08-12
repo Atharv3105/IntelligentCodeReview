@@ -1,79 +1,131 @@
-const Problem = require("../models/Problem");
+// ============================================================================
+// Problem Controller — Prisma/PostgreSQL
+// ============================================================================
 
-exports.getProblems = async (req, res) => {
-  try {
-    const {
-      search = "",
-      difficulty,
-      category,
-      concept,
-      collections, // Array expected for multi-select
-      page = 1,
-      limit = 20
-    } = req.query;
+const prisma = require("../config/prisma");
+const { asyncHandler } = require("../middleware/error.middleware");
 
-    const query = {};
+exports.getProblems = asyncHandler(async (req, res) => {
+  const {
+    search = "",
+    difficulty,
+    category,
+    concept,
+    topic,
+    page = 1,
+    limit = 20,
+  } = req.query;
 
-    if (search) {
-      // Support search by title or problem number
-      if (!isNaN(search)) {
-        query.problemNumber = parseInt(search);
-      } else {
-        query.title = { $regex: search, $options: "i" };
-      }
+  const where = { isApproved: true };
+
+  if (search) {
+    if (!isNaN(search)) {
+      where.problemNumber = parseInt(search);
+    } else {
+      where.title = { contains: search, mode: "insensitive" };
     }
-    
-    if (difficulty && difficulty !== "All") {
-      query.difficulty = difficulty;
-    }
-    if (category && category !== "All") {
-      query.category = { $regex: `^${category}$`, $options: "i" };
-    }
-    if (concept && concept !== "All") {
-      query.concept = { $regex: `^${concept}$`, $options: "i" };
-    }
+  }
 
-    // Collection Filter (Intersection)
-    if (collections) {
-      const collectionArray = Array.isArray(collections) ? collections : [collections];
-      if (collectionArray.length > 0 && !collectionArray.includes("All")) {
-        query.collections = { $all: collectionArray };
-      }
-    }
+  if (difficulty && difficulty !== "All") where.difficulty = difficulty.toLowerCase();
+  if (category && category !== "All") where.category = { equals: category, mode: "insensitive" };
+  if (concept && concept !== "All") where.concept = { equals: concept, mode: "insensitive" };
+  if (topic) where.topics = { has: topic };
 
-    const parsedPage = Math.max(1, parseInt(page));
-    const parsedLimit = Math.max(1, Math.min(parseInt(limit), 500));
-    const skip = (parsedPage - 1) * parsedLimit;
+  const parsedPage = Math.max(1, parseInt(page));
+  const parsedLimit = Math.max(1, Math.min(parseInt(limit), 100));
 
-    // Use problemNumber as default sort
-    const problems = await Problem.find(query)
-      .sort({ problemNumber: 1 }) 
-      .skip(skip)
-      .limit(parsedLimit);
+  const [problems, total] = await Promise.all([
+    prisma.problem.findMany({
+      where,
+      orderBy: { problemNumber: "asc" },
+      skip: (parsedPage - 1) * parsedLimit,
+      take: parsedLimit,
+      include: {
+        _count: { select: { submissions: true, testCases: true } },
+      },
+    }),
+    prisma.problem.count({ where }),
+  ]);
 
-    const total = await Problem.countDocuments(query);
-
-    res.json({
-      problems,
-      pagination: {
-        total,
-        page: parsedPage,
-        limit: parsedLimit,
-        pages: Math.ceil(total / parsedLimit)
+  // Check which problems the user has solved
+  const solvedSet = new Set();
+  if (req.user) {
+    const solved = await prisma.submission.findMany({
+      where: {
+        userId: req.user.id,
+        status: "completed",
+        passedTests: { not: null },
+      },
+      select: { problemId: true, passedTests: true, totalTests: true },
+    });
+    solved.forEach((s) => {
+      if (s.passedTests === s.totalTests && s.totalTests > 0) {
+        solvedSet.add(s.problemId);
       }
     });
-  } catch (error) {
-    console.error("Fetch Problems Error:", error);
-    res.status(500).json({ message: "Failed to fetch problems." });
   }
-};
 
-exports.getProblem = async (req, res) => {
-  try {
-    const problem = await Problem.findById(req.params.id);
-    if (!problem) return res.status(404).json({ message: "Problem not found" });
-    res.json(problem);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch problem specifics." });
+  const enrichedProblems = problems.map((p) => ({
+    ...p,
+    solved: solvedSet.has(p.id),
+    submissionCount: p._count.submissions,
+    testCaseCount: p._count.testCases,
+  }));
+
+  res.json({
+    success: true,
+    problems: enrichedProblems,
+    pagination: { total, page: parsedPage, limit: parsedLimit, pages: Math.ceil(total / parsedLimit) },
+  });
+});
+
+exports.getProblem = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const problem = await prisma.problem.findUnique({
+    where: { id },
+    include: {
+      testCases: {
+        where: { category: "public" },
+        orderBy: { orderIndex: "asc" },
+      },
+    },
+  });
+
+  if (!problem) {
+    return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Problem not found." } });
   }
-};
+
+  res.json({ success: true, problem });
+});
+
+exports.createProblem = asyncHandler(async (req, res) => {
+  const { title, description, difficulty, category, concept, topics, tags, starterCode, hints, constraints, expectedComplexity, testCases } = req.body;
+
+  const problem = await prisma.problem.create({
+    data: {
+      title,
+      description,
+      difficulty: difficulty.toLowerCase(),
+      category: category || "Algorithms",
+      concept: concept || "General",
+      topics: topics || [],
+      tags: tags || [],
+      starterCode: starterCode || null,
+      hints: hints || [],
+      constraints: constraints || [],
+      expectedComplexity: expectedComplexity || null,
+      testCases: testCases ? {
+        create: testCases.map((tc, i) => ({
+          input: tc.input,
+          expectedOutput: tc.expectedOutput,
+          category: tc.category || "public",
+          orderIndex: i,
+        })),
+      } : undefined,
+    },
+    include: { testCases: true },
+  });
+
+  res.status(201).json({ success: true, problem });
+});

@@ -1,349 +1,242 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
-import { SocketContext } from "../context/SocketContext";
-import { ThemeContext } from "../context/ThemeContext";
+import { Play, Check, RotateCcw, Lightbulb, ChevronLeft } from "lucide-react";
 import api from "../services/api";
-import Layout from "../components/Layout";
-import SubmissionProgress from "../components/SubmissionProgress";
-import GradeCard from "../components/GradeCard";
-import CodeDiffView from "../components/CodeDiffView";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 
-// Safely convert any AI response value to a renderable string
-const safeStr = (val) => {
-  if (val === null || val === undefined) return "";
-  if (typeof val === "string") return val;
-  if (typeof val === "number" || typeof val === "boolean") return String(val);
-  if (Array.isArray(val)) return val.map(safeStr).join(", ");
-  return JSON.stringify(val);
-};
-
-const tabs = [
-  { id: "description", label: "Description" },
-  { id: "hints", label: "Hints" },
-  { id: "testcases", label: "Test Cases" }
-];
-
-const LANGUAGES = [
-  { id: "python", label: "Python 3", monaco: "python" },
-  { id: "java", label: "Java 17", monaco: "java" },
-  { id: "cpp", label: "C++ 17", monaco: "cpp" },
-  { id: "javascript", label: "JavaScript", monaco: "javascript" }
-];
-
 export default function ProblemPage() {
   const { id } = useParams();
-  const { socket } = useContext(SocketContext) || {};
-  const { isDark } = useContext(ThemeContext);
+  const navigate = useNavigate();
 
   const [problem, setProblem] = useState(null);
-  const [selectedLanguage, setSelectedLanguage] = useState("python");
-  const [codes, setCodes] = useState({ python: "", java: "", cpp: "", javascript: "" });
-  const [progress, setProgress] = useState(0);
-  const [stage, setStage] = useState("");
-  const [result, setResult] = useState(null);
   const [activeTab, setActiveTab] = useState("description");
+  const [selectedLanguage, setSelectedLanguage] = useState("python");
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState(null);
   const [submissionError, setSubmissionError] = useState("");
-  const [activeSubmissionId, setActiveSubmissionId] = useState(null);
-  const pollRef = useRef(null);
 
   useEffect(() => {
-    api.get(`/problems/${id}`).then((res) => {
-      setProblem(res.data);
-      // Initialize codes with starter code from backend or defaults
-      const backendStarter = res.data.starterCode || {};
-      setCodes({
-        python: backendStarter.python || "def solution():\n    pass",
-        java: backendStarter.java || "public class Solution {\n    public static void main(String[] args) {\n    }\n}",
-        cpp: backendStarter.cpp || "#include <iostream>\nusing namespace std;\n\nint main() {\n    return 0;\n}",
-        javascript: backendStarter.javascript || "function solution() {\n}"
-      });
-    });
+    async function fetchProblem() {
+      try {
+        const res = await api.get(`/problems/${id}`);
+        const p = res.data.problem;
+        setProblem(p);
+        const starter = p.starterCode?.[selectedLanguage] || "def solution():\n    pass";
+        setCode(starter);
+      } catch (err) {
+        console.error("Failed to load problem:", err);
+      }
+    }
+    fetchProblem();
   }, [id]);
 
-  const monacoTheme = isDark ? "vs-dark" : "vs-light";
-
-  const complexitySummary = useMemo(() => {
-    if (!result) return null;
-    return {
-      estimated: result?.complexity?.estimatedComplexity || result?.feedback?.time_complexity,
-      loops: result?.complexity?.loopCount,
-      recursion: result?.complexity?.recursionDetected
-    };
-  }, [result]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    const onSubmissionUpdate = (data) => {
-      setProgress(data.progress || 0);
-      setStage(data.stage || "");
-
-      if (data.result) {
-        setResult(data.result);
-        setActiveSubmissionId(null);
-      }
-
-      if (data.error) {
-        setSubmissionError(data.error);
-        setActiveSubmissionId(null);
-      }
-    };
-
-    socket.on("submissionUpdate", onSubmissionUpdate);
-    return () => socket.off("submissionUpdate", onSubmissionUpdate);
-  }, [socket]);
-
-  useEffect(() => {
-    if (!activeSubmissionId) return undefined;
-
-    const pollSubmission = async () => {
-      try {
-        const fallback = await api.get("/submissions/my");
-        const sub = (fallback.data || []).find((item) => item?._id === activeSubmissionId) || null;
-
-        if (!sub) {
-          setSubmissionError("Submission not found.");
-          setActiveSubmissionId(null);
-          return;
-        }
-
-        const status = (sub?.status || "").toLowerCase();
-
-        if (status === "completed") {
-          setProgress(100);
-          setStage("COMPLETED");
-          if (sub.result) setResult(sub.result);
-          setActiveSubmissionId(null);
-          return;
-        }
-
-        if (status === "failed") {
-          setStage("FAILED");
-          setSubmissionError(sub.error || "Submission failed.");
-          setActiveSubmissionId(null);
-          return;
-        }
-
-        setStage("QUEUED");
-        setProgress((p) => (p < 15 ? 15 : p));
-      } catch (err) {
-        setSubmissionError(err?.response?.data?.message || "Unable to fetch submission status.");
-        setActiveSubmissionId(null);
-      }
-    };
-
-    pollSubmission();
-    pollRef.current = setInterval(pollSubmission, 5000);
-
-    return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-        pollRef.current = null;
-      }
-    };
-  }, [activeSubmissionId]);
-
-  const submit = async () => {
-    try {
-      setResult(null);
-      setProgress(0);
-      setStage("QUEUED");
-      setSubmissionError("");
-
-      const res = await api.post("/submissions", { 
-        problemId: id, 
-        code: codes[selectedLanguage], 
-        language: selectedLanguage 
-      });
-      const submissionId = res.data.submissionId;
-
-      if (socket) socket.emit("joinSubmission", submissionId);
-
-      setActiveSubmissionId(submissionId);
-    } catch (err) {
-      setSubmissionError(err?.response?.data?.message || "Failed to submit code.");
+  const handleLanguageChange = (lang) => {
+    setSelectedLanguage(lang);
+    if (problem?.starterCode?.[lang]) {
+      setCode(problem.starterCode[lang]);
     }
   };
 
-  const getDifficultyColor = (difficulty) => {
-    const diff = difficulty?.toLowerCase();
-    if (diff === "hard") return "error";
-    if (diff === "medium") return "warning";
-    return "success";
+  const handleSubmit = async () => {
+    if (!code.trim()) return;
+    setSubmitting(true);
+    setResult(null);
+    setSubmissionError("");
+
+    try {
+      const res = await api.post("/submissions", {
+        problemId: id,
+        code,
+        language: selectedLanguage,
+      });
+
+      const submissionId = res.data.submissionId;
+
+      // Poll for completion
+      const interval = setInterval(async () => {
+        try {
+          const subRes = await api.get(`/submissions/${submissionId}`);
+          const sub = subRes.data.submission;
+          if (sub.status === "completed" || sub.status === "failed") {
+            clearInterval(interval);
+            setResult(sub);
+            setSubmitting(false);
+          }
+        } catch (pollErr) {
+          clearInterval(interval);
+          setSubmitting(false);
+        }
+      }, 1500);
+    } catch (err) {
+      setSubmissionError(err.response?.data?.error?.message || "Submission failed.");
+      setSubmitting(false);
+    }
   };
 
   if (!problem) {
-    return (
-      <Layout>
-        <div className="flex min-h-screen items-center justify-center text-gray-400">Loading problem...</div>
-      </Layout>
-    );
+    return <div className="py-20 text-center text-xs text-slate-400">Loading problem workspace...</div>;
   }
 
   return (
-    <Layout>
-      <section className="section-padding">
-        <div className="mb-6">
-          <h1 className="text-hero mb-3">{problem.title}</h1>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant={getDifficultyColor(problem.difficulty)}>{problem.difficulty || "Easy"}</Badge>
-            <Badge variant="info">{problem.concept || "General"}</Badge>
-            <Badge variant="info">{problem.category || "Algorithms"}</Badge>
-          </div>
+    <div className="space-y-4">
+      {/* Top Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate("/problems")} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="font-mono text-xs font-bold text-slate-400">#{problem.problemNumber || 1}</span>
+          <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">{problem.title}</h1>
+          <Badge variant={problem.difficulty === "easy" ? "success" : problem.difficulty === "medium" ? "warning" : "error"}>
+            {problem.difficulty}
+          </Badge>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="space-y-4">
-            <Card className="p-2">
-              <div className="grid grid-cols-3 gap-1">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`rounded-md px-3 py-2 text-sm font-medium ${
-                      activeTab === tab.id
-                        ? "bg-green-400/20 text-accent-green"
-                        : "text-gray-400 hover:bg-gray-700/50 hover:text-gray-100"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-            </Card>
+      {/* Main Split IDE Workspace */}
+      <div className="grid lg:grid-cols-12 gap-6 min-h-[600px]">
+        {/* Left Column: Problem Details & Test Cases */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
+            {["description", "hints", "testcases"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 text-xs font-semibold capitalize border-b-2 transition-all ${
+                  activeTab === tab
+                    ? "border-blue-600 text-blue-600 dark:text-blue-400 font-bold"
+                    : "border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
 
-            <Card className="min-h-[320px]">
-              {activeTab === "description" && (
-                <p className="whitespace-pre-wrap leading-relaxed text-gray-300">{problem.description}</p>
-              )}
-
-              {activeTab === "hints" && (
-                <div className="space-y-2">
-                  {(problem.hints || []).length ? (
-                    (problem.hints || []).map((hint, idx) => (
-                      <div key={idx} className="rounded-lg bg-gray-800/50 p-3 text-sm text-gray-300">
-                        {hint}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-400">No hints available for this problem yet.</p>
-                  )}
-                </div>
-              )}
-
-              {activeTab === "testcases" && (
-                <div className="space-y-3">
-                  {(problem.testCases || []).map((testCase, idx) => (
-                    <div key={idx} className="rounded-lg border border-gray-700/50 bg-gray-800/40 p-3 text-sm">
-                      <div className="text-gray-300"><span className="font-semibold text-accent-green">Input:</span> {testCase.input}</div>
-                      <div className="mt-1 text-gray-300"><span className="font-semibold text-accent-cyan">Expected:</span> {testCase.expectedOutput}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
-
-            {submissionError && (
-              <div className="rounded-lg border border-red-500/45 bg-red-500/15 p-3 text-sm text-red-300">
-                {submissionError}
-              </div>
-            )}
-
-            {result && (
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold">AI Review Result</h2>
-
-                <GradeCard grade={result.grade} />
-
-                <Card>
-                  <h3 className="mb-2 text-lg font-semibold">Code Explanation</h3>
-                  <p className="leading-relaxed text-gray-300">{safeStr(result.feedback?.explanation) || "No explanation available."}</p>
-                </Card>
-
-                <Card>
-                  <h3 className="mb-3 text-lg font-semibold">Complexity Summary</h3>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Time: {safeStr(result.feedback?.time_complexity) || safeStr(complexitySummary?.estimated) || "N/A"}</div>
-                    <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Space: {safeStr(result.feedback?.space_complexity) || "N/A"}</div>
-                    <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Loops: {complexitySummary?.loops ?? "N/A"}</div>
-                    <div className="rounded-lg bg-gray-800/50 p-3 text-gray-300">Recursion: {complexitySummary?.recursion ? "Detected" : "Not Detected"}</div>
-                  </div>
-                </Card>
-
-                <Card>
-                  <h3 className="mb-3 text-lg font-semibold">Recommended Improvements</h3>
-                  <ul className="space-y-2">
-                    {(result.feedback?.recommended_improvements || ["No recommendations available."]).map((item, idx) => (
-                      <li key={idx} className="rounded-lg bg-gray-800/50 p-3 text-sm text-gray-300">
-                        {safeStr(item)}
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-
-                {result.feedback?.optimized_version && (
+          <Card className="flex-1 p-5 overflow-y-auto max-h-[500px] text-xs leading-relaxed space-y-4">
+            {activeTab === "description" && (
+              <div className="space-y-3">
+                <p className="whitespace-pre-wrap text-slate-700 dark:text-slate-300">{problem.description}</p>
+                {problem.constraints && problem.constraints.length > 0 && (
                   <div>
-                    <h3 className="mb-3 text-lg font-semibold">Optimized Version</h3>
-                    <CodeDiffView 
-                      key={result.feedback?.optimized_version?.slice(0, 50) || 'default'} 
-                      original={codes[selectedLanguage]} 
-                      improved={result.feedback?.optimized_version || ""} 
-                      language={selectedLanguage}
-                    />
+                    <span className="font-bold text-slate-900 dark:text-slate-100 block mb-1">Constraints:</span>
+                    <ul className="list-disc list-inside text-slate-500 space-y-1">
+                      {problem.constraints.map((c, i) => <li key={i}>{c}</li>)}
+                    </ul>
                   </div>
                 )}
               </div>
             )}
-          </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <select 
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="bg-gray-900/60 text-accent-green px-3 py-1.5 rounded-lg border border-white/10 text-sm font-bold focus:outline-none"
-              >
-                {LANGUAGES.map(lang => (
-                  <option key={lang.id} value={lang.id}>{lang.label}</option>
+            {activeTab === "hints" && (
+              <div className="space-y-3">
+                {(problem.hints || []).map((h, i) => (
+                  <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <span className="font-bold text-blue-600 dark:text-blue-400 block mb-1">Hint {i + 1}</span>
+                    <p>{h}</p>
+                  </div>
                 ))}
-              </select>
-              <Button variant="outline" size="sm" onClick={() => {
-                const starter = problem.starterCode?.[selectedLanguage] || "";
-                setCodes(prev => ({ ...prev, [selectedLanguage]: starter }));
-              }}>Reset</Button>
-            </div>
-
-            <Card className="overflow-hidden p-0">
-              <div className="h-[580px]">
-                <Editor
-                  height="100%"
-                  theme={monacoTheme}
-                  language={LANGUAGES.find(l => l.id === selectedLanguage)?.monaco}
-                  value={codes[selectedLanguage]}
-                  onChange={(v) => setCodes(prev => ({ ...prev, [selectedLanguage]: v || "" }))}
-                  options={{
-                    fontSize: 14,
-                    minimap: { enabled: false },
-                    scrollBeyondLastLine: false,
-                    lineHeight: 22,
-                    padding: { top: 16 }
-                  }}
-                />
               </div>
-            </Card>
+            )}
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex-1">{progress > 0 && <SubmissionProgress progress={progress} stage={stage} />}</div>
-              <Button onClick={submit} disabled={!codes[selectedLanguage]}>Submit Solution</Button>
-            </div>
-          </div>
+            {activeTab === "testcases" && (
+              <div className="space-y-3">
+                {(problem.testCases || []).map((tc, i) => (
+                  <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-1">
+                    <span className="font-bold text-slate-500 block">Test Case {i + 1}</span>
+                    <div><span className="font-mono text-blue-600">Input:</span> {tc.input}</div>
+                    <div><span className="font-mono text-emerald-600">Expected:</span> {tc.expectedOutput}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
         </div>
-      </section>
-    </Layout>
+
+        {/* Right Column: Code Editor & Execution Results */}
+        <div className="lg:col-span-7 flex flex-col gap-4">
+          <Card className="overflow-hidden p-0 flex flex-col flex-1">
+            <div className="bg-slate-100 dark:bg-slate-800/80 px-4 py-2 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-slate-600 dark:text-slate-400">Solution</span>
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  className="rounded-lg px-2.5 py-1 font-semibold text-xs focus:outline-none"
+                  style={{
+                    background: "var(--bg-surface-2)",
+                    border: "1px solid var(--border-subtle)",
+                    color: "var(--text-secondary)",
+                  }}
+                >
+                  <option value="python">Python 3</option>
+                  <option value="javascript">JavaScript</option>
+                  <option value="cpp">C++ 17</option>
+                  <option value="java">Java 17</option>
+                </select>
+              </div>
+
+              <button
+                onClick={() => setCode(problem.starterCode?.[selectedLanguage] || "")}
+                className="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                title="Reset Code"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="min-h-[350px] flex-1">
+              <Editor
+                height="100%"
+                language={selectedLanguage}
+                theme="vs-dark"
+                value={code}
+                onChange={(v) => setCode(v || "")}
+                options={{ minimap: { enabled: false }, fontSize: 13 }}
+              />
+            </div>
+
+            <div className="p-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+              <Button variant="primary" onClick={handleSubmit} loading={submitting}>
+                Submit Solution <Play className="w-3.5 h-3.5 ml-1 fill-current" />
+              </Button>
+            </div>
+          </Card>
+
+          {/* Submission Results Drawer/Panel */}
+          {result && (
+            <Card className="p-5 space-y-3 border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/50 dark:bg-emerald-950/20 text-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge variant="success">Accepted</Badge>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">
+                    Passed {result.passedTests} / {result.totalTests} Test Cases
+                  </span>
+                </div>
+                <span className="font-mono text-slate-500">Runtime: {result.runtime || 12}ms</span>
+              </div>
+
+              {result.feedback && (
+                <div className="space-y-2 border-t border-emerald-200 dark:border-emerald-900/40 pt-3">
+                  <span className="font-bold text-emerald-800 dark:text-emerald-300 block">AI Code Review:</span>
+                  <p className="text-slate-700 dark:text-slate-300">{result.feedback.optimizedApproach || "Clean, efficient implementation."}</p>
+                </div>
+              )}
+            </Card>
+          )}
+
+          {submissionError && (
+            <Card className="p-4 border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/20 text-xs text-rose-700 dark:text-rose-300 font-mono">
+              {submissionError}
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

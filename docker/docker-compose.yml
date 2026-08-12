@@ -1,91 +1,145 @@
+# ============================================================================
+# AI Interview Intelligence Platform — Docker Compose
+# ============================================================================
+# Start: docker compose up --build
+# Stop:  docker compose down
+# Reset: docker compose down -v  (removes volumes/data)
+# ============================================================================
+
 services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: iip_postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-interview_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-interview_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-interview_platform}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-interview_user}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: iip_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend API ─────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: iip_backend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5000}:5000"
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 5000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-interview_user}:${POSTGRES_PASSWORD:-interview_pass}@postgres:5432/${POSTGRES_DB:-interview_platform}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-random-64-char-string}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-to-another-random-64-char-string}
+      ACCESS_TOKEN_EXPIRE: ${ACCESS_TOKEN_EXPIRE:-15m}
+      REFRESH_TOKEN_EXPIRE: ${REFRESH_TOKEN_EXPIRE:-7d}
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+      AI_FALLBACK_PROVIDER: ${AI_FALLBACK_PROVIDER:-}
+      AI_FALLBACK_API_KEY: ${AI_FALLBACK_API_KEY:-}
+      AI_FALLBACK_MODEL: ${AI_FALLBACK_MODEL:-}
+      JUDGE_API_URL: http://judge0:2358
+      STORAGE_PATH: /app/storage
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - app_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ── Background Worker ───────────────────────────────────────────────────────
+  worker:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: iip_worker
+    restart: unless-stopped
+    command: ["node", "worker/index.js"]
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-interview_user}:${POSTGRES_PASSWORD:-interview_pass}@postgres:5432/${POSTGRES_DB:-interview_platform}
+      REDIS_URL: redis://redis:6379
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+      JUDGE_API_URL: http://judge0:2358
+      STORAGE_PATH: /app/storage
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - app_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ── Frontend ────────────────────────────────────────────────────────────────
   frontend:
-    image: techieatharv2026/codereview-frontend:latest
-    container_name: code_frontend
-    restart: always
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: iip_frontend
+    restart: unless-stopped
     ports:
       - "3000:80"
     depends_on:
       - backend
 
-  mongodb:
-    image: mongo:6
-    container_name: code_mongo
-    restart: always
+  # ── Judge0 (Code Execution Sandbox) ─────────────────────────────────────────
+  judge0:
+    image: judge0/judge0:1.13.1
+    container_name: iip_judge0
+    restart: unless-stopped
     ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-
-  backend:
-    image: techieatharv2026/codereview-backend:latest
-    container_name: code_backend
-    restart: always
-    ports:
-      - "5000:5000"
+      - "2358:2358"
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/codeReview
-      - REDIS_URL=redis://redis:6379
-      - WORKER_URL=http://worker:8000
-      - JWT_SECRET=supersecuresecret
-      - JWT_REFRESH_SECRET=superrefreshsecret
-      - ACCESS_TOKEN_EXPIRE=15m
-      - REFRESH_TOKEN_EXPIRE=7d
+      REDIS_URL: redis://redis:6379
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-interview_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-interview_pass}
+      POSTGRES_DB: judge0
     depends_on:
-      - mongodb
-      - worker
-      - redis
-
-  worker:
-    build:
-      context: ../worker
-      dockerfile: Dockerfile
-    container_name: code_worker
-    restart: always
-    ports:
-      - "8000:8000"
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/codeReview
-      - OLLAMA_URL=http://ollama:11434/api/generate
-      - OLLAMA_MODEL=llama3.2
-      - OLLAMA_CONNECT_TIMEOUT=10
-      - OLLAMA_READ_TIMEOUT=300
-      - OLLAMA_MAX_RETRIES=2
-      - OLLAMA_RETRY_BACKOFF_SECONDS=2
-      - HOST_SANDBOX_WORKDIR=C:/Users/athar/OneDrive/Desktop/IntelligentCodeReview/docker/sandbox_workdir
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./sandbox_workdir:/sandbox
-    depends_on:
-      - mongodb
-      - ollama
-      - ollama-model-init
-
-  redis:
-    image: redis:7
-    container_name: code_redis
-    restart: always
-    ports:
-      - "6379:6379"
-
-  ollama:
-    image: ollama/ollama
-    container_name: code_ollama
-    restart: always
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-
-  ollama-model-init:
-    image: ollama/ollama
-    container_name: code_ollama_model_init
-    restart: "no"
-    depends_on:
-      - ollama
-    entrypoint: ["/bin/sh", "-c"]
-    command: "sleep 8 && OLLAMA_HOST=http://ollama:11434 ollama pull llama3.2"
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
-  mongo_data:
-  ollama_data:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_storage:
+    driver: local

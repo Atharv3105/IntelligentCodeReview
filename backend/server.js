@@ -1,3 +1,7 @@
+// ============================================================================
+// AI Interview Intelligence Platform — Server Entry Point
+// ============================================================================
+
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
@@ -6,113 +10,163 @@ const cookieParser = require("cookie-parser");
 const http = require("http");
 const { Server } = require("socket.io");
 const rateLimit = require("express-rate-limit");
+const { v4: uuidv4 } = require("uuid");
 
-const connectDB = require("./config/db");
+const { validateEnv, getConfig } = require("./config/env");
+const prisma = require("./config/prisma");
 const socketService = require("./services/socket.service");
-const errorHandler = require("./middleware/error.middleware");
+const { errorHandler } = require("./middleware/error.middleware");
 const logger = require("./utils/logger");
+const { ensureStorageDirectories } = require("./utils/storage");
 
-connectDB();
+// Validate environment on startup
+validateEnv();
+const config = getConfig();
 
-// Pre-load all models to avoid MissingSchemaError during population
-require("./models/User");
-require("./models/Problem");
-require("./models/Submission");
-require("./models/Assessment");
-require("./models/Attempt");
-
-// start the queue processor (requires Redis configured)
-require("./jobProcessor");
+// Ensure storage directories exist
+ensureStorageDirectories(config.storage.path);
 
 const app = express();
-app.set("trust proxy", 1); // trust first proxy (Render, Heroku, etc.)
+app.set("trust proxy", 1);
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: { origin: config.corsOrigin === "*" ? true : config.corsOrigin.split(",").map(s => s.trim()), credentials: true },
 });
 
 socketService.initialize(io);
 
-// simple request logger middleware
+// ── Request ID & Logging Middleware ──────────────────────────────────────────
+
 app.use((req, res, next) => {
-  logger.info({ method: req.method, url: req.url });
+  req.requestId = uuidv4();
+  res.setHeader("X-Request-Id", req.requestId);
+  const start = Date.now();
+  res.on("finish", () => {
+    logger.info({
+      requestId: req.requestId,
+      method: req.method,
+      url: req.url,
+      status: res.statusCode,
+      duration: Date.now() - start,
+      userId: req.user?.id || null,
+    });
+  });
   next();
 });
 
+// ── CORS ─────────────────────────────────────────────────────────────────────
+
 const getCorsOrigin = () => {
-  const corsOrigin = process.env.CORS_ORIGIN;
-  if (!corsOrigin || corsOrigin === "*") {
-    return true; // Reflect request origin to support credentials
-  }
-  const origins = corsOrigin.split(",").map((orig) => {
-    let o = orig.trim();
-    return o.endsWith("/") ? o.slice(0, -1) : o;
-  });
+  const corsOrigin = config.corsOrigin;
+  if (!corsOrigin || corsOrigin === "*") return true;
+  const origins = corsOrigin.split(",").map(o => o.trim().replace(/\/$/, ""));
   return origins.includes("*") ? true : origins;
 };
 
-app.use(cors({
-  origin: getCorsOrigin(),
-  credentials: true
-}));
-app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(cors({ origin: getCorsOrigin(), credentials: true }));
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
-// Rate Limiting
+// Serve uploaded files with authorization check (static for now)
+app.use("/storage", express.static(path.resolve(config.storage.path)));
+
+// ── Rate Limiting ────────────────────────────────────────────────────────────
+
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 500, // increased from 150 for normal API usage
-  message: { message: "Too many requests from this IP, please try again." }
+  windowMs: 15 * 60 * 1000,
+  max: 500,
+  message: { success: false, error: { code: "RATE_LIMITED", message: "Too many requests. Please try again later." } },
 });
 
-// Separate limiter for polling/frequent endpoints
-const pollLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute window
-  max: 120, // 2 requests per second
-  message: { message: "Too many polling requests, please try again." }
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { success: false, error: { code: "RATE_LIMITED", message: "Too many auth attempts. Please try again later." } },
+});
+
+const aiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 30,
+  message: { success: false, error: { code: "AI_RATE_LIMITED", message: "Too many AI requests. Please slow down." } },
 });
 
 app.use("/api", apiLimiter);
-// Apply stricter limit to polling endpoints
-app.use("/api/submissions/my", pollLimiter);
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
+app.use("/api/ai", aiLimiter);
+app.use("/api/interviews", aiLimiter);
 
-// Input Sanitization Middleware to prevent NoSQL Injection
-app.use((req, res, next) => {
-  const sanitize = (obj) => {
-    for (const key in obj) {
-      if (key.startsWith("$") || key.includes(".")) {
-        delete obj[key];
-      } else if (typeof obj[key] === "object" && obj[key] !== null) {
-        sanitize(obj[key]);
-      }
-    }
-  };
-  if (req.body) sanitize(req.body);
-  if (req.query) sanitize(req.query);
-  if (req.params) sanitize(req.params);
-  next();
-});
+// ── Routes ───────────────────────────────────────────────────────────────────
 
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/problems", require("./routes/problem.routes"));
 app.use("/api/submissions", require("./routes/submission.routes"));
-app.use("/api/leaderboard", require("./routes/leaderboard.routes"));
-app.use("/api/analytics", require("./routes/analytics.routes"));
 app.use("/api/assessments", require("./routes/assessment.routes"));
+app.use("/api/analytics", require("./routes/analytics.routes"));
+app.use("/api/leaderboard", require("./routes/leaderboard.routes"));
+app.use("/api/interviews", require("./routes/interview.routes"));
+app.use("/api/mock-tests", require("./routes/mocktest.routes"));
+app.use("/api/sql", require("./routes/sql.routes"));
+app.use("/api/ai", require("./routes/ai.routes"));
+app.use("/api/career", require("./routes/career.routes"));
+app.use("/api/skills", require("./routes/skill.routes"));
+app.use("/api/health", require("./routes/health.routes"));
+app.use("/api/notifications", require("./routes/notification.routes"));
+
+// ── Health Check (root) ──────────────────────────────────────────────────────
+
+app.get("/api/health", async (req, res) => {
+  res.json({ status: "ok", service: "AI Interview Intelligence Platform", timestamp: new Date().toISOString() });
+});
+
+// ── Error Handler ────────────────────────────────────────────────────────────
 
 app.use(errorHandler);
 
-server.listen(process.env.PORT || 5050, "0.0.0.0", () =>
-  logger.info(`Server running on port ${process.env.PORT || 5050}`)
-);
+// ── Start Server ─────────────────────────────────────────────────────────────
 
-// catch unhandled promise rejections so the process doesn't die unexpectedly
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+const PORT = config.port;
+
+async function start() {
+  try {
+    // Test database connection
+    await prisma.$connect();
+    logger.info("✓ PostgreSQL connected");
+
+    server.listen(PORT, "0.0.0.0", () => {
+      logger.info(`
+╔══════════════════════════════════════════════════════════╗
+║       AI Interview Intelligence Platform                ║
+╠══════════════════════════════════════════════════════════╣
+║  Backend:   http://localhost:${PORT}                       ║
+║  API Docs:  http://localhost:${PORT}/api/health             ║
+║  Env:       ${config.nodeEnv.padEnd(43)}║
+╚══════════════════════════════════════════════════════════╝
+      `);
+    });
+  } catch (err) {
+    logger.error("Failed to start server:", err);
+    process.exit(1);
+  }
+}
+
+start();
+
+// Graceful shutdown
+const shutdown = async (signal) => {
+  logger.info(`${signal} received. Shutting down gracefully...`);
+  server.close();
+  await prisma.$disconnect();
+  process.exit(0);
+};
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("Unhandled Rejection:", reason);
 });
-
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
+process.on("uncaughtException", (err) => {
+  logger.error("Uncaught Exception:", err);
+  process.exit(1);
 });

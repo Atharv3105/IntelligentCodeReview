@@ -1,13 +1,3 @@
-const mongoose = require("mongoose");
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB Connected");
-  } catch (err) {
-    console.error("Database error:", err.message);
-    process.exit(1);
-  }
-};
-
-module.exports = connectDB;
+// Deprecated: MongoDB connection module replaced by Prisma ORM.
+// See /backend/config/prisma.js
+module.exports = async () => {};

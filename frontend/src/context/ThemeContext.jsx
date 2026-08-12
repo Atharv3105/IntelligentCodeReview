@@ -2,23 +2,35 @@ import { createContext, useEffect, useMemo, useState } from "react";
 
 export const ThemeContext = createContext();
 
-const THEME_KEY = "preferred-theme";
+const THEME_KEY = "iip-theme";
 
 function getInitialTheme() {
-  const savedTheme = localStorage.getItem(THEME_KEY);
-  if (savedTheme === "light" || savedTheme === "dark") {
-    return savedTheme;
-  }
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  // Respect saved preference first
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === "light" || saved === "dark") return saved;
+  // Default to dark — this platform is designed dark-first
+  return "dark";
+}
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  root.setAttribute("data-theme", theme);
+  root.classList.toggle("dark", theme === "dark");
+  root.style.colorScheme = theme;
+  // Also apply directly to body background for instant paint
+  document.body.style.background = theme === "dark" ? "#060912" : "#f7f8fa";
 }
 
 export default function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(getInitialTheme);
+  const [theme, setTheme] = useState(() => {
+    const t = getInitialTheme();
+    // Apply synchronously before first render to avoid flash
+    if (typeof document !== "undefined") applyTheme(t);
+    return t;
+  });
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    document.documentElement.style.colorScheme = theme;
+    applyTheme(theme);
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
@@ -26,7 +38,7 @@ export default function ThemeProvider({ children }) {
     () => ({
       theme,
       isDark: theme === "dark",
-      toggleTheme: () => setTheme((prev) => (prev === "dark" ? "light" : "dark"))
+      toggleTheme: () => setTheme((prev) => (prev === "dark" ? "light" : "dark")),
     }),
     [theme]
   );
