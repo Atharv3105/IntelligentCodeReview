@@ -10,6 +10,7 @@ export default function SubjectPractice() {
   const [userAnswer, setUserAnswer] = useState("");
   const [evaluation, setEvaluation] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const subjects = ["DBMS", "Operating Systems", "Computer Networks", "OOP", "System Design"];
 
@@ -18,11 +19,25 @@ export default function SubjectPractice() {
     setQuestion(null);
     setUserAnswer("");
     setEvaluation(null);
+    setError("");
     try {
-      const res = await api.post("/ai/generate-question", { topic: subject, difficulty, questionType: "short_answer" });
-      setQuestion(res.data.question);
+      const res = await api.post("/ai/generate-question", {
+        topic: subject,
+        difficulty,
+        questionType: "short_answer",
+      });
+      if (res.data.question) {
+        setQuestion(res.data.question);
+      } else {
+        setError("AI returned an empty question. Please try again.");
+      }
     } catch (err) {
       console.error("Failed to generate question:", err);
+      setError(
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        "Failed to generate question. Make sure the backend is running and the AI API key is configured."
+      );
     } finally {
       setLoading(false);
     }
@@ -101,6 +116,20 @@ export default function SubjectPractice() {
           </Button>
         </div>
       </div>
+
+      {/* Error */}
+      {error && (
+        <div
+          className="rounded-2xl p-4 text-xs flex items-start gap-3"
+          style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444" }}
+        >
+          <span className="font-bold mt-0.5">⚠</span>
+          <div>
+            <p className="font-bold mb-1">AI Generation Failed</p>
+            <p>{error}</p>
+          </div>
+        </div>
+      )}
 
       {/* Workspace */}
       {question ? (

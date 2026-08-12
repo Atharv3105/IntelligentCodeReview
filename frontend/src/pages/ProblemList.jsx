@@ -16,6 +16,7 @@ const diffBadge = {
 export default function ProblemList() {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
   const [selectedTopic, setSelectedTopic] = useState("All");
@@ -25,6 +26,7 @@ export default function ProblemList() {
 
   const fetchProblems = async () => {
     setLoading(true);
+    setError("");
     try {
       const q = new URLSearchParams();
       if (selectedDifficulty !== "All") q.append("difficulty", selectedDifficulty);
@@ -34,6 +36,7 @@ export default function ProblemList() {
       setProblems(res.data.problems || []);
     } catch (err) {
       console.error("Failed to fetch problems:", err);
+      setError(err.response?.data?.error?.message || "Could not connect to server. Make sure the backend is running.");
     } finally {
       setLoading(false);
     }
@@ -132,6 +135,15 @@ export default function ProblemList() {
           })}
         </div>
       </motion.div>
+
+      {/* Error Banner */}
+      {error && (
+        <div className="rounded-2xl p-4 text-xs flex items-center gap-3"
+          style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444" }}>
+          <span className="font-bold">⚠ Error:</span> {error}
+          <button onClick={fetchProblems} className="ml-auto underline font-bold">Retry</button>
+        </div>
+      )}
 
       {/* Problem List */}
       <div className="space-y-2">
