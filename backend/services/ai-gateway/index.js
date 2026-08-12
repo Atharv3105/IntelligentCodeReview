@@ -9,6 +9,7 @@
 const OpenAIProvider = require("./providers/openai");
 const GeminiProvider = require("./providers/gemini");
 const GroqProvider = require("./providers/groq");
+const NvidiaProvider = require("./providers/nvidia");
 const prisma = require("../../config/prisma");
 const { getConfig } = require("../../config/env");
 
@@ -23,12 +24,17 @@ const COST_TABLE = {
   "llama-3.1-8b-instant": { input: 0.05, output: 0.08 },
   "llama-3.1-70b-versatile": { input: 0.59, output: 0.79 },
   "mixtral-8x7b-32768": { input: 0.24, output: 0.24 },
+  // NVIDIA NIM models (free tier)
+  "nvidia/nemotron-3-super-120b-a12b": { input: 0.00, output: 0.00 },
+  "nvidia/llama-3.1-nemotron-70b-instruct": { input: 0.00, output: 0.00 },
+  "meta/llama-3.1-8b-instruct": { input: 0.00, output: 0.00 },
 };
 
 const PROVIDER_MAP = {
   openai: OpenAIProvider,
   gemini: GeminiProvider,
   groq: GroqProvider,
+  nvidia: NvidiaProvider,
 };
 
 class AIGateway {
@@ -549,6 +555,225 @@ Return JSON:
       userPrompt,
       userId,
       requestType: "interview_report",
+      promptVersion: "v1.0",
+    });
+  }
+
+  // ── DSA / Code Review / SQL AI Methods ──────────────────────────────────
+
+  /**
+   * Review user code for correctness, style, and efficiency.
+   * Used by Problem (DSA) page.
+   */
+  async reviewCode({ code, language, problemTitle, problemDescription, userId }) {
+    const systemPrompt = `You are an expert software engineer doing a code review.
+Analyze the code for correctness, time/space complexity, code style, and potential bugs.
+Be constructive, specific, and educational. Mention both strengths and areas for improvement.`;
+
+    const userPrompt = `Review this ${language} code:
+
+Problem: ${problemTitle || "Unknown"}
+Description: ${problemDescription || "Not provided"}
+
+\`\`\`${language}
+${code}
+\`\`\`
+
+Return JSON:
+{
+  "overallScore": 0-100,
+  "verdict": "excellent|good|needs_improvement|poor",
+  "timeComplexity": "O(?)",
+  "spaceComplexity": "O(?)",
+  "correctness": { "score": 0-100, "feedback": "..." },
+  "efficiency": { "score": 0-100, "feedback": "..." },
+  "codeStyle": { "score": 0-100, "feedback": "..." },
+  "bugs": ["potential bug or edge case"],
+  "strengths": ["what was done well"],
+  "improvements": ["specific improvement suggestion"],
+  "optimizedSnippet": "// A concise optimized version or key optimization idea",
+  "explanation": "Overall summary for the student"
+}`;
+
+    return this.generateStructured({
+      systemPrompt,
+      userPrompt,
+      userId,
+      requestType: "code_review",
+      promptVersion: "v1.0",
+    });
+  }
+
+  /**
+   * Explain a DSA concept or problem approach.
+   * Used by Problem (DSA) page.
+   */
+  async explainConcept({ concept, difficulty, language, userId }) {
+    const systemPrompt = `You are a top CS educator. Explain programming concepts clearly with examples.
+Adjust depth based on difficulty level. Use ${language || "Python"} for code examples.`;
+
+    const userPrompt = `Explain: "${concept}"
+Difficulty Level: ${difficulty || "medium"}
+Language for examples: ${language || "Python"}
+
+Return JSON:
+{
+  "title": "${concept}",
+  "summary": "1-2 sentence overview",
+  "explanation": "detailed explanation",
+  "keyPoints": ["key point 1", "key point 2"],
+  "codeExample": "// Working code example in ${language || "Python"}",
+  "complexity": { "time": "O(?)", "space": "O(?)" },
+  "useCases": ["when to use this"],
+  "commonMistakes": ["common error or pitfall"],
+  "relatedConcepts": ["related topic"]
+}`;
+
+    return this.generateStructured({
+      systemPrompt,
+      userPrompt,
+      userId,
+      requestType: "concept_explanation",
+      promptVersion: "v1.0",
+    });
+  }
+
+  /**
+   * Explain a SQL query result or error.
+   * Used by SQL Lab page.
+   */
+  async explainSQL({ query, error, schema, userId }) {
+    const systemPrompt = `You are a SQL expert and educator.
+Help students understand SQL queries, errors, and optimization.
+Be clear, educational, and practical.`;
+
+    const userPrompt = error
+      ? `The following SQL query produced an error.
+
+Query:
+\`\`\`sql
+${query}
+\`\`\`
+
+Error: ${error}
+Schema context: ${schema || "Not provided"}
+
+Return JSON:
+{
+  "errorType": "syntax|semantic|logic|permission",
+  "explanation": "what caused the error",
+  "fixedQuery": "corrected SQL query",
+  "explanation": "why the fix works",
+  "tips": ["tip to avoid this error"]
+}`
+      : `Explain this SQL query:
+
+\`\`\`sql
+${query}
+\`\`\`
+
+Schema context: ${schema || "Not provided"}
+
+Return JSON:
+{
+  "summary": "what this query does in plain English",
+  "breakdown": [
+    { "clause": "SELECT", "explanation": "..." }
+  ],
+  "performance": "performance notes or index suggestions",
+  "alternativeApproach": "simpler or more efficient alternative if any",
+  "tips": ["best practice tip"]
+}`;
+
+    return this.generateStructured({
+      systemPrompt,
+      userPrompt,
+      userId,
+      requestType: "sql_explanation",
+      promptVersion: "v1.0",
+    });
+  }
+
+  /**
+   * Generate a DSA problem with test cases.
+   * Used by admin / AI generate problem feature.
+   */
+  async generateDSAProblem({ topic, difficulty, language, userId }) {
+    const systemPrompt = `You are a competitive programming problem setter.
+Create original, well-defined algorithmic problems with clear constraints and test cases.
+Problems must be solvable and have at least one optimal solution.`;
+
+    const userPrompt = `Generate a ${difficulty || "medium"} DSA problem on the topic: "${topic || "Arrays"}".
+Primary language: ${language || "python"}
+
+Return JSON:
+{
+  "title": "Problem title",
+  "description": "Full problem statement with examples",
+  "difficulty": "${difficulty || "medium"}",
+  "topics": ["${topic || "Arrays"}"],
+  "constraints": ["1 <= n <= 10^5"],
+  "examples": [
+    { "input": "...", "output": "...", "explanation": "..." }
+  ],
+  "starterCode": { "${language || "python"}": "def solution(...):\n    pass" },
+  "solutionCode": { "${language || "python"}": "def solution(...):\n    # optimal solution" },
+  "expectedComplexity": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": ["hint 1", "hint 2"],
+  "testCases": [
+    { "input": "5\n1 2 3 4 5", "expectedOutput": "15", "isHidden": false },
+    { "input": "3\n-1 0 1", "expectedOutput": "0", "isHidden": true }
+  ]
+}`;
+
+    return this.generateStructured({
+      systemPrompt,
+      userPrompt,
+      userId,
+      requestType: "dsa_problem_generation",
+      promptVersion: "v1.0",
+    });
+  }
+
+  /**
+   * Get AI feedback on a submission.
+   * Used by submission result page.
+   */
+  async getSubmissionFeedback({ code, language, testResults, problemTitle, userId }) {
+    const passed = testResults?.filter(t => t.passed)?.length || 0;
+    const total = testResults?.length || 0;
+
+    const systemPrompt = `You are a coding mentor reviewing a student submission.
+Give constructive, encouraging feedback. Focus on what the student did right and how to improve.`;
+
+    const userPrompt = `Submission for problem: "${problemTitle || "Unknown"}"
+Language: ${language}
+Test results: ${passed}/${total} passed
+
+Code:
+\`\`\`${language}
+${code}
+\`\`\`
+
+Failed tests (if any): ${JSON.stringify(testResults?.filter(t => !t.passed) || [])}
+
+Return JSON:
+{
+  "score": ${Math.round((passed / Math.max(total, 1)) * 100)},
+  "status": "${passed === total ? "accepted" : "partially_correct"}",
+  "summary": "brief overall feedback",
+  "correctness": { "score": 0-100, "feedback": "..." },
+  "efficiency": { "score": 0-100, "timeComplexity": "O(?)", "feedback": "..." },
+  "strengths": ["what was done well"],
+  "failureReason": "why tests failed (if any)",
+  "nextSteps": ["what to try next"]
+}`;
+
+    return this.generateStructured({
+      systemPrompt,
+      userPrompt,
+      userId,
+      requestType: "submission_feedback",
       promptVersion: "v1.0",
     });
   }

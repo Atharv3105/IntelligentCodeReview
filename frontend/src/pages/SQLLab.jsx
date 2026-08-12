@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { Database, Play, RotateCcw, Sparkles, CheckCircle2, AlertTriangle, Table } from "lucide-react";
+import { Database, Play, RotateCcw, Sparkles, CheckCircle2, AlertTriangle, Table, Brain, Loader2 } from "lucide-react";
 import api from "../services/api";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -15,7 +15,8 @@ export default function SQLLab() {
   const [executionTime, setExecutionTime] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [aiAdvice, setAiAdvice] = useState("");
+  const [aiAdvice, setAiAdvice] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     fetchChallenges();
@@ -72,13 +73,39 @@ export default function SQLLab() {
     }
   };
 
-  const handleExplain = () => {
-    if (!selectedChallenge) return;
-    setAiAdvice(selectedChallenge.explanation || "This query joins the Employee table with itself to compare manager salaries.");
+  const handleExplain = async () => {
+    if (!query.trim()) return;
+    setAiLoading(true);
+    setAiAdvice(null);
+    try {
+      const res = await api.post("/ai/explain-sql", {
+        query,
+        error: executionError,
+        challengeId: selectedChallenge?.id,
+      });
+      setAiAdvice({ type: "explain", data: res.data.explanation });
+    } catch (err) {
+      console.error("SQL Explain failed:", err);
+    } finally {
+      setAiLoading(false);
+    }
   };
 
-  const handleOptimize = () => {
-    setAiAdvice("Optimization Tip: Ensure an index exists on `managerId` and `salary` for faster join filtering.");
+  const handleOptimize = async () => {
+    if (!query.trim()) return;
+    setAiLoading(true);
+    setAiAdvice(null);
+    try {
+      const res = await api.post("/ai/explain-sql", {
+        query,
+        schema: selectedChallenge ? `${selectedChallenge.title}\n${selectedChallenge.setupSQL || ""}` : undefined,
+      });
+      setAiAdvice({ type: "optimize", data: res.data.explanation });
+    } catch (err) {
+      console.error("SQL Optimize failed:", err);
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   return (
@@ -168,14 +195,54 @@ export default function SQLLab() {
             </div>
           </Card>
 
+          {/* AI Loading */}
+          {aiLoading && (
+            <Card className="p-4 text-xs flex items-center gap-2 text-slate-500">
+              <Loader2 className="w-4 h-4 animate-spin text-violet-500" />
+              <span>NVIDIA AI is analyzing your SQL...</span>
+            </Card>
+          )}
+
           {/* AI Explain / Optimize Advice */}
-          {aiAdvice && (
-            <Card className="p-4 bg-violet-50 dark:bg-violet-950/40 border-violet-200 dark:border-violet-900 text-xs text-violet-900 dark:text-violet-200">
-              <div className="flex items-center gap-2 font-bold mb-1">
-                <Sparkles className="w-4 h-4 text-violet-600" />
-                <span>SQL Insight</span>
+          {aiAdvice && !aiLoading && (
+            <Card className="p-4 bg-violet-50 dark:bg-violet-950/40 border-violet-200 dark:border-violet-900 text-xs space-y-2">
+              <div className="flex items-center gap-2 font-bold text-violet-800 dark:text-violet-300 mb-1">
+                <Brain className="w-4 h-4 text-violet-600" />
+                <span>NVIDIA AI SQL {aiAdvice.type === "optimize" ? "Optimization" : "Explanation"}</span>
               </div>
-              <p>{aiAdvice}</p>
+              {aiAdvice.data?.summary && (
+                <p className="text-slate-700 dark:text-slate-300">{aiAdvice.data.summary}</p>
+              )}
+              {aiAdvice.data?.explanation && (
+                <p className="text-slate-700 dark:text-slate-300">{aiAdvice.data.explanation}</p>
+              )}
+              {aiAdvice.data?.breakdown && aiAdvice.data.breakdown.length > 0 && (
+                <div className="space-y-1">
+                  {aiAdvice.data.breakdown.map((b, i) => (
+                    <div key={i} className="flex gap-2">
+                      <span className="font-mono font-bold text-violet-600 min-w-[60px]">{b.clause}</span>
+                      <span className="text-slate-600 dark:text-slate-400">{b.explanation}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {aiAdvice.data?.performance && (
+                <p className="text-amber-700 dark:text-amber-400"><strong>Performance:</strong> {aiAdvice.data.performance}</p>
+              )}
+              {aiAdvice.data?.alternativeApproach && (
+                <p className="text-slate-600 dark:text-slate-400"><strong>Alternative:</strong> {aiAdvice.data.alternativeApproach}</p>
+              )}
+              {aiAdvice.data?.fixedQuery && (
+                <div>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400 block mb-1">Fixed Query:</span>
+                  <pre className="bg-slate-900 text-green-400 rounded-lg p-3 overflow-x-auto font-mono text-[11px]">{aiAdvice.data.fixedQuery}</pre>
+                </div>
+              )}
+              {aiAdvice.data?.tips?.length > 0 && (
+                <ul className="list-disc list-inside text-slate-500 dark:text-slate-400">
+                  {aiAdvice.data.tips.map((t, i) => <li key={i}>{t}</li>)}
+                </ul>
+              )}
             </Card>
           )}
 
