@@ -2,14 +2,15 @@ const socketService = require("./socket.service");
 const submissionQueue = require("../queue");
 
 exports.callWorker = async (submission) => {
-  socketService.emitSubmissionUpdate(submission._id, {
+  const submissionId = submission.id || submission._id;
+  socketService.emitSubmissionUpdate(submissionId, {
     stage: "QUEUED",
     progress: 0
   });
 
   // add job to queue, with automatic retries; do not wait here
   const job = await submissionQueue.add(
-    { submissionId: submission._id, code: submission.code, language: submission.language },
+    { submissionId, code: submission.code, language: submission.language },
     { attempts: 3, backoff: 5000 }
   );
 

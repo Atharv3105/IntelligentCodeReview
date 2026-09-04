@@ -64,7 +64,7 @@ if %ERRORLEVEL% NEQ 0 (
 echo [5/6] Running PostgreSQL database migrations and initial seed...
 cd backend
 call npx prisma generate
-call npx prisma db push --skip-generate
+call npx prisma db push --skip-generate --accept-data-loss
 call node prisma/seed.js
 cd ..
 

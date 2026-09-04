@@ -25,13 +25,13 @@ exports.getLeaderboard = asyncHandler(async (req, res) => {
     FROM "User" u
     LEFT JOIN "UserProfile" p ON u.id = p."userId"
     LEFT JOIN "Submission" s ON u.id = s."userId" AND s.status = 'completed' AND s.grade IS NOT NULL
-    WHERE u.role = 'student'
+    WHERE u.role IN ('student', 'admin', 'interviewer')
     GROUP BY u.id, u.name, u.email, p.xp, p."streakCount", p.level
     ORDER BY "solvedCount" DESC, "avgGrade" DESC NULLS LAST, p.xp DESC NULLS LAST
     LIMIT ${limit} OFFSET ${skip};
   `;
 
-  const totalCount = await prisma.user.count({ where: { role: "student" } });
+  const totalCount = await prisma.user.count({ where: { role: { in: ["student", "admin", "interviewer"] } } });
 
   res.json({
     success: true,

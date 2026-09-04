@@ -1,513 +1,592 @@
-import React, { useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowRight, Code2, Bot, BarChart3, CheckCircle2, Zap,
-  Shield, Cpu, Database, Play, Star, ChevronRight
+  Code2,
+  Database,
+  BookOpen,
+  Mic,
+  ArrowRight,
+  Sun,
+  Moon,
+  Sparkles,
+  Zap,
+  TrendingUp,
+  Shield,
+  Layers,
+  ChevronRight,
 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
+import { ThemeContext } from "../context/ThemeContext";
 
-/* ── Data ─────────────────────────────────────── */
-const features = [
-  {
-    icon: Code2,
-    title: "DSA & SQL Arenas",
-    desc: "Solve 500+ algorithm and SQL problems with real-time test-case evaluation via Judge0 and isolated database schemas.",
-    color: "from-blue-500/20 to-blue-600/5",
-    iconColor: "text-blue-400",
-    border: "hover:border-blue-500/40",
-    tag: "500+ Problems",
-    tagColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  },
-  {
-    icon: Bot,
-    title: "AI Interview Simulator",
-    desc: "Run technical, coding, and behavioral interviews powered by AI. Get probing follow-ups and real evaluation reports.",
-    color: "from-violet-500/20 to-violet-600/5",
-    iconColor: "text-violet-400",
-    border: "hover:border-violet-500/40",
-    tag: "4 Interview Modes",
-    tagColor: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-  },
-  {
-    icon: BarChart3,
-    title: "Readiness Analytics",
-    desc: "Track a 0–100 interview readiness score. Follow personalized day-by-day roadmaps built from your actual mistakes.",
-    color: "from-emerald-500/20 to-emerald-600/5",
-    iconColor: "text-emerald-400",
-    border: "hover:border-emerald-500/40",
-    tag: "Skill-level Insights",
-    tagColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  },
-];
-
-const stats = [
-  { value: "500+", label: "Curated Problems" },
-  { value: "4", label: "Interview Modes" },
-  { value: "10+", label: "CS Topics" },
-  { value: "100%", label: "Runs Locally" },
-];
-
-const trust = [
-  "No subscription required",
-  "Runs fully on your machine",
-  "Open-source codebase",
-  "No data sent to cloud",
-];
-
-/* ── Star Field ───────────────────────────────── */
-const STARS = Array.from({ length: 40 }, (_, i) => ({
-  id: i,
-  top: `${Math.random() * 90}%`,
-  left: `${Math.random() * 100}%`,
-  dur: `${2.5 + Math.random() * 4}s`,
-  delay: `${Math.random() * 3}s`,
-  size: Math.random() > 0.7 ? 3 : 2,
-}));
-
-/* ── Code Preview ─────────────────────────────── */
-const CODE_PREVIEW = `function twoSum(nums, target) {
-  const map = new Map();
-  for (let i = 0; i < nums.length; i++) {
-    const complement = target - nums[i];
-    if (map.has(complement))
-      return [map.get(complement), i];
-    map.set(nums[i], i);
-  }
+function DiffBadge({ level }) {
+  const map = {
+    Easy: { bg: "rgba(52,211,153,.12)", color: "#10b981", border: "rgba(52,211,153,.25)" },
+    Medium: { bg: "rgba(251,191,36,.12)", color: "#f59e0b", border: "rgba(251,191,36,.25)" },
+    Hard: { bg: "rgba(248,113,113,.12)", color: "#ef4444", border: "rgba(248,113,113,.25)" },
+  };
+  const c = map[level] || map.Easy;
+  return (
+    <span
+      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap"
+      style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}
+    >
+      {level}
+    </span>
+  );
 }
 
-// ✅ All 57 test cases passed
-// ⏱  Runtime: 68ms  (beats 94.2%)
-// 📦 Memory:  41.9MB (beats 88.1%)`;
-
-/* ── Main Component ───────────────────────────── */
 export default function Landing() {
   const { user } = useContext(AuthContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
 
-  const container = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.08 } },
-  };
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
-  };
+  const previewProblems = [
+    { n: 1, title: "Two Sum", tags: "Arrays · Hashing", diff: "Easy" },
+    { n: 2, title: "Valid Anagram", tags: "Strings · Hashing", diff: "Easy" },
+    { n: 3, title: "Best Time to Buy & Sell", tags: "Arrays · Sliding Window", diff: "Easy" },
+    { n: 4, title: "Valid Parentheses", tags: "Stack · Strings", diff: "Easy" },
+    { n: 5, title: "Max Subarray", tags: "Arrays · Dynamic Programming", diff: "Medium" },
+    { n: 6, title: "Container With Most Water", tags: "Arrays · Two Pointers", diff: "Medium" },
+  ];
 
   return (
-    <div className="min-h-screen mesh-gradient text-slate-100 font-sans overflow-x-hidden">
-
-      {/* ─── Star Field ─────────────────────────── */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {STARS.map((s) => (
-          <span
-            key={s.id}
-            className="star"
-            style={{
-              top: s.top,
-              left: s.left,
-              "--dur": s.dur,
-              "--delay": s.delay,
-              width: s.size,
-              height: s.size,
-            }}
-          />
-        ))}
-        {/* Subtle grid */}
-        <div className="absolute inset-0 grid-pattern opacity-40" />
-      </div>
-
-      {/* ─── Nav ────────────────────────────────── */}
-      <nav className="relative z-20 glass-dark border-b border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-6 h-[60px] flex items-center justify-between">
+    <div
+      className="min-h-screen font-sans relative overflow-x-hidden"
+      style={{
+        background: "var(--bg)",
+        color: "var(--text-primary)",
+      }}
+    >
+      {/* ── Floating Pill Navigation ── */}
+      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[min(calc(100%-32px),1160px)]">
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 350, damping: 25 }}
+          className="flex items-center justify-between px-4 py-2.5 rounded-full border shadow-xl"
+          style={{
+            background: "var(--glass-bg)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            borderColor: "var(--glass-border)",
+            boxShadow: "var(--glass-shadow)",
+          }}
+        >
           {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex items-center gap-3"
-          >
-            <div className="relative">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-black text-white text-sm shadow-lg shadow-blue-500/30">
-                II
-              </div>
-              <span className="live-dot absolute -top-0.5 -right-0.5" style={{ width: 6, height: 6 }} />
+          <Link to="/" className="flex items-center gap-2.5 mr-2">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs text-white shadow-md"
+              style={{ background: "linear-gradient(135deg, #3b82f6, #60a5fa)" }}
+            >
+              II
             </div>
-            <div className="leading-none">
-              <span className="text-sm font-bold text-white block tracking-tight">Interview</span>
-              <span className="text-[10px] font-semibold text-blue-400 uppercase tracking-[0.15em] block">Intelligence</span>
-            </div>
-          </motion.div>
+            <span className="font-semibold text-sm tracking-tight hidden sm:inline" style={{ color: "var(--text-primary)" }}>
+              Interview Intelligence
+            </span>
+          </Link>
 
-          {/* Center links */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.15 }}
-            className="hidden md:flex items-center gap-1"
-          >
-            {["Features", "Practice", "Interviews", "Analytics"].map((label) => (
+          {/* Nav Links */}
+          <div className="hidden md:flex items-center gap-1">
+            {[
+              { label: "Features", href: "#features" },
+              { label: "Practice", href: user ? "/problems" : "/login" },
+              { label: "SQL Lab", href: user ? "/sql" : "/login" },
+              { label: "Interviews", href: user ? "/interviews" : "/login" },
+            ].map((link) => (
               <button
-                key={label}
-                className="px-3.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all font-medium"
+                key={link.label}
+                onClick={() => {
+                  if (link.href.startsWith("#")) {
+                    document.querySelector(link.href)?.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    navigate(link.href);
+                  }
+                }}
+                className="px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors hover:text-blue-500 cursor-pointer"
+                style={{ color: "var(--text-secondary)" }}
               >
-                {label}
+                {link.label}
               </button>
             ))}
-          </motion.div>
+          </div>
 
-          {/* Actions */}
-          <motion.div
-            initial={{ opacity: 0, x: 12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.18 }}
-            className="flex items-center gap-3"
-          >
+          {/* Right Actions */}
+          <div className="flex items-center gap-2">
+            {/* Theme switch */}
+            <motion.button
+              onClick={toggleTheme}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              className="p-2 rounded-full border cursor-pointer transition-colors"
+              style={{
+                background: "var(--glass-bg)",
+                borderColor: "var(--glass-border)",
+                color: "var(--text-secondary)",
+              }}
+              title="Toggle Theme"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </motion.button>
+
             {user ? (
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+              <button
                 onClick={() => navigate("/dashboard")}
-                className="btn-glow btn-ripple flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold shadow-lg shadow-blue-600/25 transition-colors"
+                className="px-4 py-1.5 rounded-full text-xs font-semibold text-white shadow-md transition-all hover:scale-105 cursor-pointer"
+                style={{
+                  background: "var(--accent)",
+                  boxShadow: "var(--accent-glow)",
+                }}
               >
-                Dashboard <ArrowRight className="w-4 h-4" />
-              </motion.button>
+                Open Dashboard →
+              </button>
             ) : (
               <>
-                <Link to="/login" className="text-sm text-slate-400 hover:text-slate-100 font-medium transition-colors">
-                  Sign in
-                </Link>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => navigate("/register")}
-                  className="btn-glow btn-ripple flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold shadow-lg shadow-blue-600/25 transition-colors"
+                <button
+                  onClick={() => navigate("/login")}
+                  className="px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all hover:scale-105 cursor-pointer"
+                  style={{
+                    background: "var(--glass-bg)",
+                    borderColor: "var(--glass-border)",
+                    color: "var(--text-primary)",
+                  }}
                 >
-                  Get Started <ChevronRight className="w-4 h-4" />
-                </motion.button>
+                  Sign In
+                </button>
+                <button
+                  onClick={() => navigate("/register")}
+                  className="px-4 py-1.5 rounded-full text-xs font-semibold text-white shadow-md transition-all hover:scale-105 cursor-pointer"
+                  style={{
+                    background: "var(--accent)",
+                    boxShadow: "var(--accent-glow)",
+                  }}
+                >
+                  Get Started
+                </button>
               </>
             )}
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
       </nav>
 
-      {/* ─── Hero ───────────────────────────────── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-12">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Copy */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="space-y-8"
+      {/* ── Hero Section ── */}
+      <section className="pt-32 pb-16 px-6 max-w-5xl mx-auto text-center relative">
+        {/* Glow backdrop */}
+        <div
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] rounded-full blur-[110px] pointer-events-none opacity-40"
+          style={{ background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)" }}
+        />
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border mb-6 text-xs font-semibold"
+          style={{
+            background: "var(--glass-bg)",
+            borderColor: "var(--glass-border)",
+            color: "var(--accent)",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>v2.0 • Native AI Engine & PostgreSQL Sandbox</span>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.08 }}
+          className="text-4xl sm:text-6xl font-light tracking-tight mb-6 max-w-4xl mx-auto leading-tight"
+          style={{ color: "var(--text-primary)" }}
+        >
+          The intelligent <span className="font-bold">interview platform.</span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.16 }}
+          className="text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Master technical interviews with real-time AI code reviews, isolated SQL database sandboxes, intelligent mock sessions, and adaptive practice paths built for top engineering roles.
+        </motion.p>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.24 }}
+          className="flex flex-wrap items-center justify-center gap-3 mb-12"
+        >
+          <button
+            onClick={() => navigate(user ? "/problems" : "/register")}
+            className="px-6 py-3 rounded-full text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 cursor-pointer flex items-center gap-2"
+            style={{
+              background: "var(--accent)",
+              boxShadow: "var(--accent-glow)",
+            }}
           >
-            <motion.div variants={item}>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300 text-xs font-bold uppercase tracking-widest">
-                <Zap className="w-3.5 h-3.5 fill-blue-400 text-blue-400" />
-                AI-powered · Runs locally · Free forever
+            <span>Start Practicing</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+            className="px-6 py-3 rounded-full text-sm font-medium border transition-all hover:scale-105 cursor-pointer"
+            style={{
+              background: "var(--glass-bg)",
+              borderColor: "var(--glass-border)",
+              color: "var(--text-primary)",
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            Explore Platform
+          </button>
+        </motion.div>
+
+        {/* Trust Stats Pills */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.32 }}
+          className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs font-medium"
+          style={{ color: "var(--text-tertiary)" }}
+        >
+          <span>500+ Curated Problems</span>
+          <span>•</span>
+          <span>4 Interview Modes</span>
+          <span>•</span>
+          <span>10+ CS Topics</span>
+          <span>•</span>
+          <span>100% Runs Locally</span>
+        </motion.div>
+      </section>
+
+      {/* ── Interactive Live Code Window Showcase ── */}
+      <section className="max-w-5xl mx-auto px-6 pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 25, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.35, type: "spring" }}
+          className="rounded-3xl border overflow-hidden shadow-2xl"
+          style={{
+            background: "var(--glass-bg)",
+            borderColor: "var(--glass-border)",
+            boxShadow: "var(--glass-shadow)",
+            backdropFilter: "blur(24px)",
+          }}
+        >
+          {/* macOS Title Bar */}
+          <div
+            className="px-5 py-3.5 flex items-center justify-between border-b"
+            style={{ borderColor: "var(--glass-border)" }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+              <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+              <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+              <span className="text-xs font-medium ml-3" style={{ color: "var(--text-tertiary)" }}>
+                Two Sum • Easy • JavaScript
               </span>
-            </motion.div>
+            </div>
 
-            <motion.h1 variants={item} className="text-5xl md:text-6xl font-black tracking-tight leading-[1.04]">
-              <span className="text-gradient-white">Master technical</span>
-              <br />
-              <span className="text-gradient-blue">interviews with AI.</span>
-            </motion.h1>
+            <div
+              className="px-3 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1.5"
+              style={{ background: "rgba(251,191,36,0.12)", color: "#f59e0b", border: "1px solid rgba(251,191,36,0.25)" }}
+            >
+              <span>⭐ 94th Percentile</span>
+            </div>
+          </div>
 
-            <motion.p variants={item} className="text-lg text-slate-400 leading-relaxed max-w-xl">
-              Practice DSA & SQL problems, run AI-powered interview simulations, and follow personalized roadmaps — all{" "}
-              <span className="text-slate-200 font-semibold">running privately on your own machine</span>.
-            </motion.p>
-
-            <motion.div variants={item} className="flex flex-wrap gap-3">
-              {user ? (
-                <motion.button
-                  whileHover={{ scale: 1.04, boxShadow: "0 0 40px rgba(59,130,246,0.4)" }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => navigate("/dashboard")}
-                  className="btn-glow btn-ripple flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-base shadow-xl shadow-blue-600/30 transition-all"
-                >
-                  Open Dashboard <ArrowRight className="w-5 h-5" />
-                </motion.button>
-              ) : (
-                <>
-                  <motion.button
-                    whileHover={{ scale: 1.04, boxShadow: "0 0 40px rgba(59,130,246,0.4)" }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => navigate("/register")}
-                    className="btn-glow btn-ripple flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-base shadow-xl shadow-blue-600/30 transition-all"
-                  >
-                    Start for free <ArrowRight className="w-5 h-5" />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => navigate("/login")}
-                    className="flex items-center gap-2 px-7 py-3.5 rounded-2xl border border-white/10 hover:border-white/20 text-slate-300 hover:text-white font-semibold text-base transition-all"
-                  >
-                    <Play className="w-4 h-4 fill-current" /> Watch demo
-                  </motion.button>
-                </>
-              )}
-            </motion.div>
-
-            {/* Trust signals */}
-            <motion.div variants={item} className="flex flex-wrap gap-x-5 gap-y-2">
-              {trust.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-                  {t}
-                </span>
+          {/* Split IDE Demo & Problem List */}
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            {/* Left: Code Box */}
+            <div
+              className="p-6 font-mono text-xs leading-relaxed border-b md:border-b-0 md:border-r overflow-x-auto"
+              style={{
+                background: "var(--code-bg)",
+                borderColor: "var(--glass-border)",
+                color: "#e2e8f0",
+              }}
+            >
+              {[
+                [1, "function twoSum(nums, target) {", "#e2e8f0"],
+                [2, "  const map = new Map();", "#e2e8f0"],
+                [3, "  for (let i = 0; i < nums.length; i++) {", "#e2e8f0"],
+                [4, "    const complement = target - nums[i];", "#93c5fd"],
+                [5, "    if (map.has(complement))", "#e2e8f0"],
+                [6, "      return [map.get(complement), i];", "#34d399"],
+                [7, "    map.set(nums[i], i);", "#e2e8f0"],
+                [8, "  }", "#e2e8f0"],
+                [9, "}", "#e2e8f0"],
+                [10, "", "#e2e8f0"],
+                [11, "// ✅ All 57 test cases passed", "#34d399"],
+                [12, "// ⏱  Runtime: 68ms (beats 94.2%)", "#94a3b8"],
+                [13, "// 📦 Memory:  41.9MB (beats 88.1%)", "#94a3b8"],
+              ].map(([num, line, color]) => (
+                <div key={num} className="flex gap-4">
+                  <span className="text-slate-600 select-none w-5 text-right">{num}</span>
+                  <span style={{ color }}>{line}</span>
+                </div>
               ))}
-            </motion.div>
-          </motion.div>
+            </div>
 
-          {/* Right: Code preview card */}
-          <motion.div
-            initial={{ opacity: 0, x: 30, scale: 0.96 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ delay: 0.35, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="hidden lg:block float"
-          >
-            <div className="relative">
-              {/* Outer glow */}
-              <div className="absolute -inset-6 bg-gradient-to-br from-blue-600/15 via-violet-600/8 to-transparent rounded-3xl blur-2xl" />
-
-              {/* Main card */}
-              <div className="relative rounded-2xl border border-white/[0.08] bg-slate-900/90 shadow-2xl shadow-black/60 overflow-hidden backdrop-blur-sm">
-                {/* Window bar */}
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06] bg-white/[0.02]">
-                  <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                  <span className="ml-3 text-xs text-slate-500 font-mono">Two Sum · Easy · JavaScript</span>
-                </div>
-
-                {/* Code */}
-                <div className="p-5">
-                  <pre className="text-xs leading-6 font-mono text-slate-300 overflow-x-auto">
-                    {CODE_PREVIEW.split("\n").map((line, i) => (
-                      <div key={i} className="flex gap-4">
-                        <span className="text-slate-600 select-none w-4 text-right flex-shrink-0">{i + 1}</span>
-                        <span
-                          className={
-                            line.startsWith("//") ? "text-slate-500" :
-                            line.startsWith("function") ? "text-blue-400" :
-                            line.includes("return") ? "text-violet-400" :
-                            "text-slate-300"
-                          }
-                        >
-                          {line}
+            {/* Right: Problem Arena Preview */}
+            <div className="p-6 flex flex-col justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider mb-4" style={{ color: "var(--text-tertiary)" }}>
+                  DSA Problem Arena
+                </p>
+                <div className="space-y-1.5">
+                  {previewProblems.map((p, idx) => (
+                    <div
+                      key={p.n}
+                      className="glass-row flex items-center justify-between p-2.5 rounded-xl border border-transparent transition-all cursor-pointer"
+                      style={{
+                        background: idx === 0 ? "var(--accent-subtle)" : "transparent",
+                        borderLeftColor: idx === 0 ? "var(--accent)" : "transparent",
+                      }}
+                      onClick={() => navigate(user ? `/problems` : "/login")}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="text-xs font-mono" style={{ color: "var(--text-tertiary)" }}>
+                          #{p.n}
                         </span>
+                        <div className="min-w-0">
+                          <span className="text-xs font-semibold truncate block" style={{ color: "var(--text-primary)" }}>
+                            {p.title}
+                          </span>
+                          <span className="text-[10px] truncate block" style={{ color: "var(--text-tertiary)" }}>
+                            {p.tags}
+                          </span>
+                        </div>
                       </div>
-                    ))}
-                  </pre>
-                </div>
-
-                {/* Status bar */}
-                <div className="flex items-center gap-3 px-4 py-3 border-t border-white/[0.06] bg-emerald-500/5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs font-semibold text-emerald-400">All test cases passed</span>
-                  <span className="ml-auto text-xs text-slate-500 font-mono">68ms · 94.2%ile</span>
+                      <DiffBadge level={p.diff} />
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Floating badge */}
-              <motion.div
-                className="float-delay absolute -top-4 -right-4 rounded-xl border border-white/10 bg-slate-900/90 px-3 py-2 shadow-xl backdrop-blur-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  <span className="text-xs font-bold text-white">94th Percentile</span>
-                </div>
-              </motion.div>
-
-              {/* Floating AI chip */}
-              <motion.div
-                className="float absolute -bottom-4 -left-4 rounded-xl border border-violet-500/20 bg-violet-950/80 px-3 py-2.5 shadow-xl backdrop-blur-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <Bot className="w-4 h-4 text-violet-400" />
-                  <div>
-                    <span className="text-[10px] font-bold text-violet-300 block leading-none">AI Feedback</span>
-                    <span className="text-[10px] text-violet-500">Optimal O(n) solution</span>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── Stats Bar ──────────────────────────── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
-        >
-          {stats.map((stat, idx) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.65 + idx * 0.08, type: "spring", stiffness: 300, damping: 24 }}
-              className="relative rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5 text-center overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent" />
-              <div className="relative text-2xl font-black text-white">{stat.value}</div>
-              <div className="relative text-xs font-medium text-slate-500 mt-1">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* ─── Features ───────────────────────────── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-14"
-        >
-          <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">
-            Everything you need to get hired.
-          </h2>
-          <p className="text-slate-400 max-w-xl mx-auto text-base leading-relaxed">
-            A complete interview preparation system — from daily practice to full-length simulations.
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-5">
-          {features.map((feat, idx) => {
-            const Icon = feat.icon;
-            return (
-              <motion.div
-                key={feat.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ delay: idx * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ y: -6, transition: { type: "spring", stiffness: 280, damping: 22 } }}
-                className={`relative rounded-2xl border border-white/[0.07] ${feat.border} bg-gradient-to-b ${feat.color} backdrop-blur-sm p-6 overflow-hidden group transition-colors duration-300`}
-              >
-                {/* Top shine */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                <div className={`inline-flex p-3 rounded-xl bg-white/5 border border-white/[0.08] mb-5 ${feat.iconColor}`}>
-                  <Icon className="w-5 h-5" />
-                </div>
-
-                <span className={`inline-block mb-4 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${feat.tagColor}`}>
-                  {feat.tag}
+              <div className="pt-4 mt-4 border-t flex items-center justify-between" style={{ borderColor: "var(--glass-border)" }}>
+                <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                  Explore 500+ standard interview questions
                 </span>
-
-                <h3 className="text-base font-bold text-white mb-2">{feat.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{feat.desc}</p>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ─── Screenshot / Preview Grid ──────────── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-8 pb-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5 }}
-          className="grid md:grid-cols-3 gap-4"
-        >
-          {[
-            { icon: Cpu, label: "Core CS Theory", sub: "DBMS · OS · Networking · OOP", color: "from-blue-500/20 to-transparent", iconColor: "text-blue-400" },
-            { icon: Database, label: "SQL Lab Sandbox", sub: "Live queries on real schemas", color: "from-emerald-500/20 to-transparent", iconColor: "text-emerald-400" },
-            { icon: Shield, label: "ATS Resume Scorer", sub: "Keyword analysis & suggestions", color: "from-violet-500/20 to-transparent", iconColor: "text-violet-400" },
-          ].map((card, idx) => {
-            const Icon = card.icon;
-            return (
-              <motion.div
-                key={card.label}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.5 }}
-                whileHover={{ scale: 1.02, transition: { type: "spring", stiffness: 300, damping: 24 } }}
-                className={`rounded-2xl border border-white/[0.07] bg-gradient-to-b ${card.color} p-5 flex items-center gap-4 cursor-pointer hover:border-white/15 transition-colors`}
-              >
-                <div className={`p-3 rounded-xl bg-white/5 border border-white/[0.07] ${card.iconColor} flex-shrink-0`}>
-                  <Icon className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-white">{card.label}</div>
-                  <div className="text-xs text-slate-400 mt-0.5">{card.sub}</div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-600 ml-auto flex-shrink-0" />
-              </motion.div>
-            );
-          })}
+                <button
+                  onClick={() => navigate(user ? "/problems" : "/login")}
+                  className="text-xs font-semibold flex items-center gap-1 text-blue-500 hover:underline cursor-pointer"
+                >
+                  <span>Open Arena</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </section>
 
-      {/* ─── CTA Section ────────────────────────── */}
-      <section className="relative z-10 border-t border-white/[0.05]">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/5 via-violet-600/3 to-transparent pointer-events-none" />
-        <div className="relative max-w-4xl mx-auto px-6 py-24 text-center space-y-8">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, type: "spring", stiffness: 200, damping: 22 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
-              Ready to land your
-              <span className="text-gradient-blue"> dream offer</span>?
-            </h2>
-            <p className="text-slate-400 text-base max-w-xl mx-auto">
-              No cloud, no subscription, no data harvesting.
-              Just you and the tools to get hired.
-            </p>
-          </motion.div>
+      {/* ── Feature Showcase Section ── */}
+      <section id="features" className="max-w-5xl mx-auto px-6 py-16">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-light tracking-tight mb-3" style={{ color: "var(--text-primary)" }}>
+            Everything you need to <span className="font-bold">get hired.</span>
+          </h2>
+          <p className="text-sm max-w-xl mx-auto" style={{ color: "var(--text-secondary)" }}>
+            A complete interview preparation system — from daily practice to full-length proctored simulations.
+          </p>
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15, duration: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+        {/* Hero Feature Card: DSA & SQL Arenas */}
+        <div
+          className="p-8 sm:p-10 rounded-3xl border mb-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+          style={{
+            background: "var(--glass-bg)",
+            borderColor: "var(--glass-border)",
+            boxShadow: "var(--glass-shadow)",
+            backdropFilter: "blur(20px)",
+          }}
+        >
+          <div>
+            <div
+              className="inline-flex px-3 py-1 rounded-full text-xs font-semibold mb-4"
+              style={{ background: "var(--accent-subtle)", color: "var(--accent)" }}
+            >
+              500+ Problems & Sandboxes
+            </div>
+            <h3 className="text-2xl font-normal mb-3" style={{ color: "var(--text-primary)" }}>
+              DSA & SQL Arenas
+            </h3>
+            <p className="text-xs sm:text-sm leading-relaxed mb-6" style={{ color: "var(--text-secondary)" }}>
+              Solve algorithm and SQL challenges with real-time test case evaluation via Judge0 and isolated PostgreSQL database schemas. Every submission is analyzed for time and space complexity.
+            </p>
+            <button
+              onClick={() => navigate(user ? "/problems" : "/login")}
+              className="px-5 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
+              style={{
+                background: "var(--accent-subtle)",
+                color: "var(--accent)",
+                border: "1px solid var(--accent)",
+              }}
+            >
+              <span>Try Problem Arena</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div
+            className="p-5 rounded-2xl border space-y-2"
+            style={{
+              background: "var(--bg-surface-2)",
+              borderColor: "var(--glass-border)",
+            }}
           >
-            <motion.button
-              whileHover={{ scale: 1.04, boxShadow: "0 0 50px rgba(59,130,246,0.45)" }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/register")}
-              className="btn-glow btn-ripple inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-base shadow-2xl shadow-blue-600/30 transition-all"
+            {previewProblems.slice(0, 4).map((p) => (
+              <div
+                key={p.n}
+                className="flex items-center justify-between py-2 border-b last:border-0"
+                style={{ borderColor: "var(--glass-border)" }}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xs font-mono" style={{ color: "var(--text-tertiary)" }}>
+                    #{p.n}
+                  </span>
+                  <span className="text-xs font-medium" style={{ color: "var(--text-primary)" }}>
+                    {p.title}
+                  </span>
+                </div>
+                <DiffBadge level={p.diff} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Dual Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div
+            className="p-8 rounded-3xl border"
+            style={{
+              background: "var(--glass-bg)",
+              borderColor: "var(--glass-border)",
+              boxShadow: "var(--glass-shadow)",
+              backdropFilter: "blur(20px)",
+            }}
+          >
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5"
+              style={{ background: "var(--accent-subtle)", color: "var(--accent)" }}
             >
-              Create free account <ArrowRight className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/login")}
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl border border-white/10 hover:border-white/20 text-slate-300 hover:text-white font-semibold text-base transition-all"
+              <Mic className="w-6 h-6" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-violet-500/10 text-violet-500 border border-violet-500/20">
+              4 Interview Modes
+            </span>
+            <h3 className="text-xl font-normal mt-3 mb-2" style={{ color: "var(--text-primary)" }}>
+              AI Interview Simulator
+            </h3>
+            <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Run technical, coding, and behavioral interviews powered by native AI. Receive probing follow-ups and comprehensive evaluation scorecards.
+            </p>
+          </div>
+
+          <div
+            className="p-8 rounded-3xl border"
+            style={{
+              background: "var(--glass-bg)",
+              borderColor: "var(--glass-border)",
+              boxShadow: "var(--glass-shadow)",
+              backdropFilter: "blur(20px)",
+            }}
+          >
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5"
+              style={{ background: "var(--accent-subtle)", color: "var(--accent)" }}
             >
-              Sign in to continue
-            </motion.button>
-          </motion.div>
+              <TrendingUp className="w-6 h-6" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+              Skill-Level Insights
+            </span>
+            <h3 className="text-xl font-normal mt-3 mb-2" style={{ color: "var(--text-primary)" }}>
+              Readiness Analytics
+            </h3>
+            <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Track a 0–100 interview readiness score. Follow personalized day-by-day roadmaps and mistake retrospectives built from actual submissions.
+            </p>
+          </div>
+        </div>
+
+        {/* Triple Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            className="p-6 rounded-2xl border"
+            style={{
+              background: "var(--glass-bg)",
+              borderColor: "var(--glass-border)",
+              backdropFilter: "blur(16px)",
+            }}
+          >
+            <BookOpen className="w-5 h-5 text-blue-500 mb-3" />
+            <h4 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+              Core CS Theory Lab
+            </h4>
+            <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Practice OS, Networks, DBMS, and System Design with dynamic AI question generation and model answers.
+            </p>
+          </div>
+
+          <div
+            className="p-6 rounded-2xl border"
+            style={{
+              background: "var(--glass-bg)",
+              borderColor: "var(--glass-border)",
+              backdropFilter: "blur(16px)",
+            }}
+          >
+            <Shield className="w-5 h-5 text-emerald-500 mb-3" />
+            <h4 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+              Live Proctoring & Security
+            </h4>
+            <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Full-screen enforcement, tab-switch logging, and anti-cheating audit feeds for high-stakes test environments.
+            </p>
+          </div>
+
+          <div
+            className="p-6 rounded-2xl border"
+            style={{
+              background: "var(--glass-bg)",
+              borderColor: "var(--glass-border)",
+              backdropFilter: "blur(16px)",
+            }}
+          >
+            <Database className="w-5 h-5 text-violet-500 mb-3" />
+            <h4 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+              PostgreSQL Sandbox
+            </h4>
+            <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Execute window functions, multi-table joins, and complex aggregations safely in isolated PostgreSQL sessions.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* ─── Footer ─────────────────────────────── */}
-      <footer className="relative z-10 border-t border-white/[0.05] px-6 py-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-black text-white text-[10px]">II</div>
-            <span className="text-sm font-bold text-slate-400">Interview Intelligence</span>
+      {/* ── Footer ── */}
+      <footer
+        className="border-t py-12 px-6 max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs"
+        style={{ borderColor: "var(--glass-border)", color: "var(--text-tertiary)" }}
+      >
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-lg bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold">
+            II
           </div>
-          <p className="text-xs text-slate-600">
-            Built for engineers who take their careers seriously.
-          </p>
+          <span>Interview Intelligence Platform © 2026</span>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <Link to="/login" className="hover:text-blue-500 transition-colors">Sign In</Link>
+          <Link to="/register" className="hover:text-blue-500 transition-colors">Register</Link>
+          <a href="#features" className="hover:text-blue-500 transition-colors">Features</a>
         </div>
       </footer>
     </div>

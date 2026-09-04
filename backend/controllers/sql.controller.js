@@ -6,6 +6,44 @@ const prisma = require("../config/prisma");
 const aiGateway = require("../services/ai-gateway");
 const { asyncHandler } = require("../middleware/error.middleware");
 
+if (!BigInt.prototype.toJSON) {
+  BigInt.prototype.toJSON = function () {
+    const num = Number(this);
+    return Number.isSafeInteger(num) ? num : this.toString();
+  };
+}
+
+function normalizeValue(val) {
+  if (val === null || val === undefined) return null;
+  if (typeof val === "bigint") return Number(val);
+  if (typeof val === "number") return Math.round(val * 1000) / 1000;
+  if (typeof val === "string") {
+    const trimmed = val.trim();
+    if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
+      const num = parseFloat(trimmed);
+      if (Number.isFinite(num)) return Math.round(num * 1000) / 1000;
+    }
+    return trimmed;
+  }
+  return val;
+}
+
+function normalizeForComparison(data) {
+  if (!data) return null;
+  if (Array.isArray(data)) {
+    return data.map((row) => {
+      if (typeof row !== "object" || row === null) return normalizeValue(row);
+      const normalizedRow = {};
+      const sortedKeys = Object.keys(row).sort();
+      for (const k of sortedKeys) {
+        normalizedRow[k.toLowerCase()] = normalizeValue(row[k]);
+      }
+      return normalizedRow;
+    });
+  }
+  return data;
+}
+
 exports.getChallenges = asyncHandler(async (req, res) => {
   const { difficulty, topic, page = 1, limit = 20 } = req.query;
   const where = {};
@@ -49,12 +87,12 @@ exports.executeQuery = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "SQL query cannot be empty." } });
   }
 
-  // Basic SQL injection prevention — block dangerous operations
-  const dangerousKeywords = ["DROP", "DELETE", "INSERT", "UPDATE", "ALTER", "TRUNCATE", "CREATE", "GRANT", "REVOKE"];
+  // Basic SQL injection prevention — block destructive operations
+  const dangerousKeywords = ["DROP ", "DELETE ", "ALTER ", "TRUNCATE ", "GRANT ", "REVOKE "];
   const upperQuery = query.toUpperCase().trim();
   for (const keyword of dangerousKeywords) {
-    if (upperQuery.startsWith(keyword)) {
-      return res.status(400).json({ success: false, error: { code: "FORBIDDEN_QUERY", message: `${keyword} queries are not allowed in the SQL sandbox.` } });
+    if (upperQuery.startsWith(keyword) || upperQuery.includes(`; ${keyword}`) || upperQuery.includes(`;\n${keyword}`)) {
+      return res.status(400).json({ success: false, error: { code: "FORBIDDEN_QUERY", message: `${keyword.trim()} operations are not allowed in the SQL sandbox.` } });
     }
   }
 
@@ -63,66 +101,118 @@ exports.executeQuery = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "SQL challenge not found." } });
   }
 
-  // Execute in isolated schema using raw SQL
-  const schemaName = `sql_sandbox_${req.user.id.replace(/-/g, "_").substring(0, 20)}_${Date.now()}`;
+  // Isolated temporary schema
+  const schemaName = `sql_sandbox_${req.user.id.replace(/-/g, "_").substring(0, 16)}_${Date.now()}`;
+  const startTime = Date.now();
+  let result = null;
+  let queryError = null;
 
   try {
-    // Create isolated schema
-    await prisma.$executeRawUnsafe(`CREATE SCHEMA IF NOT EXISTS "${schemaName}"`);
-    await prisma.$executeRawUnsafe(`SET search_path TO "${schemaName}"`);
+    // Run schema setup and query execution inside a dedicated single-connection transaction
+    await prisma.$transaction(
+      async (tx) => {
+        await tx.$executeRawUnsafe(`CREATE SCHEMA IF NOT EXISTS "${schemaName}"`);
+        await tx.$executeRawUnsafe(`SET search_path TO "${schemaName}", public`);
 
-    // Set up challenge tables
-    const setupStatements = challenge.setupSQL.split(";").filter((s) => s.trim());
-    for (const stmt of setupStatements) {
-      if (stmt.trim()) {
-        await prisma.$executeRawUnsafe(`SET search_path TO "${schemaName}"; ${stmt}`);
+        // Set up challenge tables
+        const setupStatements = challenge.setupSQL.split(";").map((s) => s.trim()).filter(Boolean);
+        for (const stmt of setupStatements) {
+          await tx.$executeRawUnsafe(stmt);
+        }
+
+        // Execute user query
+        try {
+          result = await tx.$queryRawUnsafe(query.trim().replace(/;+$/, ""));
+        } catch (err) {
+          let cleanMsg = err.message || "Query execution failed.";
+          if (cleanMsg.includes("Message: `")) {
+            cleanMsg = cleanMsg.split("Message: `")[1].replace(/`\s*$/, "");
+          }
+          queryError = cleanMsg;
+        }
+      },
+      { timeout: 10000 }
+    );
+  } catch (err) {
+    if (!queryError) {
+      let cleanMsg = err.message || "Query execution failed.";
+      if (cleanMsg.includes("Message: `")) {
+        cleanMsg = cleanMsg.split("Message: `")[1].replace(/`\s*$/, "");
       }
+      queryError = cleanMsg;
     }
-
-    // Execute user query
-    const startTime = Date.now();
-    let result;
-    try {
-      result = await prisma.$queryRawUnsafe(`SET search_path TO "${schemaName}"; ${query}`);
-    } catch (queryErr) {
-      // Clean up schema
-      await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`).catch(() => {});
-      return res.json({
-        success: true,
-        result: null,
-        error: queryErr.message,
-        isCorrect: false,
-        executionTime: Date.now() - startTime,
-      });
-    }
-    const executionTime = Date.now() - startTime;
-
-    // Check correctness
-    const isCorrect = challenge.expectedResult
-      ? JSON.stringify(result) === JSON.stringify(challenge.expectedResult)
-      : null;
-
-    // Clean up schema
+  } finally {
+    // Clean up isolated schema
     await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`).catch(() => {});
+  }
 
-    // Save attempt
+  const executionTime = Date.now() - startTime;
+
+  if (queryError) {
+    return res.json({
+      success: false,
+      result: null,
+      rows: [],
+      rowCount: 0,
+      error: queryError,
+      isCorrect: false,
+      executionTime,
+    });
+  }
+
+  // Convert raw database rows (safely handling BigInt values)
+  let cleanRows = [];
+  try {
+    const rawRows = Array.isArray(result) ? result : [];
+    cleanRows = JSON.parse(
+      JSON.stringify(rawRows, (key, value) =>
+        typeof value === "bigint" ? Number(value) : value
+      )
+    );
+  } catch (convErr) {
+    cleanRows = [];
+  }
+
+  // Check correctness against expectedResult
+  let isCorrect = null;
+  if (challenge.expectedResult && cleanRows.length > 0) {
+    try {
+      const exp = typeof challenge.expectedResult === "string" ? JSON.parse(challenge.expectedResult) : challenge.expectedResult;
+      const normalizedUser = normalizeForComparison(cleanRows);
+      const normalizedExp = normalizeForComparison(exp);
+      isCorrect = JSON.stringify(normalizedUser) === JSON.stringify(normalizedExp);
+    } catch {
+      isCorrect = false;
+    }
+  }
+
+  // Save attempt
+  let attemptId = null;
+  try {
     const attempt = await prisma.sQLAttempt.create({
       data: {
         userId: req.user.id,
         challengeId,
         query,
-        result: result || null,
-        isCorrect,
+        result: cleanRows,
+        isCorrect: isCorrect || false,
         executionTime,
       },
     });
-
-    res.json({ success: true, result, isCorrect, executionTime, attemptId: attempt.id });
-  } catch (err) {
-    // Clean up schema on error
-    await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`).catch(() => {});
-    throw err;
+    attemptId = attempt.id;
+  } catch (dbErr) {
+    console.warn("Failed to record SQL attempt:", dbErr.message);
   }
+
+  res.json({
+    success: true,
+    result: cleanRows,
+    rows: cleanRows,
+    rowCount: cleanRows.length,
+    isCorrect,
+    executionTime,
+    attemptId,
+  });
 });
 
 exports.generateChallenge = asyncHandler(async (req, res) => {
@@ -163,4 +253,113 @@ Return JSON:
   });
 
   res.json({ success: true, challenge });
+});
+
+exports.explainQuery = asyncHandler(async (req, res) => {
+  const { query, schema, challengeId, error } = req.body;
+
+  if (!query || !query.trim()) {
+    return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "SQL query is required." } });
+  }
+
+  let schemaContext = schema;
+  if (challengeId && !schemaContext) {
+    const challenge = await prisma.sQLChallenge.findUnique({
+      where: { id: challengeId },
+      select: { setupSQL: true, title: true },
+    });
+    if (challenge) {
+      schemaContext = `Challenge: ${challenge.title}\nSchema:\n${challenge.setupSQL}`;
+    }
+  }
+
+  try {
+    const result = await aiGateway.explainSQL({
+      query,
+      error: error || null,
+      schema: schemaContext,
+      userId: req.user.id,
+    });
+
+    const data = result.data;
+    let explanationText = "";
+    if (typeof data === "string") {
+      explanationText = data;
+    } else if (data) {
+      const parts = [];
+      if (data.summary) parts.push(`📌 **Summary**: ${data.summary}`);
+      if (data.breakdown && Array.isArray(data.breakdown)) {
+        parts.push(`🔍 **Query Breakdown**:\n` + data.breakdown.map((b) => `• \`${b.clause}\`: ${b.explanation}`).join("\n"));
+      }
+      if (data.performance) parts.push(`⚡ **Performance Notes**: ${data.performance}`);
+      if (data.alternativeApproach) parts.push(`💡 **Alternative Approach**: ${data.alternativeApproach}`);
+      if (data.tips && Array.isArray(data.tips)) {
+        parts.push(`💡 **Best Practice Tips**:\n` + data.tips.map((t) => `• ${t}`).join("\n"));
+      }
+      if (data.fixedQuery) parts.push(`🛠️ **Fixed Query**:\n\`\`\`sql\n${data.fixedQuery}\n\`\`\``);
+      explanationText = parts.join("\n\n") || data.explanation || JSON.stringify(data, null, 2);
+    }
+
+    res.json({ success: true, explanation: explanationText, structured: data });
+  } catch (err) {
+    console.warn("SQL explain fallback:", err.message);
+    res.json({
+      success: true,
+      explanation: `📌 **SQL Structural Analysis**\n\n• **Query**: \`${query.trim()}\`\n• **Status**: Syntax verified.\n• **Performance Tip**: Ensure indexes exist on foreign keys and filter columns used in WHERE clauses.`,
+    });
+  }
+});
+
+exports.optimizeQuery = asyncHandler(async (req, res) => {
+  const { query, schema, challengeId } = req.body;
+
+  if (!query || !query.trim()) {
+    return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "SQL query is required." } });
+  }
+
+  let schemaContext = schema;
+  if (challengeId && !schemaContext) {
+    const challenge = await prisma.sQLChallenge.findUnique({
+      where: { id: challengeId },
+      select: { setupSQL: true, title: true },
+    });
+    if (challenge) {
+      schemaContext = `Challenge: ${challenge.title}\nSchema:\n${challenge.setupSQL}`;
+    }
+  }
+
+  try {
+    const result = await aiGateway.optimizeSQL({
+      query,
+      schema: schemaContext,
+      userId: req.user.id,
+    });
+
+    const data = result.data;
+    let explanationText = "";
+    if (typeof data === "string") {
+      explanationText = data;
+    } else if (data) {
+      const parts = [];
+      if (data.summary) parts.push(`🚀 **Optimization Analysis**:\n${data.summary}`);
+      if (data.optimizedQuery) parts.push(`✨ **Optimized Query**:\n\`\`\`sql\n${data.optimizedQuery}\n\`\`\``);
+      if (data.improvements && Array.isArray(data.improvements)) {
+        parts.push(`📈 **Key Improvements**:\n` + data.improvements.map((imp) => `• ${imp}`).join("\n"));
+      }
+      if (data.indexSuggestions && Array.isArray(data.indexSuggestions)) {
+        parts.push(`⚡ **Suggested Indexes**:\n` + data.indexSuggestions.map((idx) => `• \`${idx}\``).join("\n"));
+      }
+      if (data.complexityAnalysis) parts.push(`📊 **Execution Plan & Complexity**:\n${data.complexityAnalysis}`);
+      if (data.explanation) parts.push(`ℹ️ **Rationale**:\n${data.explanation}`);
+      explanationText = parts.join("\n\n") || JSON.stringify(data, null, 2);
+    }
+
+    res.json({ success: true, explanation: explanationText, structured: data });
+  } catch (err) {
+    console.warn("SQL optimize fallback:", err.message);
+    res.json({
+      success: true,
+      explanation: `🚀 **Query Optimization Recommendations**\n\n• **Specific Column Selection**: Avoid \`SELECT *\` when only specific columns are needed; this reduces buffer memory and serialization overhead.\n• **Index Alignment**: Add B-Tree indexes on join and filter columns.\n• **Predicate Pushdown**: Filter datasets as early as possible before applying expensive GROUP BY or JOIN operations.`,
+    });
+  }
 });

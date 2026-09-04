@@ -1,0 +1,3095 @@
+{
+  "metadata": {
+    "dataset": "Striver SDE Sheet — original metadata/test data",
+    "batch": 1,
+    "problems": 50,
+    "note": "Batch 1 contains 50 SDE-sheet-aligned problems. Descriptions and hints are newly written; third-party editorial/problem text is not reproduced."
+  },
+  "records": [
+    {
+      "problem": {
+        "problemNumber": 1,
+        "title": "Set Matrix Zeroes",
+        "description": "Modify a matrix so that every row and column containing a zero becomes entirely zero, while preserving the required in-place constraint.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Matrix",
+        "topics": [
+          "arrays",
+          "matrix",
+          "in-place"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "matrix",
+          "in-place",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "First identify which rows and columns must be cleared.",
+          "Avoid changing cells to zero too early because that can create new markers.",
+          "Can the first row and first column act as marker storage?"
+        ],
+        "constraints": [
+          "1 <= rows, cols <= 200",
+          "Matrix values are integers"
+        ],
+        "expectedComplexity": {
+          "time": "O(m*n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[[1,1,1],[1,0,1],[1,1,1]]",
+          "expectedOutput": "[[1,0,1],[0,0,0],[1,0,1]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[0,1],[1,1]]",
+          "expectedOutput": "[[0,0],[0,1]]",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[1,2,3],[4,5,6]]",
+          "expectedOutput": "[[1,2,3],[4,5,6]]",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[1,0,3],[4,5,6],[7,8,9]]",
+          "expectedOutput": "[[0,0,0],[4,0,6],[7,0,9]]",
+          "category": "hidden",
+          "orderIndex": 4,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 2,
+        "title": "Pascal's Triangle",
+        "description": "Generate the first numRows rows of Pascal's triangle.",
+        "difficulty": "EASY",
+        "category": "Arrays",
+        "concept": "Combinatorics",
+        "topics": [
+          "arrays",
+          "matrix",
+          "combinatorics"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "matrix",
+          "combinatorics",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Every row starts and ends with 1.",
+          "An interior value comes from the two values directly above it.",
+          "Build each row from the previous row."
+        ],
+        "constraints": [
+          "1 <= numRows <= 30"
+        ],
+        "expectedComplexity": {
+          "time": "O(n^2)",
+          "space": "O(n^2)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "5",
+          "expectedOutput": "[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "1",
+          "expectedOutput": "[[1]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "3",
+          "expectedOutput": "[[1],[1,1],[1,2,1]]",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 3,
+        "title": "Next Permutation",
+        "description": "Transform an integer sequence into its next lexicographically greater permutation. If it is already the largest permutation, return the smallest ordering.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Permutation",
+        "topics": [
+          "arrays",
+          "permutations",
+          "greedy"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "permutations",
+          "greedy",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Scan from the right to find the first increasing pair.",
+          "Swap the pivot with the smallest larger value on its right.",
+          "Reverse the suffix after the pivot."
+        ],
+        "constraints": [
+          "1 <= n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,3]",
+          "expectedOutput": "[1,3,2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[3,2,1]",
+          "expectedOutput": "[1,2,3]",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,1,5]",
+          "expectedOutput": "[1,5,1]",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1]",
+          "expectedOutput": "[1]",
+          "category": "hidden",
+          "orderIndex": 4,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 4,
+        "title": "Kadane's Algorithm",
+        "description": "Find the maximum possible sum of a non-empty contiguous subarray.",
+        "difficulty": "EASY",
+        "category": "Arrays",
+        "concept": "Maximum Subarray",
+        "topics": [
+          "arrays",
+          "dynamic-programming",
+          "greedy"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "dynamic-programming",
+          "greedy",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Maintain the best sum ending at the current position.",
+          "A negative running sum is usually better discarded.",
+          "Keep a separate global maximum."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Values fit in signed 32-bit integer"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[-2,1,-3,4,-1,2,1,-5,4]",
+          "expectedOutput": "6",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[-5,-2,-9]",
+          "expectedOutput": "-2",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 5,
+        "title": "Sort an Array of 0s, 1s and 2s",
+        "description": "Sort an array containing only 0, 1 and 2 in-place.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Dutch National Flag",
+        "topics": [
+          "arrays",
+          "two-pointers",
+          "sorting"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "two-pointers",
+          "sorting",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Maintain regions for 0s, unknown values and 2s.",
+          "A 0 belongs on the left; a 2 belongs on the right.",
+          "Do not advance the middle pointer after swapping an unknown value with the right side."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Each value is 0, 1 or 2"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[2,0,2,1,1,0]",
+          "expectedOutput": "[0,0,1,1,2,2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[0]",
+          "expectedOutput": "[0]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[2,2,1,0,0,1]",
+          "expectedOutput": "[0,0,1,1,2,2]",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 6,
+        "title": "Best Time to Buy and Sell Stock",
+        "description": "Choose one buying day followed by a later selling day to maximize profit.",
+        "difficulty": "EASY",
+        "category": "Arrays",
+        "concept": "Greedy",
+        "topics": [
+          "arrays",
+          "greedy"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "greedy",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Track the cheapest price seen so far.",
+          "At each day calculate the profit from selling today.",
+          "Return zero if no profitable transaction exists."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Prices are non-negative"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[7,1,5,3,6,4]",
+          "expectedOutput": "5",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[7,6,4,3,1]",
+          "expectedOutput": "0",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 7,
+        "title": "Rotate Matrix",
+        "description": "Rotate a square matrix 90 degrees clockwise in-place.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Matrix",
+        "topics": [
+          "arrays",
+          "matrix",
+          "in-place"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "matrix",
+          "in-place",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Transpose the matrix first.",
+          "Then reverse every row.",
+          "Both operations can be done without another matrix."
+        ],
+        "constraints": [
+          "1 <= n <= 200",
+          "Matrix is n x n"
+        ],
+        "expectedComplexity": {
+          "time": "O(n^2)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[[1,2,3],[4,5,6],[7,8,9]]",
+          "expectedOutput": "[[7,4,1],[8,5,2],[9,6,3]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[1]]",
+          "expectedOutput": "[[1]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 8,
+        "title": "Merge Overlapping Intervals",
+        "description": "Merge all overlapping closed intervals and return the resulting non-overlapping intervals.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Intervals",
+        "topics": [
+          "arrays",
+          "sorting",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "sorting",
+          "intervals",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort intervals by starting point.",
+          "Compare each interval with the last merged interval.",
+          "Extend the end when they overlap."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Start <= end"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[[1,3],[2,6],[8,10],[15,18]]",
+          "expectedOutput": "[[1,6],[8,10],[15,18]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[1,4],[4,5]]",
+          "expectedOutput": "[[1,5]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[1,2]]",
+          "expectedOutput": "[[1,2]]",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 9,
+        "title": "Merge Two Sorted Arrays Without Extra Space",
+        "description": "Given two sorted arrays, rearrange them in-place so their combined values remain sorted, with the first array holding the smaller values.",
+        "difficulty": "HARD",
+        "category": "Arrays",
+        "concept": "Gap Method",
+        "topics": [
+          "arrays",
+          "sorting",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "sorting",
+          "two-pointers",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Think of the two arrays as one virtual sorted array.",
+          "Compare elements separated by a shrinking gap.",
+          "Swap values that are out of order."
+        ],
+        "constraints": [
+          "1 <= n,m <= 100000",
+          "Both arrays are initially sorted"
+        ],
+        "expectedComplexity": {
+          "time": "O((n+m) log(n+m))",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,4,8,10] | [2,3,9]",
+          "expectedOutput": "[1,2,3,4] | [8,9,10]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1] | [2]",
+          "expectedOutput": "[1] | [2]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 10,
+        "title": "Find Duplicate in Array",
+        "description": "An array contains n+1 integers in the range 1..n. Find the repeated value without modifying the array.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Cycle Detection",
+        "topics": [
+          "arrays",
+          "fast-slow-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "fast-slow-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Treat each value as a pointer to another index.",
+          "A duplicate creates a cycle.",
+          "Use Floyd's tortoise-and-hare technique."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Exactly one value is repeated at least twice"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,3,4,2,2]",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[3,1,3,4,2]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,1]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 11,
+        "title": "Repeat and Missing Number",
+        "description": "An array contains every value from 1..n except one missing value, while another value occurs twice. Find both.",
+        "difficulty": "HARD",
+        "category": "Arrays",
+        "concept": "Mathematical / XOR",
+        "topics": [
+          "arrays",
+          "math",
+          "bit-manipulation"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "math",
+          "bit-manipulation",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "XOR all expected and observed values to isolate two candidates.",
+          "Separate numbers by a distinguishing bit.",
+          "Check which candidate is duplicated to identify the missing value."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Exactly one missing and one repeated value"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[3,1,2,5,3]",
+          "expectedOutput": "[3,4]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2,2,4]",
+          "expectedOutput": "[2,3]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 12,
+        "title": "Count Inversions",
+        "description": "Count pairs of indices i < j for which the value at i is greater than the value at j.",
+        "difficulty": "HARD",
+        "category": "Arrays",
+        "concept": "Merge Sort",
+        "topics": [
+          "arrays",
+          "merge-sort",
+          "divide-and-conquer"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "merge-sort",
+          "divide-and-conquer",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "A merge step can count cross-half inversions efficiently.",
+          "When a right-half value is chosen before remaining left-half values, all those left values form inversions.",
+          "Use a 64-bit counter for the answer."
+        ],
+        "constraints": [
+          "1 <= n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[2,4,1,3,5]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[5,4,3,2,1]",
+          "expectedOutput": "10",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2,3]",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 13,
+        "title": "Search in a 2D Matrix",
+        "description": "Search for a target in a matrix whose rows are sorted and whose row ranges are ordered globally.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Binary Search",
+        "topics": [
+          "arrays",
+          "matrix",
+          "binary-search"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "matrix",
+          "binary-search",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Treat the matrix as a flattened sorted array.",
+          "Map a flat index back to row and column.",
+          "Binary search gives logarithmic search time."
+        ],
+        "constraints": [
+          "1 <= rows, cols <= 200",
+          "Values are sorted row-wise"
+        ],
+        "expectedComplexity": {
+          "time": "O(log(m*n))",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[[1,3,5],[7,9,11],[13,15,17]], 9",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[1]], 2",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 14,
+        "title": "Pow(x, n)",
+        "description": "Compute x raised to an integer exponent n, including negative exponents.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Binary Exponentiation",
+        "topics": [
+          "math",
+          "binary-exponentiation",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "math",
+          "binary-exponentiation",
+          "recursion",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Exponentiation by squaring reduces the number of multiplications.",
+          "Handle negative exponents carefully.",
+          "Use a wider integer type for the exponent when needed."
+        ],
+        "constraints": [
+          "-100 <= x <= 100",
+          "Exponent fits signed 32-bit integer"
+        ],
+        "expectedComplexity": {
+          "time": "O(log n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "2,10",
+          "expectedOutput": "1024",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "2,-2",
+          "expectedOutput": "0.25",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "2,0",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 15,
+        "title": "Majority Element",
+        "description": "Find the value that appears more than half of the array length.",
+        "difficulty": "EASY",
+        "category": "Arrays",
+        "concept": "Boyer-Moore",
+        "topics": [
+          "arrays",
+          "greedy",
+          "voting-algorithm"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "greedy",
+          "voting-algorithm",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Keep a candidate and a counter.",
+          "Equal values increase support; different values decrease it.",
+          "The majority element survives cancellation."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "A majority element is guaranteed"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[2,2,1,1,1,2,2]",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[3]",
+          "expectedOutput": "3",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 16,
+        "title": "Majority Element II",
+        "description": "Return all values that occur more than floor(n/3) times.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Boyer-Moore",
+        "topics": [
+          "arrays",
+          "greedy",
+          "voting-algorithm"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "greedy",
+          "voting-algorithm",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "There can be at most two such values.",
+          "Maintain two candidates and their counters.",
+          "Perform a final counting pass to verify candidates."
+        ],
+        "constraints": [
+          "1 <= n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[3,2,3]",
+          "expectedOutput": "[3]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1]",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2,3,1,2,1]",
+          "expectedOutput": "[1]",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 17,
+        "title": "Grid Unique Paths",
+        "description": "Count paths from the top-left to bottom-right of an m by n grid when movement is only right or down.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Combinatorics",
+        "topics": [
+          "dynamic-programming",
+          "math",
+          "combinatorics"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "dynamic-programming",
+          "math",
+          "combinatorics",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Each cell can be reached from its top or left neighbor.",
+          "A 1D DP array is enough.",
+          "For larger values, consider a combinatorial formulation."
+        ],
+        "constraints": [
+          "1 <= m,n <= 100",
+          "Answer fits 64-bit integer"
+        ],
+        "expectedComplexity": {
+          "time": "O(m*n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "3,7",
+          "expectedOutput": "28",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "1,1",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "3,2",
+          "expectedOutput": "3",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 18,
+        "title": "Reverse Pairs",
+        "description": "Count index pairs where an earlier value is more than twice a later value.",
+        "difficulty": "HARD",
+        "category": "Arrays",
+        "concept": "Merge Sort",
+        "topics": [
+          "arrays",
+          "merge-sort",
+          "divide-and-conquer"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "merge-sort",
+          "divide-and-conquer",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Count qualifying pairs before merging the two sorted halves.",
+          "Use two pointers for the cross-half count.",
+          "Then perform the normal merge."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Values fit signed 32-bit integer"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,3,2,3,1]",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[2,4,3,5,1]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1]",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 19,
+        "title": "Two Sum",
+        "description": "Return indices of two distinct elements whose values add to a target.",
+        "difficulty": "EASY",
+        "category": "Hashing",
+        "concept": "Hash Map",
+        "topics": [
+          "arrays",
+          "hashing",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "hashing",
+          "two-pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Store previously seen values in a hash map.",
+          "For the current value, look for target minus that value.",
+          "Return the matching pair as soon as it is found."
+        ],
+        "constraints": [
+          "2 <= n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[2,7,11,15], 9",
+          "expectedOutput": "[0,1]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[3,2,4], 6",
+          "expectedOutput": "[1,2]",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[3,3], 6",
+          "expectedOutput": "[0,1]",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[-3,4,3,90], 0",
+          "expectedOutput": "[0,2]",
+          "category": "hidden",
+          "orderIndex": 4,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 20,
+        "title": "4 Sum",
+        "description": "Return all unique quadruplets whose four values add to a target.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Two Pointers",
+        "topics": [
+          "arrays",
+          "sorting",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "sorting",
+          "two-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort first.",
+          "Fix two positions and solve the remaining two-sum problem with two pointers.",
+          "Skip equal values at every level to avoid duplicates."
+        ],
+        "constraints": [
+          "1 <= n <= 200",
+          "Values fit signed 32-bit integer"
+        ],
+        "expectedComplexity": {
+          "time": "O(n^3)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,0,-1,0,-2,2], 0",
+          "expectedOutput": "[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[2,2,2,2,2], 8",
+          "expectedOutput": "[[2,2,2,2]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 21,
+        "title": "Longest Consecutive Sequence",
+        "description": "Find the length of the longest run of consecutive integers in an unsorted array.",
+        "difficulty": "MEDIUM",
+        "category": "Hashing",
+        "concept": "Set",
+        "topics": [
+          "arrays",
+          "hashing"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "hashing",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "A number starts a sequence only if its predecessor is absent.",
+          "Then walk forward until the sequence ends.",
+          "A hash set gives average constant-time membership checks."
+        ],
+        "constraints": [
+          "0 <= n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[100,4,200,1,3,2]",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[0,3,7,2,5,8,4,6,0,1]",
+          "expectedOutput": "9",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[]",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 22,
+        "title": "Largest Subarray with Sum 0",
+        "description": "Find the maximum length of a contiguous subarray whose sum is zero.",
+        "difficulty": "MEDIUM",
+        "category": "Hashing",
+        "concept": "Prefix Sum",
+        "topics": [
+          "arrays",
+          "hashing",
+          "prefix-sum"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "hashing",
+          "prefix-sum",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Track prefix sums.",
+          "If the same prefix sum appears twice, the values between those positions sum to zero.",
+          "Keep the earliest index for each prefix sum."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Values fit signed 32-bit integer"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[15,-2,2,-8,1,7,10,23]",
+          "expectedOutput": "5",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,-1]",
+          "expectedOutput": "2",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2,3]",
+          "expectedOutput": "0",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 23,
+        "title": "Count Subarrays with XOR K",
+        "description": "Count contiguous subarrays whose bitwise XOR equals a given value K.",
+        "difficulty": "MEDIUM",
+        "category": "Hashing",
+        "concept": "Prefix XOR",
+        "topics": [
+          "arrays",
+          "hashing",
+          "prefix-xor"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "hashing",
+          "prefix-xor",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Let prefixXor be the XOR up to the current index.",
+          "A previous prefix equal to prefixXor XOR K forms a valid subarray.",
+          "Store frequencies, not just first positions."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Values are non-negative integers"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[4,2,2,6,4], 6",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[5,6,7,8,9], 5",
+          "expectedOutput": "2",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 24,
+        "title": "Longest Substring Without Repeating Characters",
+        "description": "Find the length of the longest substring containing no repeated character.",
+        "difficulty": "MEDIUM",
+        "category": "Hashing",
+        "concept": "Sliding Window",
+        "topics": [
+          "strings",
+          "hashing",
+          "sliding-window"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "strings",
+          "hashing",
+          "sliding-window",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use a moving left boundary.",
+          "When a character repeats, move the left boundary past its previous occurrence.",
+          "Store last-seen positions."
+        ],
+        "constraints": [
+          "0 <= length <= 100000",
+          "Input uses ASCII characters"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(min(n, alphabet))"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "\"abcabcbb\"",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "\"bbbbb\"",
+          "expectedOutput": "1",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "\"pwwkew\"",
+          "expectedOutput": "3",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "\"\"",
+          "expectedOutput": "0",
+          "category": "hidden",
+          "orderIndex": 4,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 25,
+        "title": "Reverse a Linked List",
+        "description": "Reverse a singly linked list and return its new head.",
+        "difficulty": "EASY",
+        "category": "Linked List",
+        "concept": "Pointers",
+        "topics": [
+          "linked-list",
+          "pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Keep previous, current and next references.",
+          "Save next before changing current.next.",
+          "Move all three references forward."
+        ],
+        "constraints": [
+          "0 <= nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,3,4,5]",
+          "expectedOutput": "[5,4,3,2,1]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1]",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[]",
+          "expectedOutput": "[]",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 26,
+        "title": "Middle of Linked List",
+        "description": "Return the middle node of a singly linked list; for an even length, return the second middle.",
+        "difficulty": "EASY",
+        "category": "Linked List",
+        "concept": "Fast and Slow Pointers",
+        "topics": [
+          "linked-list",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "two-pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Move one pointer one step and another two steps.",
+          "When the fast pointer reaches the end, the slow pointer is at the answer."
+        ],
+        "constraints": [
+          "1 <= nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,3,4,5]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2,3,4,5,6]",
+          "expectedOutput": "4",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 27,
+        "title": "Merge Two Sorted Linked Lists",
+        "description": "Merge two ascending singly linked lists into one ascending list.",
+        "difficulty": "EASY",
+        "category": "Linked List",
+        "concept": "Merge",
+        "topics": [
+          "linked-list",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "two-pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use a dummy node to simplify the head case.",
+          "Always attach the smaller current node.",
+          "Attach the remaining suffix at the end."
+        ],
+        "constraints": [
+          "0 <= nodes in each list <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n+m)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,4] ; [1,3,4]",
+          "expectedOutput": "[1,1,2,3,4,4]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[] ; [0]",
+          "expectedOutput": "[0]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 28,
+        "title": "Remove Nth Node from End",
+        "description": "Remove the nth node from the end of a singly linked list and return the head.",
+        "difficulty": "MEDIUM",
+        "category": "Linked List",
+        "concept": "Two Pointers",
+        "topics": [
+          "linked-list",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "two-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Place two pointers n nodes apart.",
+          "Advance them together until the leading pointer reaches the end.",
+          "A dummy node handles removal of the original head."
+        ],
+        "constraints": [
+          "1 <= n <= length of list"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,3,4,5], 2",
+          "expectedOutput": "[1,2,3,5]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1], 1",
+          "expectedOutput": "[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 29,
+        "title": "Delete a Node with O(1) Extra Space",
+        "description": "Delete a given non-tail node when only that node is provided, without access to the list head.",
+        "difficulty": "MEDIUM",
+        "category": "Linked List",
+        "concept": "Pointer Manipulation",
+        "topics": [
+          "linked-list",
+          "pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Copy the successor's value into the given node.",
+          "Then bypass the successor.",
+          "The supplied node is guaranteed not to be the tail."
+        ],
+        "constraints": [
+          "At least 2 nodes",
+          "Given node is not the tail"
+        ],
+        "expectedComplexity": {
+          "time": "O(1)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[4,5,1,9], node=5",
+          "expectedOutput": "[4,1,9]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[4,5], node=4",
+          "expectedOutput": "[5]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 30,
+        "title": "Add Two Numbers as Linked Lists",
+        "description": "Add two non-negative integers represented by linked lists with least significant digits first.",
+        "difficulty": "MEDIUM",
+        "category": "Linked List",
+        "concept": "Carry",
+        "topics": [
+          "linked-list",
+          "math"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "math",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Process both lists while either remains or a carry exists.",
+          "Create one result digit per step.",
+          "Carry can be appended as a final node."
+        ],
+        "constraints": [
+          "1 <= digits <= 100000",
+          "Digits are 0..9"
+        ],
+        "expectedComplexity": {
+          "time": "O(n+m)",
+          "space": "O(1) auxiliary"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[2,4,3] ; [5,6,4]",
+          "expectedOutput": "[7,0,8]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[0] ; [0]",
+          "expectedOutput": "[0]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[9,9,9] ; [1]",
+          "expectedOutput": "[0,0,0,1]",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 31,
+        "title": "Intersection Point of Two Linked Lists",
+        "description": "Find the first node shared by two singly linked lists, or report that they do not intersect.",
+        "difficulty": "MEDIUM",
+        "category": "Linked List",
+        "concept": "Two Pointers",
+        "topics": [
+          "linked-list",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "two-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "After reaching the end, switch each pointer to the other head.",
+          "Both pointers then traverse equal total lengths.",
+          "Reference identity, not node value, determines intersection."
+        ],
+        "constraints": [
+          "0 <= nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n+m)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "A=[4,1,8,4,5], B=[5,6,1,8,4,5], shared starts at value 8",
+          "expectedOutput": "8",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "A=[2,6,4], B=[1,5], no intersection",
+          "expectedOutput": "null",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 32,
+        "title": "Detect Cycle in Linked List",
+        "description": "Determine whether a singly linked list contains a cycle.",
+        "difficulty": "EASY",
+        "category": "Linked List",
+        "concept": "Floyd Cycle Detection",
+        "topics": [
+          "linked-list",
+          "fast-slow-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "fast-slow-pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Move slow one step and fast two steps.",
+          "If they meet, a cycle exists.",
+          "If fast reaches null, there is no cycle."
+        ],
+        "constraints": [
+          "0 <= nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nodes=[3,2,0,-4], tail connects to index 1",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nodes=[1,2], no cycle",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 33,
+        "title": "Reverse Nodes in Groups of K",
+        "description": "Reverse nodes in consecutive groups of size k. Leave a final group unchanged if it has fewer than k nodes.",
+        "difficulty": "HARD",
+        "category": "Linked List",
+        "concept": "Reversal",
+        "topics": [
+          "linked-list",
+          "recursion",
+          "pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "recursion",
+          "pointers",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Check that a complete group exists before reversing.",
+          "Reverse exactly k links.",
+          "Connect the reversed group to the next group."
+        ],
+        "constraints": [
+          "1 <= nodes <= 100000",
+          "1 <= k <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,3,4,5], k=2",
+          "expectedOutput": "[2,1,4,3,5]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2,3,4,5], k=3",
+          "expectedOutput": "[3,2,1,4,5]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1], k=1",
+          "expectedOutput": "[1]",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 34,
+        "title": "Palindrome Linked List",
+        "description": "Determine whether a singly linked list reads the same forward and backward.",
+        "difficulty": "EASY",
+        "category": "Linked List",
+        "concept": "Fast and Slow Pointers",
+        "topics": [
+          "linked-list",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "two-pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Find the midpoint.",
+          "Reverse the second half.",
+          "Compare the two halves node by node."
+        ],
+        "constraints": [
+          "1 <= nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,2,1]",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2]",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1]",
+          "expectedOutput": "true",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 35,
+        "title": "Starting Point of Linked List Cycle",
+        "description": "Return the first node belonging to a cycle, or null when no cycle exists.",
+        "difficulty": "MEDIUM",
+        "category": "Linked List",
+        "concept": "Floyd Cycle Detection",
+        "topics": [
+          "linked-list",
+          "fast-slow-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "fast-slow-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "First detect a meeting point using slow and fast pointers.",
+          "Reset one pointer to the head.",
+          "Move both one step; their next meeting point is the cycle entry."
+        ],
+        "constraints": [
+          "0 <= nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nodes=[3,2,0,-4], tail connects to index 1",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nodes=[1,2], tail connects to index 0",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nodes=[1], no cycle",
+          "expectedOutput": "null",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 36,
+        "title": "Flatten a Linked List",
+        "description": "Flatten a linked structure where each node has a next pointer and a sorted child list, producing one sorted child chain.",
+        "difficulty": "MEDIUM",
+        "category": "Linked List",
+        "concept": "Merge",
+        "topics": [
+          "linked-list",
+          "recursion",
+          "merging"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "recursion",
+          "merging",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Flatten the remaining lists recursively.",
+          "Merge two sorted child chains.",
+          "Use the child pointer for the flattened chain."
+        ],
+        "constraints": [
+          "1 <= top-level nodes <= 10000"
+        ],
+        "expectedComplexity": {
+          "time": "O(N log k)",
+          "space": "O(k)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "1 -> 5 -> 8 ; children: 1->3->7, 5->6, 8->9",
+          "expectedOutput": "[1,3,5,6,7,8,9]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "single node 4",
+          "expectedOutput": "[4]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 37,
+        "title": "Rotate Linked List",
+        "description": "Rotate a singly linked list to the right by k positions.",
+        "difficulty": "MEDIUM",
+        "category": "Linked List",
+        "concept": "Circular List",
+        "topics": [
+          "linked-list",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "two-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Compute the length and reduce k modulo the length.",
+          "Connect the tail to the head temporarily.",
+          "Break the circle at the correct predecessor."
+        ],
+        "constraints": [
+          "0 <= nodes <= 100000",
+          "k >= 0"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,3,4,5], k=2",
+          "expectedOutput": "[4,5,1,2,3]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[0,1,2], k=4",
+          "expectedOutput": "[2,0,1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 38,
+        "title": "Clone Linked List with Random Pointer",
+        "description": "Create a deep copy of a linked list where each node has next and random references.",
+        "difficulty": "MEDIUM",
+        "category": "Linked List",
+        "concept": "Hashing / Interleaving",
+        "topics": [
+          "linked-list",
+          "hashing",
+          "pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "linked-list",
+          "hashing",
+          "pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "One approach maps each original node to its clone.",
+          "An O(1)-extra-space approach interleaves clones with originals.",
+          "Restore the original list after assigning random links."
+        ],
+        "constraints": [
+          "0 <= nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "values=[7,13,11,10,1], random=[null,0,4,2,0]",
+          "expectedOutput": "values=[7,13,11,10,1], random=[null,0,4,2,0]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "values=[]",
+          "expectedOutput": "values=[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 39,
+        "title": "3 Sum",
+        "description": "Return all unique triples whose values sum to zero.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Two Pointers",
+        "topics": [
+          "arrays",
+          "sorting",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "sorting",
+          "two-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort the array.",
+          "Fix one value and solve two-sum on the suffix.",
+          "Skip duplicate values for unique triples."
+        ],
+        "constraints": [
+          "3 <= n <= 3000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n^2)",
+          "space": "O(1) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[-1,0,1,2,-1,-4]",
+          "expectedOutput": "[[-1,-1,2],[-1,0,1]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[0,1,1]",
+          "expectedOutput": "[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[0,0,0]",
+          "expectedOutput": "[[0,0,0]]",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 40,
+        "title": "Trapping Rain Water",
+        "description": "Compute how much water can be trapped between vertical bars after rainfall.",
+        "difficulty": "HARD",
+        "category": "Two Pointers",
+        "concept": "Prefix Max",
+        "topics": [
+          "arrays",
+          "two-pointers",
+          "stack"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "two-pointers",
+          "stack",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Water at a position depends on the smaller of the best left and right boundaries.",
+          "Two pointers can avoid storing both prefix arrays.",
+          "Always advance the side with the smaller boundary."
+        ],
+        "constraints": [
+          "1 <= n <= 20000",
+          "Heights are non-negative"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[0,1,0,2,1,0,1,3,2,1,2,1]",
+          "expectedOutput": "6",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[4,2,0,3,2,5]",
+          "expectedOutput": "9",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,2,3]",
+          "expectedOutput": "0",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 2000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 41,
+        "title": "Remove Duplicates from Sorted Array",
+        "description": "Remove duplicates from a sorted array in-place so each distinct value appears once, returning the number of retained values.",
+        "difficulty": "EASY",
+        "category": "Two Pointers",
+        "concept": "In-place",
+        "topics": [
+          "arrays",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "two-pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use a slow pointer for the next unique position.",
+          "Scan with a fast pointer.",
+          "Write a value only when it differs from the previous retained value."
+        ],
+        "constraints": [
+          "0 <= n <= 100000",
+          "Array is sorted"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,1,2]",
+          "expectedOutput": "k=2, array prefix=[1,2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[0,0,1,1,1,2,2,3,3,4]",
+          "expectedOutput": "k=5, array prefix=[0,1,2,3,4]",
+          "category": "public",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[]",
+          "expectedOutput": "k=0",
+          "category": "edge",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 42,
+        "title": "Max Consecutive Ones",
+        "description": "Find the longest contiguous run of 1s in a binary array.",
+        "difficulty": "EASY",
+        "category": "Two Pointers",
+        "concept": "Linear Scan",
+        "topics": [
+          "arrays",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "two-pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Maintain the current run length.",
+          "Reset it when a zero appears.",
+          "Track the maximum seen."
+        ],
+        "constraints": [
+          "0 <= n <= 100000",
+          "Values are 0 or 1"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,1,0,1,1,1]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[0,0]",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1,1,1]",
+          "expectedOutput": "3",
+          "category": "hidden",
+          "orderIndex": 3,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 43,
+        "title": "N Meetings in One Room",
+        "description": "Select the maximum number of non-overlapping meetings that can be held in one room.",
+        "difficulty": "EASY",
+        "category": "Greedy",
+        "concept": "Activity Selection",
+        "topics": [
+          "greedy",
+          "sorting",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "intervals",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort meetings by finishing time.",
+          "Always select the next meeting whose start is after the last selected finish.",
+          "The earliest finishing compatible meeting leaves the most room for future meetings."
+        ],
+        "constraints": [
+          "1 <= n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "start=[1,3,0,5,8,5], end=[2,4,6,7,9,9]",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "start=[1], end=[2]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 44,
+        "title": "Minimum Number of Platforms",
+        "description": "Find the minimum number of railway platforms needed so that no train waits, given arrival and departure times.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Sweep Line",
+        "topics": [
+          "greedy",
+          "sorting",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "two-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort arrival and departure times separately.",
+          "A new arrival before the next departure needs another platform.",
+          "A departure first frees a platform."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Times are valid same-day timestamps"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "arr=[900,940,950,1100,1500,1800], dep=[910,1200,1120,1130,1900,2000]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "arr=[1000], dep=[1001]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 45,
+        "title": "Job Sequencing Problem",
+        "description": "Given jobs with deadlines and profits, schedule at most one job per time slot to maximize total profit.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Scheduling",
+        "topics": [
+          "greedy",
+          "sorting"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort jobs by decreasing profit.",
+          "Try to place each job in the latest available slot before its deadline.",
+          "Use a slot structure to find free positions efficiently."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Deadlines are positive"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n) with efficient slots",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "jobs=[(a,2,100),(b,1,19),(c,2,27),(d,1,25),(e,3,15)]",
+          "expectedOutput": "jobs=3, profit=142",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "jobs=[(a,1,10)]",
+          "expectedOutput": "jobs=1, profit=10",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 46,
+        "title": "Fractional Knapsack",
+        "description": "Maximize value in a knapsack of fixed capacity when fractions of items may be taken.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Ratio",
+        "topics": [
+          "greedy",
+          "sorting",
+          "knapsack"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "knapsack",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Compute value per unit weight.",
+          "Take higher-ratio items first.",
+          "Only the final item may need to be fractional."
+        ],
+        "constraints": [
+          "1 <= n <= 100000",
+          "Weights are positive",
+          "Capacity is non-negative"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "values=[60,100,120], weights=[10,20,30], capacity=50",
+          "expectedOutput": "240",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "values=[500], weights=[30], capacity=10",
+          "expectedOutput": "166.6667",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 47,
+        "title": "Minimum Coins",
+        "description": "Using a supplied set of standard coin denominations, find the minimum number of coins needed to make a target amount.",
+        "difficulty": "EASY",
+        "category": "Greedy",
+        "concept": "Coin Change",
+        "topics": [
+          "greedy",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "arrays",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Take the largest denomination that does not exceed the remaining amount.",
+          "Repeat until the amount becomes zero.",
+          "This greedy rule is valid for canonical denominations such as standard Indian/decimal coin sets, but not for arbitrary denominations."
+        ],
+        "constraints": [
+          "Target >= 0",
+          "Coin denominations are positive"
+        ],
+        "expectedComplexity": {
+          "time": "O(target / minCoin)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "coins=[1,2,5,10,20,50,100,200,500,2000], amount=93",
+          "expectedOutput": "5",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "coins=[1,2,5,10,20,50,100,200,500,2000], amount=0",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 48,
+        "title": "Activity Selection",
+        "description": "Select the maximum number of mutually compatible activities when each activity has a start and finish time.",
+        "difficulty": "EASY",
+        "category": "Greedy",
+        "concept": "Activity Selection",
+        "topics": [
+          "greedy",
+          "sorting",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "intervals",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "This is equivalent to choosing meetings by earliest finishing time.",
+          "Sort by finish time and greedily accept compatible activities.",
+          "Do not sort by duration."
+        ],
+        "constraints": [
+          "1 <= n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "start=[1,3,0,5,8,5], finish=[2,4,6,7,9,9]",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "start=[1], finish=[2]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 49,
+        "title": "Subset Sum",
+        "description": "Determine whether some subset of the given non-negative integers has sum exactly equal to a target.",
+        "difficulty": "MEDIUM",
+        "category": "Recursion",
+        "concept": "Backtracking / DP",
+        "topics": [
+          "recursion",
+          "dynamic-programming",
+          "backtracking"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "recursion",
+          "dynamic-programming",
+          "backtracking",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "For each value, consider taking or skipping it.",
+          "Memoization removes repeated states.",
+          "A boolean DP indexed by sum works when the target is manageable."
+        ],
+        "constraints": [
+          "1 <= n <= 200",
+          "0 <= target <= 10000",
+          "Values are non-negative"
+        ],
+        "expectedComplexity": {
+          "time": "O(n*target)",
+          "space": "O(target)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "arr=[3,34,4,12,5,2], target=9",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "arr=[3,34,4], target=2",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 50,
+        "title": "Subset Sum II",
+        "description": "Generate all unique subsets of an integer array that may contain duplicates.",
+        "difficulty": "MEDIUM",
+        "category": "Recursion",
+        "concept": "Backtracking",
+        "topics": [
+          "recursion",
+          "backtracking",
+          "sorting"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "recursion",
+          "backtracking",
+          "sorting",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort first so equal values become adjacent.",
+          "At the same recursion depth, skip duplicate values.",
+          "A chosen duplicate at a deeper depth is still allowed."
+        ],
+        "constraints": [
+          "1 <= n <= 15"
+        ],
+        "expectedComplexity": {
+          "time": "O(n*2^n)",
+          "space": "O(n) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,2,2]",
+          "expectedOutput": "[[],[1],[1,2],[1,2,2],[2],[2,2]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[]",
+          "expectedOutput": "[[]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1000,
+          "memoryLimit": 262144
+        }
+      ]
+    }
+  ]
+}

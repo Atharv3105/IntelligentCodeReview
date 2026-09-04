@@ -3,6 +3,15 @@
 // ============================================================================
 
 require("dotenv").config();
+
+// Enable clean serialization of BigInt values in JSON.stringify / Prisma / Express
+if (!BigInt.prototype.toJSON) {
+  BigInt.prototype.toJSON = function () {
+    const num = Number(this);
+    return Number.isSafeInteger(num) ? num : this.toString();
+  };
+}
+
 const express = require("express");
 const path = require("path");
 const cors = require("cors");

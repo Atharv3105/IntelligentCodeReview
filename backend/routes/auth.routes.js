@@ -7,7 +7,7 @@ const protect = require("../middleware/auth.middleware");
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 50,
   message: { success: false, error: { code: "RATE_LIMITED", message: "Too many requests, please try again later." } },
 });
 

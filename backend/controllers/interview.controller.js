@@ -42,7 +42,14 @@ exports.startInterview = asyncHandler(async (req, res) => {
   const status = await interviewEngine.getCurrentQuestion(id);
   socketService.emitInterviewEvent(id, "interview.started", { state: "active" });
   socketService.emitInterviewEvent(id, "interview.question_started", { question: status.currentQuestion, questionIndex: status.questionIndex });
-  res.json({ success: true, session: result, ...status });
+  res.json({
+    success: true,
+    session: result,
+    question: status.currentQuestion,
+    questionIndex: status.questionIndex,
+    totalQuestions: status.totalQuestions,
+    ...status,
+  });
 });
 
 // Partial and final captions are durable session records. We keep them in the

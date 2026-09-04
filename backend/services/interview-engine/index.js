@@ -53,6 +53,10 @@ class InterviewEngine {
     const session = await prisma.interviewSession.findUnique({ where: { id: sessionId } });
     if (!session) throw new Error("Interview session not found");
 
+    if (session.state === newState) {
+      return session;
+    }
+
     const validTransitions = STATE_TRANSITIONS[session.state];
     if (!validTransitions || !validTransitions.includes(newState)) {
       throw new Error(`Invalid state transition: ${session.state} → ${newState}`);
@@ -79,8 +83,15 @@ class InterviewEngine {
    * Prepare and start the interview — generate initial questions.
    */
   async prepareInterview(sessionId) {
-    const session = await prisma.interviewSession.findUnique({ where: { id: sessionId } });
+    const session = await prisma.interviewSession.findUnique({
+      where: { id: sessionId },
+      include: { questions: { orderBy: { orderIndex: "asc" } } },
+    });
     if (!session) throw new Error("Interview session not found");
+
+    if (session.state === "active" && session.questions && session.questions.length > 0) {
+      return session;
+    }
 
     await this.transitionState(sessionId, "preparing");
 

@@ -22,4 +22,7 @@ router.post("/submission-feedback", protect, controller.getSubmissionFeedback);
 // SQL Lab features
 router.post("/explain-sql", protect, controller.explainSQL);
 
+// Concept & Subject Practice features
+router.post("/evaluate-concept", protect, controller.evaluateConcept);
+
 module.exports = router;

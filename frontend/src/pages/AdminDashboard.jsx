@@ -260,7 +260,7 @@ export default function AdminDashboard() {
                     </thead>
                     <tbody className="divide-y divide-white/5">
                       {data.topStreaks.map((user, idx) => (
-                        <tr key={user._id} className="hover:bg-white/[0.02] transition-all group">
+                        <tr key={user.id || user._id} className="hover:bg-white/[0.02] transition-all group">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex h-8 w-8 items-center justify-center rounded-lg text-xs font-black ${idx === 0 ? 'bg-yellow-500 text-black shadow-xl shadow-yellow-500/20' : idx === 1 ? 'bg-gray-400 text-black' : idx === 2 ? 'bg-amber-700 text-white' : 'bg-white/5 text-gray-500'}`}>
                               {idx + 1}
@@ -279,7 +279,7 @@ export default function AdminDashboard() {
                           </td>
                           <td className="px-6 py-4 text-right">
                              <button 
-                             onClick={() => handleStudentClick(user._id)}
+                             onClick={() => handleStudentClick(user.id || user._id)}
                              className="p-3 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-all hover:bg-accent-green hover:text-black shadow-xl"
                              >
                                 <Eye className="h-4 w-4" />
@@ -310,7 +310,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="space-y-4">
                             {assessments.map(a => (
-                                <div key={a._id} className="flex justify-between items-center bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                                <div key={a.id || a._id} className="flex justify-between items-center bg-white/[0.02] p-4 rounded-2xl border border-white/5">
                                     <div className="flex items-center gap-4">
                                         <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center font-black text-xs text-accent-green">{a.duration}M</div>
                                         <div>
@@ -333,7 +333,7 @@ export default function AdminDashboard() {
                                             onClick={async () => {
                                                 if(confirm('Permanently decommission this test?')) {
                                                     try {
-                                                        await api.delete(`/assessments/admin/${a._id}`);
+                                                        await api.delete(`/assessments/admin/${a.id || a._id}`);
                                                         api.get("/assessments/admin/all").then(res => setAssessments(res.data));
                                                     } catch (err) {
                                                         alert("Decommission failed: " + err.message);
@@ -359,7 +359,7 @@ export default function AdminDashboard() {
                          <h3 className="text-xs font-black uppercase text-red-500 tracking-widest mb-6">Security Auditor</h3>
                          <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                             {attempts.map(att => (
-                                <div key={att._id} className={`p-4 rounded-xl border transition-all ${att.violations?.length > 0 ? 'bg-red-500/5 border-red-500/20' : 'bg-white/[0.03] border-white/5'}`}>
+                                <div key={att.id || att._id} className={`p-4 rounded-xl border transition-all ${att.violations?.length > 0 ? 'bg-red-500/5 border-red-500/20' : 'bg-white/[0.03] border-white/5'}`}>
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
                                             <div className="font-bold text-white text-sm">{att.userId?.name}</div>
@@ -387,9 +387,9 @@ export default function AdminDashboard() {
                                                 placeholder="Grade" 
                                                 className="bg-black/40 border border-white/10 rounded px-2 py-0.5 text-[10px] w-14 text-white hover:border-accent-green transition-all"
                                                 onBlur={(e) => {
-                                                    api.put(`/assessments/admin/attempts/${att._id}/grade`, { grade: e.target.value })
+                                                    api.put(`/assessments/admin/attempts/${att.id || att._id}/grade`, { grade: e.target.value })
                                                        .then(() => {
-                                                            const newAttempts = attempts.map(a => a._id === att._id ? { ...a, grade: e.target.value } : a);
+                                                            const newAttempts = attempts.map(a => (a.id || a._id) === (att.id || att._id) ? { ...a, grade: e.target.value } : a);
                                                             setAttempts(newAttempts);
                                                        });
                                                 }}
@@ -786,19 +786,22 @@ function CreateAssessmentModal({ isOpen, onClose, problems, onSuccess }) {
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
-                                        {filteredProblems.map(p => (
-                                            <div 
-                                                key={p._id}
-                                                onClick={() => toggleProblem(p._id)}
-                                                className={`p-4 rounded-xl border transition-all cursor-pointer flex justify-between items-center ${formData.selectedProblems.includes(p._id) ? 'bg-accent-green/10 border-accent-green/50 shadow-lg shadow-accent-green/5' : 'bg-white/[0.02] border-white/5 hover:border-white/20'}`}
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <span className="font-mono text-[9px] text-gray-500">#{p.problemNumber}</span>
-                                                    <span className="font-bold text-sm text-gray-200">{p.title}</span>
+                                        {filteredProblems.map(p => {
+                                            const pId = p.id || p._id;
+                                            return (
+                                                <div 
+                                                    key={pId}
+                                                    onClick={() => toggleProblem(pId)}
+                                                    className={`p-4 rounded-xl border transition-all cursor-pointer flex justify-between items-center ${formData.selectedProblems.includes(pId) ? 'bg-accent-green/10 border-accent-green/50 shadow-lg shadow-accent-green/5' : 'bg-white/[0.02] border-white/5 hover:border-white/20'}`}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="font-mono text-[9px] text-gray-500">#{p.problemNumber}</span>
+                                                        <span className="font-bold text-sm text-gray-200">{p.title}</span>
+                                                    </div>
+                                                    {formData.selectedProblems.includes(pId) && <CheckCircle className="h-4 w-4 text-accent-green" />}
                                                 </div>
-                                                {formData.selectedProblems.includes(p._id) && <CheckCircle className="h-4 w-4 text-accent-green" />}
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                     <div className="text-[10px] font-black uppercase text-accent-green tracking-widest text-right">
                                         {formData.selectedProblems.length} Problems Selected

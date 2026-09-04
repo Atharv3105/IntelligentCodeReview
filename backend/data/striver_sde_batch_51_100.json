@@ -1,0 +1,2761 @@
+{
+  "metadata": {
+    "dataset": "Striver SDE Sheet — original metadata/test data",
+    "batch": 2,
+    "problemRange": "51-100",
+    "problems": 50,
+    "note": "Descriptions and hints are newly written; third-party editorial/problem text is not reproduced."
+  },
+  "records": [
+    {
+      "problem": {
+        "problemNumber": 51,
+        "title": "Implement Stack using Arrays",
+        "description": "Implement a LIFO stack using an array.",
+        "difficulty": "EASY",
+        "category": "Stack",
+        "concept": "Stack Implementation",
+        "topics": [
+          "stack",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "stack",
+          "arrays",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Track the top index and handle empty operations."
+        ],
+        "constraints": [
+          "Capacity > 0"
+        ],
+        "expectedComplexity": {
+          "time": "O(1)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[push 1,2,3,pop,top]",
+          "expectedOutput": "[1,2,3,3,2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[pop on empty]",
+          "expectedOutput": "[empty/error]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 52,
+        "title": "Implement Queue using Arrays",
+        "description": "Implement a FIFO queue using an array.",
+        "difficulty": "EASY",
+        "category": "Queue",
+        "concept": "Queue Implementation",
+        "topics": [
+          "queue",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "queue",
+          "arrays",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use front/rear indices; circular storage avoids shifting."
+        ],
+        "constraints": [
+          "Capacity > 0"
+        ],
+        "expectedComplexity": {
+          "time": "O(1)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[enqueue 1,2,3,dequeue,front]",
+          "expectedOutput": "[1,2,3,1,2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[dequeue on empty]",
+          "expectedOutput": "[empty/error]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 53,
+        "title": "Implement Stack using Queue",
+        "description": "Implement LIFO behavior using FIFO queue operations.",
+        "difficulty": "MEDIUM",
+        "category": "Stack",
+        "concept": "Simulation",
+        "topics": [
+          "stack",
+          "queue"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "stack",
+          "queue",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Rotate existing elements behind the newly pushed value."
+        ],
+        "constraints": [
+          "Operations <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n) push",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[push 1,2,3,top,pop,top]",
+          "expectedOutput": "[3,3,2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[push 5,pop,pop]",
+          "expectedOutput": "[5,empty]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 54,
+        "title": "Implement Queue using Stack",
+        "description": "Implement FIFO behavior using two stacks.",
+        "difficulty": "MEDIUM",
+        "category": "Queue",
+        "concept": "Simulation",
+        "topics": [
+          "queue",
+          "stack"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "queue",
+          "stack",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Transfer to the output stack only when it is empty."
+        ],
+        "constraints": [
+          "Operations <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(1) amortized",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[enqueue 1,2,3,dequeue,front]",
+          "expectedOutput": "[1,1,2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[enqueue 7,dequeue]",
+          "expectedOutput": "[7]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 55,
+        "title": "Valid Parentheses",
+        "description": "Check whether brackets are correctly nested and matched.",
+        "difficulty": "EASY",
+        "category": "Stack",
+        "concept": "Matching",
+        "topics": [
+          "stack",
+          "strings"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "stack",
+          "strings",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Push opening brackets and match every closing bracket against the top."
+        ],
+        "constraints": [
+          "Length <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "\"()[]{}\"",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "\"([)]\"",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 56,
+        "title": "Next Greater Element",
+        "description": "Find the first greater value to the right of each array element.",
+        "difficulty": "MEDIUM",
+        "category": "Stack",
+        "concept": "Monotonic Stack",
+        "topics": [
+          "stack",
+          "arrays",
+          "monotonic-stack"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "stack",
+          "arrays",
+          "monotonic-stack",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Scan from right to left and remove useless stack candidates."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[4,5,2,25]",
+          "expectedOutput": "[5,25,25,-1]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[13,7,6,12]",
+          "expectedOutput": "[-1,12,12,-1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 57,
+        "title": "Largest Rectangle in Histogram",
+        "description": "Find the largest rectangle that can be formed under a histogram.",
+        "difficulty": "HARD",
+        "category": "Stack",
+        "concept": "Monotonic Stack",
+        "topics": [
+          "stack",
+          "arrays",
+          "monotonic-stack"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "stack",
+          "arrays",
+          "monotonic-stack",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Maintain increasing bar indices and finalize rectangles when height decreases."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[2,1,5,6,2,3]",
+          "expectedOutput": "10",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[2,4]",
+          "expectedOutput": "4",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 58,
+        "title": "Sliding Window Maximum",
+        "description": "Return the maximum value in every window of size k.",
+        "difficulty": "HARD",
+        "category": "Queue",
+        "concept": "Deque",
+        "topics": [
+          "queue",
+          "deque",
+          "sliding-window"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "queue",
+          "deque",
+          "sliding-window",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Keep candidate indices in decreasing value order."
+        ],
+        "constraints": [
+          "n <= 100000, 1 <= k <= n"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(k)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[1,3,-1,-3,5,3,6,7], k=3",
+          "expectedOutput": "[3,3,5,5,6,7]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[1], k=1",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 59,
+        "title": "LRU Cache",
+        "description": "Design a cache with O(1) average get and put operations and least-recently-used eviction.",
+        "difficulty": "HARD",
+        "category": "Design",
+        "concept": "Cache",
+        "topics": [
+          "design",
+          "hashing",
+          "linked-list"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "design",
+          "hashing",
+          "linked-list",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Combine a hash map with a doubly linked list."
+        ],
+        "constraints": [
+          "capacity <= 10000"
+        ],
+        "expectedComplexity": {
+          "time": "O(1) average",
+          "space": "O(capacity)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "capacity=2; put(1,1),put(2,2),get(1),put(3,3),get(2)",
+          "expectedOutput": "[1,-1]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "capacity=1; put(1,1),put(2,2),get(1),get(2)",
+          "expectedOutput": "[-1,2]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 60,
+        "title": "Min Stack",
+        "description": "Support push, pop, top and minimum retrieval in constant time.",
+        "difficulty": "MEDIUM",
+        "category": "Stack",
+        "concept": "Minimum Tracking",
+        "topics": [
+          "stack",
+          "design"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "stack",
+          "design",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Track the minimum for each stack level or use a second stack."
+        ],
+        "constraints": [
+          "Operations <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(1)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[push -2,push 0,push -3,getMin,pop,top,getMin]",
+          "expectedOutput": "[-3,0,-2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[push 5,getMin,pop]",
+          "expectedOutput": "[5]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 61,
+        "title": "Binary Tree Traversals",
+        "description": "Return preorder, inorder and postorder traversals.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "Traversal",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "dfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Follow the exact visitation order for each traversal."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,4,5]",
+          "expectedOutput": "pre=[1,2,4,5,3], in=[4,2,5,1,3], post=[4,5,2,3,1]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "pre=[1], in=[1], post=[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 62,
+        "title": "Level Order Traversal",
+        "description": "Return binary-tree values level by level.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "BFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "queue"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "queue",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Process the queue one level at a time."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[3,9,20,null,null,15,7]",
+          "expectedOutput": "[[3],[9,20],[15,7]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[]",
+          "expectedOutput": "[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 63,
+        "title": "Maximum Depth of Binary Tree",
+        "description": "Find the maximum number of nodes on a root-to-leaf path.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "DFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "dfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Depth is one plus the larger child depth."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[3,9,20,null,null,15,7]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[]",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 64,
+        "title": "Check Balanced Binary Tree",
+        "description": "Check whether every node has subtree height difference at most one.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "Height DFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "dfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Return height while propagating an imbalance sentinel."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[3,9,20,null,null,15,7]",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1,2,2,3,3,null,null,4,4]",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 65,
+        "title": "Diameter of Binary Tree",
+        "description": "Find the longest path between any two nodes, measured in edges.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "Height DFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "dfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Combine left and right heights at every node."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,4,5]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 66,
+        "title": "Identical Binary Trees",
+        "description": "Check whether two binary trees have identical structure and values.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "Comparison",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "recursion",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Compare null structure, values and both children."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "A=[1,2,3], B=[1,2,3]",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "A=[1,2], B=[1,null,2]",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 67,
+        "title": "Zigzag Level Order Traversal",
+        "description": "Return tree levels alternately from left-to-right and right-to-left.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "BFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Perform BFS and reverse alternate levels or fill them backward."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[3,9,20,null,null,15,7]",
+          "expectedOutput": "[[3],[20,9],[15,7]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "[[1]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 68,
+        "title": "Boundary Traversal of Binary Tree",
+        "description": "Return the outer boundary without duplicates.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "Boundary",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "dfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Collect left boundary, leaves, then reversed right boundary."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,4,5,6,7]",
+          "expectedOutput": "[1,2,4,5,6,7,3]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 69,
+        "title": "Vertical Order Traversal",
+        "description": "Group nodes by vertical column using row and value ordering.",
+        "difficulty": "HARD",
+        "category": "Trees",
+        "concept": "Coordinates",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "sorting"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "sorting",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Assign row/column coordinates and group by column."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[3,9,20,null,null,15,7]",
+          "expectedOutput": "[[9],[3,15],[20],[7]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "[[1]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 70,
+        "title": "Top View of Binary Tree",
+        "description": "Return the first visible node at every horizontal distance.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "BFS Coordinates",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "BFS makes the first encountered node the shallowest candidate."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,4,5,null,6]",
+          "expectedOutput": "[4,2,1,3,6]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 71,
+        "title": "Bottom View of Binary Tree",
+        "description": "Return the visible node at every horizontal distance from below.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "BFS Coordinates",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Store the latest value encountered for each column."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,4,5,null,6]",
+          "expectedOutput": "[4,2,5,3,6]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 72,
+        "title": "Left View of Binary Tree",
+        "description": "Return the first visible node at every depth from the left.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "BFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Take the first node of each BFS level."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,4,5,null,6]",
+          "expectedOutput": "[1,2,4]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 73,
+        "title": "Right View of Binary Tree",
+        "description": "Return the last visible node at every depth from the right.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "BFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Take the last node of each BFS level."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,4,5,null,6]",
+          "expectedOutput": "[1,3,6]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 74,
+        "title": "Symmetric Binary Tree",
+        "description": "Check whether a binary tree is its own mirror.",
+        "difficulty": "EASY",
+        "category": "Trees",
+        "concept": "Mirror",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "recursion",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Compare opposite children recursively."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,2,3,4,4,3]",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1,2,2,null,3,null,3]",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 75,
+        "title": "Root to Node Path",
+        "description": "Return the path from the root to a target node.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "Backtracking",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "backtracking"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "backtracking",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Append before descent and remove the node when a branch fails."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,4,5], target=5",
+          "expectedOutput": "[1,2,5]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1], target=1",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 76,
+        "title": "Lowest Common Ancestor of Binary Tree",
+        "description": "Find the lowest node containing both target nodes in its subtree.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "Recursion",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "recursion",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Return matches upward; two non-null child results identify the LCA."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[3,5,1,6,2,0,8,null,null,7,4], p=5,q=1",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1,2], p=1,q=2",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 77,
+        "title": "Maximum Path Sum in Binary Tree",
+        "description": "Find the maximum sum over any simple path.",
+        "difficulty": "HARD",
+        "category": "Trees",
+        "concept": "DFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "dfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Only the larger positive child contribution can continue upward."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[-10,9,20,null,null,15,7]",
+          "expectedOutput": "42",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[-3]",
+          "expectedOutput": "-3",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 78,
+        "title": "Serialize and Deserialize Binary Tree",
+        "description": "Serialize a binary tree and reconstruct an equivalent tree.",
+        "difficulty": "HARD",
+        "category": "Trees",
+        "concept": "Serialization",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "serialization",
+          "bfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "serialization",
+          "bfs",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Include null markers so tree structure is preserved."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,3,null,null,4,5]",
+          "expectedOutput": "round-trip equals original",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[]",
+          "expectedOutput": "round-trip equals empty",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 79,
+        "title": "Construct Binary Tree from Inorder and Preorder",
+        "description": "Reconstruct a tree from preorder and inorder traversals.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "Construction",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "recursion",
+          "hashing"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "recursion",
+          "hashing",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Preorder supplies roots and an inorder index map supplies subtree boundaries."
+        ],
+        "constraints": [
+          "nodes <= 100000, values unique"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "pre=[3,9,20,15,7], in=[9,3,15,20,7]",
+          "expectedOutput": "tree=[3,9,20,null,null,15,7]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "pre=[1], in=[1]",
+          "expectedOutput": "tree=[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 80,
+        "title": "Construct Binary Tree from Inorder and Postorder",
+        "description": "Reconstruct a tree from inorder and postorder traversals.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "Construction",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "recursion",
+          "hashing"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "recursion",
+          "hashing",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Postorder's last value is a root; use inorder positions to split."
+        ],
+        "constraints": [
+          "nodes <= 100000, values unique"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "in=[9,3,15,20,7], post=[9,15,7,20,3]",
+          "expectedOutput": "tree=[3,9,20,null,null,15,7]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "in=[1], post=[1]",
+          "expectedOutput": "tree=[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 81,
+        "title": "Flatten Binary Tree to Linked List",
+        "description": "Transform a tree into its preorder sequence using right pointers.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "Transformation",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "dfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "dfs",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Process in reverse preorder or use a stack; clear left pointers."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,2,5,3,4,null,6]",
+          "expectedOutput": "[1,2,3,4,5,6]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 82,
+        "title": "Morris Inorder Traversal",
+        "description": "Perform inorder traversal without recursion or an auxiliary stack.",
+        "difficulty": "HARD",
+        "category": "Trees",
+        "concept": "Threaded Traversal",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "morris"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "morris",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Temporarily thread inorder predecessors and remove each thread afterward."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[4,2,6,1,3,5,7]",
+          "expectedOutput": "[1,2,3,4,5,6,7]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[]",
+          "expectedOutput": "[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 83,
+        "title": "Binary Tree Maximum Width",
+        "description": "Find the maximum width counting null-position gaps between end nodes.",
+        "difficulty": "MEDIUM",
+        "category": "Trees",
+        "concept": "Indexed BFS",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bfs",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Assign complete-tree indices and normalize them per level."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[1,3,2,5,3,null,9]",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 84,
+        "title": "Search in Binary Search Tree",
+        "description": "Find a target value in a binary search tree.",
+        "difficulty": "EASY",
+        "category": "BST",
+        "concept": "Search",
+        "topics": [
+          "bst",
+          "trees",
+          "binary-search"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "binary-search",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Move left for smaller targets and right for larger ones."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(h)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[4,2,7,1,3], target=2",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[4,2,7,1,3], target=6",
+          "expectedOutput": "null",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 85,
+        "title": "Ceil in a BST",
+        "description": "Find the smallest BST value greater than or equal to a target.",
+        "difficulty": "MEDIUM",
+        "category": "BST",
+        "concept": "Search",
+        "topics": [
+          "bst",
+          "trees",
+          "binary-search"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "binary-search",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Record a candidate and move left when the current value is large enough."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(h)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[8,4,12,2,6,10,14], target=5",
+          "expectedOutput": "6",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[8,4,12], target=15",
+          "expectedOutput": "-1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 86,
+        "title": "Floor in a BST",
+        "description": "Find the largest BST value less than or equal to a target.",
+        "difficulty": "MEDIUM",
+        "category": "BST",
+        "concept": "Search",
+        "topics": [
+          "bst",
+          "trees",
+          "binary-search"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "binary-search",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Record a candidate and move right when the current value is small enough."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(h)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[8,4,12,2,6,10,14], target=5",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[8,4,12], target=1",
+          "expectedOutput": "-1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 87,
+        "title": "Insert into BST",
+        "description": "Insert a unique value while preserving BST ordering.",
+        "difficulty": "EASY",
+        "category": "BST",
+        "concept": "Insertion",
+        "topics": [
+          "bst",
+          "trees"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Walk until the correct null child position is found."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(h)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[4,2,7,1,3], insert=5",
+          "expectedOutput": "valid BST containing 5",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[], insert=8",
+          "expectedOutput": "[8]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 88,
+        "title": "Delete Node in BST",
+        "description": "Delete a value while preserving BST ordering.",
+        "difficulty": "MEDIUM",
+        "category": "BST",
+        "concept": "Deletion",
+        "topics": [
+          "bst",
+          "trees",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "recursion",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Handle zero/one child directly; replace a two-child node with its successor or predecessor."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(h)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[5,3,6,2,4,null,7], delete=3",
+          "expectedOutput": "valid BST after deletion",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[5], delete=5",
+          "expectedOutput": "[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 89,
+        "title": "Kth Smallest Element in BST",
+        "description": "Return the kth smallest BST value.",
+        "difficulty": "MEDIUM",
+        "category": "BST",
+        "concept": "Inorder",
+        "topics": [
+          "bst",
+          "trees",
+          "stack"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "stack",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Inorder traversal visits BST values in ascending order."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(h+k)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[3,1,4,null,2], k=1",
+          "expectedOutput": "1",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[5,3,6,2,4,null,null,1], k=3",
+          "expectedOutput": "3",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 90,
+        "title": "Kth Largest Element in BST",
+        "description": "Return the kth largest BST value.",
+        "difficulty": "MEDIUM",
+        "category": "BST",
+        "concept": "Reverse Inorder",
+        "topics": [
+          "bst",
+          "trees",
+          "stack"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "stack",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Reverse inorder visits BST values in descending order."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(h+k)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[3,1,4,null,2], k=1",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[5,3,6,2,4,null,null,1], k=3",
+          "expectedOutput": "4",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 91,
+        "title": "Validate Binary Search Tree",
+        "description": "Determine whether a binary tree satisfies strict BST ordering.",
+        "difficulty": "MEDIUM",
+        "category": "BST",
+        "concept": "Range Validation",
+        "topics": [
+          "bst",
+          "trees",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "recursion",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Carry valid lower and upper bounds down each subtree."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[2,1,3]",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[5,1,4,null,null,3,6]",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 92,
+        "title": "LCA in BST",
+        "description": "Find the lowest common ancestor of two values in a BST.",
+        "difficulty": "MEDIUM",
+        "category": "BST",
+        "concept": "BST Property",
+        "topics": [
+          "bst",
+          "trees"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "If both targets lie on one side, move there; otherwise the current node is the split point."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(h)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[6,2,8,0,4,7,9,null,null,3,5], p=2,q=8",
+          "expectedOutput": "6",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[6,2,8,0,4,7,9,null,null,3,5], p=2,q=4",
+          "expectedOutput": "2",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 93,
+        "title": "Two Sum in BST",
+        "description": "Determine whether two distinct BST values sum to a target.",
+        "difficulty": "MEDIUM",
+        "category": "BST",
+        "concept": "Two Iterators",
+        "topics": [
+          "bst",
+          "trees",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "two-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use ascending and descending iterators as two sorted streams."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "BST=[5,3,6,2,4,null,7], target=9",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "BST=[5,3,6,2,4,null,7], target=28",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 94,
+        "title": "Recover BST",
+        "description": "Two BST values have been swapped; restore the ordering.",
+        "difficulty": "HARD",
+        "category": "BST",
+        "concept": "Inorder",
+        "topics": [
+          "bst",
+          "trees",
+          "morris"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "bst",
+          "trees",
+          "morris",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Inorder traversal should be sorted, so locate the inversion nodes."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "inorder corrupted [1,3,2,4]",
+          "expectedOutput": "restore inorder [1,2,3,4]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "two swapped values in 3-node BST",
+          "expectedOutput": "restore valid BST",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 95,
+        "title": "Largest BST in Binary Tree",
+        "description": "Find the size of the largest subtree that is also a BST.",
+        "difficulty": "HARD",
+        "category": "Trees",
+        "concept": "Postorder DP",
+        "topics": [
+          "trees",
+          "binary-tree",
+          "bst",
+          "dynamic-programming"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "trees",
+          "binary-tree",
+          "bst",
+          "dynamic-programming",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Return validity, size, minimum and maximum together from each subtree."
+        ],
+        "constraints": [
+          "nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(h)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "tree=[10,5,15,1,8,null,7]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "tree=[1]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 96,
+        "title": "Graph BFS",
+        "description": "Traverse a graph breadth-first from a starting vertex.",
+        "difficulty": "EASY",
+        "category": "Graphs",
+        "concept": "BFS",
+        "topics": [
+          "graphs",
+          "bfs",
+          "queue"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "graphs",
+          "bfs",
+          "queue",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Mark vertices when they enter the queue."
+        ],
+        "constraints": [
+          "V <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(V+E)",
+          "space": "O(V)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "V=5, edges=0-1,0-2,1-3,2-4, start=0",
+          "expectedOutput": "[0,1,2,3,4]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "V=1, edges=[], start=0",
+          "expectedOutput": "[0]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 97,
+        "title": "Graph DFS",
+        "description": "Traverse a graph depth-first from a starting vertex.",
+        "difficulty": "EASY",
+        "category": "Graphs",
+        "concept": "DFS",
+        "topics": [
+          "graphs",
+          "dfs",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "graphs",
+          "dfs",
+          "recursion",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Mark each vertex before exploring its neighbors."
+        ],
+        "constraints": [
+          "V <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(V+E)",
+          "space": "O(V)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "V=5, edges=0-1,0-2,1-3,2-4, start=0",
+          "expectedOutput": "[0,1,3,2,4]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "V=1, edges=[], start=0",
+          "expectedOutput": "[0]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 98,
+        "title": "Detect Cycle in Undirected Graph",
+        "description": "Determine whether an undirected graph contains a cycle.",
+        "difficulty": "MEDIUM",
+        "category": "Graphs",
+        "concept": "Cycle Detection",
+        "topics": [
+          "graphs",
+          "dfs",
+          "bfs",
+          "cycle-detection"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "graphs",
+          "dfs",
+          "bfs",
+          "cycle-detection",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "A visited neighbor other than the parent indicates a cycle."
+        ],
+        "constraints": [
+          "V <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(V+E)",
+          "space": "O(V)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "V=3, edges=(0,1),(1,2),(2,0)",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "V=3, edges=(0,1),(1,2)",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 99,
+        "title": "Detect Cycle in Directed Graph",
+        "description": "Determine whether a directed graph contains a cycle.",
+        "difficulty": "MEDIUM",
+        "category": "Graphs",
+        "concept": "Cycle Detection",
+        "topics": [
+          "graphs",
+          "dfs",
+          "cycle-detection"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "graphs",
+          "dfs",
+          "cycle-detection",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "An edge to a currently active recursion-stack node creates a cycle."
+        ],
+        "constraints": [
+          "V <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(V+E)",
+          "space": "O(V)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "V=3, edges=0->1,1->2,2->0",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "V=3, edges=0->1,1->2",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 100,
+        "title": "Topological Sort",
+        "description": "Return a valid ordering of a directed acyclic graph.",
+        "difficulty": "MEDIUM",
+        "category": "Graphs",
+        "concept": "Kahn Algorithm",
+        "topics": [
+          "graphs",
+          "topological-sort",
+          "bfs"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "graphs",
+          "topological-sort",
+          "bfs",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Repeatedly process zero-indegree vertices; incomplete processing means a cycle."
+        ],
+        "constraints": [
+          "V <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(V+E)",
+          "space": "O(V)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "V=6, edges=5->2,5->0,4->0,4->1,2->3,3->1",
+          "expectedOutput": "valid topological ordering",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "V=2, edges=0->1",
+          "expectedOutput": "[0,1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    }
+  ]
+}

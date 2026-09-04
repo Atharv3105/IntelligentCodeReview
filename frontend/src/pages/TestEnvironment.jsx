@@ -26,7 +26,8 @@ export default function TestEnvironment() {
   const [file, setFile] = useState(null);
 
   // Initialize Proctoring (Disabled for Document Submissions)
-  const { enterFullScreen } = useProctoring(attempt?._id, assessment?.settings, assessment?.type === 'DOCUMENT');
+  const attemptId = attempt?.id || attempt?._id;
+  const { enterFullScreen } = useProctoring(attemptId, assessment?.settings, assessment?.type === 'DOCUMENT');
 
   const fetchAttempt = useCallback(async () => {
     try {
@@ -34,7 +35,7 @@ export default function TestEnvironment() {
       setAttempt(res.data);
       
       const aRes = await api.get(`/assessments/admin/all`); 
-      const found = aRes.data.find(a => a._id === assessmentId);
+      const found = aRes.data.find(a => (a.id === assessmentId || a._id === assessmentId));
       setAssessment(found);
 
       const startTime = new Date(res.data.startTime);
@@ -76,13 +77,14 @@ export default function TestEnvironment() {
 
   const submitTest = async (external = false) => {
     setIsSubmitting(true);
+    const currAttemptId = attempt?.id || attempt?._id;
     try {
       if (assessment.type === 'DOCUMENT' && file) {
           const formData = new FormData();
           formData.append("file", file);
-          await api.post(`/assessments/attempt/${attempt._id}/upload`, formData);
+          await api.post(`/assessments/attempt/${currAttemptId}/upload`, formData);
       } else {
-          await api.post(`/assessments/attempt/${attempt._id}/submit`, { isExternalSubmitted: external });
+          await api.post(`/assessments/attempt/${currAttemptId}/submit`, { isExternalSubmitted: external });
       }
       
       document.exitFullscreen().catch(() => {});
@@ -254,8 +256,8 @@ export default function TestEnvironment() {
                             height="100%"
                             defaultLanguage="python"
                             theme={isDark ? "vs-dark" : "light"}
-                            value={codingCodes[assessment.problems[codingIndex]?._id] || assessment.problems[codingIndex]?.starterCode?.python || ""}
-                            onChange={(val) => setCodingCodes(prev => ({ ...prev, [assessment.problems[codingIndex]?._id]: val }))}
+                            value={codingCodes[assessment.problems[codingIndex]?.id || assessment.problems[codingIndex]?._id] || assessment.problems[codingIndex]?.starterCode?.python || ""}
+                            onChange={(val) => setCodingCodes(prev => ({ ...prev, [assessment.problems[codingIndex]?.id || assessment.problems[codingIndex]?._id]: val }))}
                             options={{
                                 minimap: { enabled: false },
                                 fontSize: 14,

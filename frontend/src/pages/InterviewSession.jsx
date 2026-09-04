@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Editor from "@monaco-editor/react";
 import { BrainCircuit, Camera, CheckCircle2, Clock3, Code2, Mic, MicOff, Pause, Play, Send, ShieldCheck, Sparkles, Square, Video, VideoOff, Volume2, WifiOff } from "lucide-react";
 import api from "../services/api";
+import { getStarterCode } from "../utils/codeTemplates";
 import { SocketContext } from "../context/SocketContext";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
@@ -194,6 +195,9 @@ export default function InterviewSession() {
         const started = await api.post(`/interviews/${create.data.session.id}/start`);
         if (!alive) return;
         setSession(started.data.session); setQuestion(started.data.currentQuestion); setMeta(started.data);
+        if (started.data.currentQuestion) {
+          setCode(getStarterCode(started.data.currentQuestion, language));
+        }
         const interviewer = type === "behavioral" ? "behavioral" : "technical";
         setActiveInterviewer(interviewer); setPhase("speaking");
         const intro = `Welcome. I’m ${INTERVIEWERS[interviewer].name}. We’ll keep this practical and conversational. ${started.data.currentQuestion.questionText}`;
@@ -201,7 +205,7 @@ export default function InterviewSession() {
       } catch { if (alive) setError("The interview room could not be prepared. Check that the local API and PostgreSQL services are running."); }
     })();
     return () => { alive = false; };
-  }, [addEntry, speak, type]);
+  }, [addEntry, speak, type, language]);
 
   useEffect(() => {
     if (!socket || !session?.id) return;
