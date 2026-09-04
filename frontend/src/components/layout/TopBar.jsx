@@ -1,9 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Sun, Moon, LogOut, User, Shield, Flame, Bell } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { ThemeContext } from "../../context/ThemeContext";
+import api from "../../services/api";
 
 const breadcrumbs = {
   "/dashboard": "Home",
@@ -26,6 +27,19 @@ export function TopBar({ onOpenSearch }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      api.get("/analytics/dashboard")
+        .then((res) => {
+          if (res.data?.dashboard?.streak !== undefined) {
+            setStreak(res.data.dashboard.streak);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [user]);
 
   const crumb = breadcrumbs[location.pathname] || "Interview Intelligence";
 
@@ -87,7 +101,9 @@ export function TopBar({ onOpenSearch }) {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, type: "spring" }}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
+          onClick={() => navigate("/analytics")}
+          title="View your study streaks & analytics"
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all hover:scale-105"
           style={{
             background: "rgba(245,158,11,0.08)",
             border: "1px solid rgba(245,158,11,0.15)",
@@ -100,7 +116,7 @@ export function TopBar({ onOpenSearch }) {
           >
             🔥
           </motion.span>
-          <span>3-day streak</span>
+          <span>{streak > 0 ? `${streak}-day streak` : "Start streak"}</span>
         </motion.div>
 
         {/* Notifications (decorative) */}

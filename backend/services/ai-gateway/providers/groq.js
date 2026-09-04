@@ -12,7 +12,14 @@ class GroqProvider extends BaseProvider {
 
   async _getClient() {
     if (!this._client) {
-      const Groq = (await import("groq-sdk")).default;
+      let Groq;
+      try {
+        Groq = require("groq-sdk");
+        if (Groq.default) Groq = Groq.default;
+      } catch {
+        const mod = await import("groq-sdk");
+        Groq = mod.default || mod.Groq || mod;
+      }
       this._client = new Groq({
         apiKey: this.apiKey,
         timeout: this.timeout,

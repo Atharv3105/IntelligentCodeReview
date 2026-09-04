@@ -7,5 +7,7 @@ router.get("/challenges", protect, controller.getChallenges);
 router.get("/challenges/:id", protect, controller.getChallenge);
 router.post("/execute", protect, controller.executeQuery);
 router.post("/generate", protect, controller.generateChallenge);
+router.post("/explain", protect, controller.explainQuery);
+router.post("/optimize", protect, controller.optimizeQuery);
 
 module.exports = router;

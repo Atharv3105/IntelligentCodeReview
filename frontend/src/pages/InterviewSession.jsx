@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Editor from "@monaco-editor/react";
 import { Clock, Send, Play, Sparkles, CheckCircle2, ChevronRight } from "lucide-react";
 import api from "../services/api";
+import { getStarterCode } from "../utils/codeTemplates";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
@@ -52,11 +53,13 @@ export default function InterviewSession() {
         setSession(newSession);
 
         const startRes = await api.post(`/interviews/${newSession.id}/start`);
-        setCurrentQuestion(startRes.data.question);
+        const q = startRes.data.question;
+        setCurrentQuestion(q);
         setQuestionMeta({
           questionIndex: startRes.data.questionIndex,
           totalQuestions: startRes.data.totalQuestions,
         });
+        setCode(getStarterCode(q, codeLanguage));
 
         setTranscript([
           {
@@ -81,13 +84,12 @@ export default function InterviewSession() {
       if (res.data.isComplete) {
         finishInterview(sessionId);
       } else {
-        setCurrentQuestion(res.data.currentQuestion);
+        const q = res.data.currentQuestion;
+        setCurrentQuestion(q);
         setQuestionMeta({ questionIndex: res.data.questionIndex, totalQuestions: res.data.totalQuestions });
         setInterviewerState("speaking");
-        appendTranscript("Interviewer", res.data.currentQuestion.questionText);
-        if (res.data.currentQuestion.starterCode) {
-          setCode(res.data.currentQuestion.starterCode.python || "// Write solution");
-        }
+        appendTranscript("Interviewer", q.questionText);
+        setCode(getStarterCode(q, codeLanguage));
       }
     } catch (err) {
       console.error("Error fetching question:", err);
@@ -340,7 +342,11 @@ export default function InterviewSession() {
                     <span className="font-semibold text-slate-600 dark:text-slate-400">Solution Editor</span>
                     <select
                       value={codeLanguage}
-                      onChange={(e) => setCodeLanguage(e.target.value)}
+                      onChange={(e) => {
+                        const newLang = e.target.value;
+                        setCodeLanguage(newLang);
+                        setCode(getStarterCode(currentQuestion, newLang));
+                      }}
                       className="rounded px-2.5 py-1 text-xs font-semibold focus:outline-none"
                       style={{
                         background: "var(--bg-surface-2)",

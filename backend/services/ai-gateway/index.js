@@ -24,6 +24,9 @@ const COST_TABLE = {
   "llama-3.1-8b-instant": { input: 0.05, output: 0.08 },
   "llama-3.1-70b-versatile": { input: 0.59, output: 0.79 },
   "mixtral-8x7b-32768": { input: 0.24, output: 0.24 },
+  "openai/gpt-oss-120b": { input: 0.15, output: 0.60 },
+  "openai/gpt-oss-20b": { input: 0.05, output: 0.10 },
+  "qwen/qwen3.6-27b": { input: 0.10, output: 0.20 },
   // NVIDIA NIM models (free tier)
   "nvidia/nemotron-3-super-120b-a12b": { input: 0.00, output: 0.00 },
   "nvidia/llama-3.1-nemotron-70b-instruct": { input: 0.00, output: 0.00 },
@@ -709,6 +712,43 @@ Return JSON:
   }
 
   /**
+   * Optimize a SQL query.
+   * Used by SQL Lab page.
+   */
+  async optimizeSQL({ query, schema, userId }) {
+    const systemPrompt = `You are a database performance tuning expert and senior DBA.
+Analyze the SQL query and schema to suggest optimizations, indexes, execution improvements, and rewritten queries.
+Be clear, educational, and practical.`;
+
+    const userPrompt = `Analyze and optimize this SQL query:
+
+\`\`\`sql
+${query}
+\`\`\`
+
+Schema context:
+${schema || "Not provided"}
+
+Return JSON:
+{
+  "summary": "High-level optimization overview and bottleneck analysis",
+  "optimizedQuery": "The rewritten, more efficient SQL query",
+  "improvements": ["improvement 1", "improvement 2"],
+  "indexSuggestions": ["CREATE INDEX ..."],
+  "complexityAnalysis": "Estimated complexity / scan type differences (e.g. Seq Scan vs Index Scan)",
+  "explanation": "Detailed explanation of why the optimized version is better"
+}`;
+
+    return this.generateStructured({
+      systemPrompt,
+      userPrompt,
+      userId,
+      requestType: "sql_optimization",
+      promptVersion: "v1.0",
+    });
+  }
+
+  /**
    * Generate a DSA problem with test cases.
    * Used by admin / AI generate problem feature.
    */
@@ -788,6 +828,42 @@ Return JSON:
       userPrompt,
       userId,
       requestType: "submission_feedback",
+      promptVersion: "v1.0",
+    });
+  }
+
+  /**
+   * Evaluate a user's answer to a conceptual subject question (OS, DBMS, CN, System Design, OOP, etc.)
+   */
+  async evaluateConceptAnswer({ topic, question, answer, difficulty, userId }) {
+    const systemPrompt = `You are an expert technical interviewer and computer science professor evaluating a candidate's answer to a technical interview question.
+Assess the answer rigorously and fairly based on technical correctness, completeness, clarity, and depth.
+Return valid JSON only.`;
+
+    const userPrompt = `Subject / Topic: ${topic || "Computer Science"}
+Difficulty: ${difficulty || "Medium"}
+Question: ${question}
+
+Candidate's Answer:
+"""
+${answer}
+"""
+
+Evaluate the candidate's answer and return a JSON object with this exact structure:
+{
+  "score": 85,
+  "feedback": "Concise summary evaluation of the answer's quality, accuracy, and technical depth.",
+  "strengths": ["Clear definition of concepts", "Accurate explanation of trade-offs"],
+  "improvements": ["Could explain edge cases or memory constraints in more depth"],
+  "modelAnswer": "An exemplary, concise reference answer demonstrating ideal technical depth and terminology."
+}
+Note: Ensure "score" is a number between 0 and 100 based strictly on how correct and thorough the answer is.`;
+
+    return this.generateStructured({
+      systemPrompt,
+      userPrompt,
+      userId,
+      requestType: "concept_evaluation",
       promptVersion: "v1.0",
     });
   }

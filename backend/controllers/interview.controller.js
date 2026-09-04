@@ -38,7 +38,14 @@ exports.startInterview = asyncHandler(async (req, res) => {
   }
 
   const result = await interviewEngine.prepareInterview(id);
-  res.json({ success: true, session: result });
+  const current = await interviewEngine.getCurrentQuestion(id);
+  res.json({
+    success: true,
+    session: result,
+    question: current.currentQuestion,
+    questionIndex: current.questionIndex,
+    totalQuestions: current.totalQuestions,
+  });
 });
 
 exports.getCurrentQuestion = asyncHandler(async (req, res) => {

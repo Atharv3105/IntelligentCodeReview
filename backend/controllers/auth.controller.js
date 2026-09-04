@@ -133,24 +133,40 @@ exports.refreshToken = asyncHandler(async (req, res) => {
     return res.status(401).json({ success: false, error: { code: "NO_TOKEN", message: "No refresh token." } });
   }
 
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  };
+
   const stored = await prisma.refreshToken.findUnique({ where: { token } });
   if (!stored) {
-    return res.status(403).json({ success: false, error: { code: "TOKEN_REVOKED", message: "Token revoked." } });
+    res.clearCookie("refreshToken", cookieOptions);
+    return res.status(401).json({ success: false, error: { code: "TOKEN_REVOKED", message: "Session expired. Please log in again." } });
   }
 
   try {
     const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    if (!payload || !payload.id) {
+      await prisma.refreshToken.deleteMany({ where: { token } });
+      res.clearCookie("refreshToken", cookieOptions);
+      return res.status(401).json({ success: false, error: { code: "INVALID_TOKEN", message: "Invalid session payload. Please log in again." } });
+    }
+
     const user = await prisma.user.findUnique({ where: { id: payload.id } });
     if (!user) {
-      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found." } });
+      await prisma.refreshToken.deleteMany({ where: { token } });
+      res.clearCookie("refreshToken", cookieOptions);
+      return res.status(401).json({ success: false, error: { code: "NOT_FOUND", message: "User not found." } });
     }
 
     const accessToken = generateAccessToken(user);
     res.json({ success: true, accessToken });
   } catch (err) {
-    // Delete invalid refresh token
+    // Delete invalid refresh token & clear cookie
     await prisma.refreshToken.deleteMany({ where: { token } });
-    return res.status(403).json({ success: false, error: { code: "INVALID_TOKEN", message: "Invalid refresh token." } });
+    res.clearCookie("refreshToken", cookieOptions);
+    return res.status(401).json({ success: false, error: { code: "INVALID_TOKEN", message: "Invalid refresh token." } });
   }
 });
 

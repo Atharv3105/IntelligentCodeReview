@@ -66,7 +66,9 @@ api.interceptors.response.use(
         pendingRequests.forEach(({ reject }) => reject(refreshError));
         pendingRequests = [];
         localStorage.removeItem("accessToken");
-        window.location.href = "/login";
+        if (typeof window !== "undefined" && window.location.pathname !== "/login" && window.location.pathname !== "/register" && window.location.pathname !== "/") {
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

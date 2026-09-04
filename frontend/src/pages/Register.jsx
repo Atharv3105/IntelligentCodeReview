@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../services/api";
-import { ArrowRight, Eye, EyeOff, User, Mail, Lock, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, User, Mail, Lock, CheckCircle2, Sun, Moon } from "lucide-react";
+import { ThemeContext } from "../context/ThemeContext";
 
 const fields = [
   { label: "Full Name", name: "name", type: "text", icon: User, placeholder: "Jane Doe" },
@@ -12,6 +13,7 @@ const fields = [
 ];
 
 export default function Register() {
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [showPass, setShowPass] = useState(false);
@@ -26,160 +28,185 @@ export default function Register() {
 
   const register = async (e) => {
     e.preventDefault();
-    setLoading(true); setError(""); setSuccess("");
+    setLoading(true);
+    setError("");
+    setSuccess("");
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
       return;
     }
     try {
-      const res = await api.post("/auth/register", { name: form.name, email: form.email, password: form.password });
-      setSuccess(res.data.message || "Account created! Redirecting...");
+      const res = await api.post("/auth/register", {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      });
+      setSuccess(res.data.message || "Account created! Redirecting to login...");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      setError(err.response?.data?.error?.message || err.response?.data?.message || "Registration failed.");
+      setError(
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        "Registration failed."
+      );
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen mesh-gradient text-slate-100 font-sans flex flex-col">
-      <div className="pointer-events-none fixed inset-0 z-0 grid-pattern opacity-30" />
-
-      {/* Nav */}
-      <nav className="relative z-20 glass-dark border-b border-white/[0.05] h-[60px] px-6 flex items-center">
+    <div
+      className="min-h-screen font-sans flex flex-col relative"
+      style={{
+        background: "var(--bg)",
+        color: "var(--text-primary)",
+      }}
+    >
+      {/* Floating Header */}
+      <nav className="relative z-20 h-[64px] px-6 flex items-center justify-between border-b" style={{ borderColor: "var(--glass-border)" }}>
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-black text-white text-[11px] shadow-md shadow-blue-500/30">II</div>
-          <span className="text-sm font-bold text-white/90">Interview Intelligence</span>
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs text-white shadow-md"
+            style={{ background: "linear-gradient(135deg, #3b82f6, #60a5fa)" }}
+          >
+            II
+          </div>
+          <span className="text-sm font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>
+            Interview Intelligence
+          </span>
         </Link>
+
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full border cursor-pointer transition-colors"
+          style={{
+            background: "var(--glass-bg)",
+            borderColor: "var(--glass-border)",
+            color: "var(--text-secondary)",
+          }}
+        >
+          {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
       </nav>
 
-      {/* Form */}
+      {/* Form Container */}
       <div className="relative z-10 flex-1 flex items-center justify-center p-6 py-10">
         <motion.div
-          initial={{ opacity: 0, y: 24, scale: 0.96 }}
+          initial={{ opacity: 0, y: 20, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.45, type: "spring", stiffness: 350, damping: 25 }}
           className="w-full max-w-[400px]"
         >
           {/* Header */}
-          <div className="text-center mb-7">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1, type: "spring", stiffness: 300 }}
-              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center font-black text-white text-xl mx-auto mb-5 shadow-xl shadow-violet-500/30"
-            >
-              II
-            </motion.div>
-            <h1 className="text-2xl font-black text-white tracking-tight">Create account</h1>
-            <p className="text-sm text-slate-400 mt-1.5">Start your interview preparation</p>
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-light tracking-tight" style={{ color: "var(--text-primary)" }}>
+              Create <span className="font-bold">account</span>
+            </h1>
+            <p className="text-xs mt-1.5" style={{ color: "var(--text-secondary)" }}>
+              Start your interview preparation and code review journey
+            </p>
           </div>
 
           {/* Alerts */}
           <AnimatePresence>
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                className="mb-5 rounded-xl px-4 py-3 text-sm text-rose-300 flex items-center gap-2"
-                style={{ background: "rgba(244,63,94,0.08)", border: "1px solid rgba(244,63,94,0.2)" }}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="mb-4 rounded-2xl px-4 py-3 text-xs text-rose-500 flex items-center gap-2 border"
+                style={{ background: "rgba(244,63,94,0.08)", borderColor: "rgba(244,63,94,0.25)" }}
               >
-                <span className="w-4 h-4 rounded-full bg-rose-500/30 flex-shrink-0 flex items-center justify-center text-rose-400 text-[10px] font-black">!</span>
-                {error}
+                <span>⚠ {error}</span>
               </motion.div>
             )}
             {success && (
               <motion.div
-                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                className="mb-5 rounded-xl px-4 py-3 text-sm text-emerald-300 flex items-center gap-2"
-                style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="mb-4 rounded-2xl px-4 py-3 text-xs text-emerald-400 flex items-center gap-2 border"
+                style={{ background: "rgba(16,185,129,0.08)", borderColor: "rgba(16,185,129,0.25)" }}
               >
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                {success}
+                <span>{success}</span>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Form card */}
+          {/* Form Card */}
           <div
-            className="rounded-2xl p-6 space-y-4"
+            className="rounded-3xl p-7 space-y-4 border shadow-xl"
             style={{
-              background: "rgba(13,17,23,0.85)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              boxShadow: "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)",
-              backdropFilter: "blur(20px)",
+              background: "var(--glass-bg)",
+              borderColor: "var(--glass-border)",
+              boxShadow: "var(--glass-shadow)",
+              backdropFilter: "blur(24px)",
             }}
           >
             <form onSubmit={register} className="space-y-3.5">
-              {fields.map((field, idx) => {
-                const Icon = field.icon;
+              {fields.map((f) => {
+                const Icon = f.icon;
+                const isPass = f.type === "password";
                 return (
-                  <motion.div
-                    key={field.name}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.12 + idx * 0.07 }}
-                    className="space-y-1.5"
-                  >
-                    <label className="text-xs font-bold text-slate-400 block">{field.label}</label>
-                    <div className="relative">
-                      <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                  <div key={f.name}>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-tertiary)" }}>
+                      {f.label}
+                    </label>
+                    <div
+                      className="flex items-center gap-2.5 px-4 py-2.5 rounded-full border transition-all"
+                      style={{
+                        background: "var(--bg-surface-2)",
+                        borderColor: "var(--glass-border)",
+                      }}
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0" style={{ color: "var(--text-tertiary)" }} />
                       <input
-                        type={field.type === "password" && showPass ? "text" : field.type}
-                        name={field.name}
-                        placeholder={field.placeholder}
-                        value={form[field.name]}
-                        onChange={handleChange}
+                        type={isPass ? (showPass ? "text" : "password") : f.type}
+                        name={f.name}
                         required
-                        className="w-full pl-10 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-600 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-violet-500/50"
-                        style={{
-                          background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.08)",
-                        }}
+                        value={form[f.name]}
+                        onChange={handleChange}
+                        placeholder={f.placeholder}
+                        className="w-full bg-transparent border-none outline-none text-xs"
+                        style={{ color: "var(--text-primary)" }}
                       />
-                      {field.type === "password" && (
+                      {isPass && f.name === "password" && (
                         <button
                           type="button"
-                          onClick={() => setShowPass((v) => !v)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-300 transition-colors"
+                          onClick={() => setShowPass(!showPass)}
+                          className="cursor-pointer"
+                          style={{ color: "var(--text-tertiary)" }}
                         >
                           {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
-                <motion.button
-                  type="submit"
-                  disabled={loading}
-                  whileHover={!loading ? { scale: 1.02, boxShadow: "0 0 30px rgba(139,92,246,0.35)" } : {}}
-                  whileTap={!loading ? { scale: 0.98 } : {}}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-60"
-                  style={{
-                    background: "linear-gradient(135deg, #7c3aed, #8b5cf6)",
-                    boxShadow: "0 4px 16px rgba(124,58,237,0.30)",
-                  }}
-                >
-                  {loading ? (
-                    <motion.svg animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </motion.svg>
-                  ) : (
-                    <>Create Account <ArrowRight className="w-4 h-4" /></>
-                  )}
-                </motion.button>
-              </motion.div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-full text-xs font-bold text-white shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-102 cursor-pointer disabled:opacity-60 mt-4"
+                style={{
+                  background: "var(--accent)",
+                  boxShadow: "var(--accent-glow)",
+                }}
+              >
+                <span>{loading ? "Creating account..." : "Create Account"}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </form>
 
-            <div className="pt-1 text-center text-xs text-slate-600">
-              Already have an account?{" "}
-              <Link to="/login" className="font-bold text-violet-400 hover:text-violet-300 transition-colors">
-                Sign in →
-              </Link>
+            <div className="pt-2 text-center">
+              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                Already have an account?{" "}
+                <Link to="/login" className="font-semibold text-blue-500 hover:underline">
+                  Sign in
+                </Link>
+              </span>
             </div>
           </div>
         </motion.div>

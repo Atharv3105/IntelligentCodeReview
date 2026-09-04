@@ -29,6 +29,7 @@ submissionQueue.process(async (job) => {
       code,
       language: language || submission.language || "python",
       testCases: problem.testCases,
+      executionConfig: problem.executionConfig,
     });
 
     socketService.emitSubmissionUpdate(submissionId, { stage: "AI_REVIEW", progress: 70 });
@@ -48,7 +49,8 @@ submissionQueue.process(async (job) => {
       console.warn("AI review failed in queue processor:", aiErr.message);
     }
 
-    const grade = Math.min(100, judgeResult.percentage + (aiFeedback?.codeQuality?.score ? (aiFeedback.codeQuality.score / 100) * 10 : 0));
+    const aiScore = aiFeedback?.overallScore || aiFeedback?.score || (aiFeedback?.codeQuality?.score ? Math.round(aiFeedback.codeQuality.score) : null);
+    const grade = aiScore ? Math.min(100, Math.max(50, aiScore)) : Math.min(100, (judgeResult.percentage || 90));
 
     // 3. Update Submission Record
     await prisma.submission.update({

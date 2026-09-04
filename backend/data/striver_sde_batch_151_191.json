@@ -1,0 +1,2242 @@
+{
+  "metadata": {
+    "dataset": "Striver SDE Sheet — original metadata/test data",
+    "batch": 4,
+    "problemRange": "151-191",
+    "problems": 41,
+    "note": "Descriptions and hints are newly written; third-party editorial/problem text is not reproduced."
+  },
+  "records": [
+    {
+      "problem": {
+        "problemNumber": 151,
+        "title": "N-Queens",
+        "description": "Place n queens on an n by n board so that no two queens attack each other.",
+        "difficulty": "HARD",
+        "category": "Backtracking",
+        "concept": "Constraint Search",
+        "topics": [
+          "backtracking",
+          "recursion",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "recursion",
+          "arrays",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Place one queen per row and track used columns and diagonals."
+        ],
+        "constraints": [
+          "1 <= n <= 14"
+        ],
+        "expectedComplexity": {
+          "time": "O(n!)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "n=4",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "n=1",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 152,
+        "title": "Sudoku Solver",
+        "description": "Fill a partially completed 9x9 Sudoku board so every row, column and box contains digits 1 through 9 exactly once.",
+        "difficulty": "HARD",
+        "category": "Backtracking",
+        "concept": "Constraint Search",
+        "topics": [
+          "backtracking",
+          "recursion",
+          "matrix"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "recursion",
+          "matrix",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Choose an empty cell and try only digits that satisfy its row, column and box."
+        ],
+        "constraints": [
+          "Board is 9x9"
+        ],
+        "expectedComplexity": {
+          "time": "Exponential",
+          "space": "O(1) auxiliary excluding recursion"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "board=[530070000,600195000,098000600,...]",
+          "expectedOutput": "solved valid Sudoku board",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "board already solved",
+          "expectedOutput": "same board",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 153,
+        "title": "Rat in a Maze",
+        "description": "Find all valid paths from the top-left to bottom-right of a binary maze.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Path Enumeration",
+        "topics": [
+          "backtracking",
+          "recursion",
+          "matrix"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "recursion",
+          "matrix",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Move only through open cells and mark the current path to prevent cycles."
+        ],
+        "constraints": [
+          "1 <= n <= 10"
+        ],
+        "expectedComplexity": {
+          "time": "Exponential",
+          "space": "O(n^2) recursion state"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "maze=[[1,0,0],[1,1,0],[0,1,1]]",
+          "expectedOutput": "[DDR,RDD]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "maze=[[0]]",
+          "expectedOutput": "[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 154,
+        "title": "M-Coloring Problem",
+        "description": "Determine whether a graph can be colored with at most m colors so adjacent vertices differ.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Graph Coloring",
+        "topics": [
+          "backtracking",
+          "graphs",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "graphs",
+          "recursion",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Assign colors vertex by vertex and reject conflicts."
+        ],
+        "constraints": [
+          "V <= 20"
+        ],
+        "expectedComplexity": {
+          "time": "O(m^V)",
+          "space": "O(V)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "V=4,m=3, edges=(0,1),(1,2),(2,3)",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "V=3,m=1, triangle",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 155,
+        "title": "Word Search",
+        "description": "Determine whether a word can be formed by adjacent grid cells without reusing a cell.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Grid Search",
+        "topics": [
+          "backtracking",
+          "matrix",
+          "strings"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "matrix",
+          "strings",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "DFS from matching starting cells and mark the current cell as used."
+        ],
+        "constraints": [
+          "Rows*cols <= 400"
+        ],
+        "expectedComplexity": {
+          "time": "O(R*C*4^L)",
+          "space": "O(L)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "board=[[A,B,C,E],[S,F,C,S],[A,D,E,E]], word=ABCCED",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "board=[[A]], word=B",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 156,
+        "title": "Combination Sum III",
+        "description": "Choose exactly k distinct numbers from 1 through 9 whose sum equals n.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Combinations",
+        "topics": [
+          "backtracking",
+          "recursion"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "recursion",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Build combinations in increasing order to avoid duplicates."
+        ],
+        "constraints": [
+          "1 <= k <= 9, 1 <= n <= 60"
+        ],
+        "expectedComplexity": {
+          "time": "O(C(9,k)*k)",
+          "space": "O(k)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "k=3,n=7",
+          "expectedOutput": "[[1,2,4]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "k=2,n=18",
+          "expectedOutput": "[[9,9] invalid because distinct]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 157,
+        "title": "Palindrome Partitioning",
+        "description": "Generate every partition of a string where every part is a palindrome.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "String Partition",
+        "topics": [
+          "backtracking",
+          "strings"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "strings",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Try each endpoint and recurse when the selected substring is palindromic."
+        ],
+        "constraints": [
+          "n <= 16"
+        ],
+        "expectedComplexity": {
+          "time": "O(n*2^n)",
+          "space": "O(n) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "s=aab",
+          "expectedOutput": "[[a,a,b],[aa,b]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "s=abc",
+          "expectedOutput": "[[a,b,c],[a,bc],[ab,c],[abc]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 158,
+        "title": "Subsets",
+        "description": "Generate all subsets of an array of distinct values.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Power Set",
+        "topics": [
+          "backtracking",
+          "recursion",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "recursion",
+          "arrays",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "At each position choose to include or exclude the value."
+        ],
+        "constraints": [
+          "n <= 20"
+        ],
+        "expectedComplexity": {
+          "time": "O(n*2^n)",
+          "space": "O(n) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[1,2,3]",
+          "expectedOutput": "[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[]",
+          "expectedOutput": "[[]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 159,
+        "title": "Subsets II",
+        "description": "Generate all unique subsets when the array can contain duplicates.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Duplicate Handling",
+        "topics": [
+          "backtracking",
+          "sorting",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "sorting",
+          "arrays",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort first and skip equal values at the same recursion depth."
+        ],
+        "constraints": [
+          "n <= 15"
+        ],
+        "expectedComplexity": {
+          "time": "O(n*2^n)",
+          "space": "O(n) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[1,2,2]",
+          "expectedOutput": "unique subsets",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[2,2]",
+          "expectedOutput": "[[],[2],[2,2]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 160,
+        "title": "Permutations",
+        "description": "Generate all permutations of distinct values.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Permutation Generation",
+        "topics": [
+          "backtracking",
+          "recursion",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "recursion",
+          "arrays",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Choose one unused value for each position."
+        ],
+        "constraints": [
+          "n <= 9"
+        ],
+        "expectedComplexity": {
+          "time": "O(n*n!)",
+          "space": "O(n) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[1,2,3]",
+          "expectedOutput": "6 permutations",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[1]",
+          "expectedOutput": "[[1]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 161,
+        "title": "Permutations II",
+        "description": "Generate all unique permutations when values may repeat.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Duplicate Handling",
+        "topics": [
+          "backtracking",
+          "sorting",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "sorting",
+          "arrays",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort values and skip duplicate choices at the same recursion depth."
+        ],
+        "constraints": [
+          "n <= 10"
+        ],
+        "expectedComplexity": {
+          "time": "O(n*n!)",
+          "space": "O(n) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[1,1,2]",
+          "expectedOutput": "3 unique permutations",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[1,1]",
+          "expectedOutput": "[[1,1]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 162,
+        "title": "Generate Parentheses",
+        "description": "Generate all valid strings containing n pairs of parentheses.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Balanced Sequences",
+        "topics": [
+          "backtracking",
+          "strings"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "strings",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Never place more closing brackets than opening brackets used."
+        ],
+        "constraints": [
+          "1 <= n <= 8"
+        ],
+        "expectedComplexity": {
+          "time": "O(Cn* n)",
+          "space": "O(n) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "n=3",
+          "expectedOutput": "[\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "n=1",
+          "expectedOutput": "[\"()\"]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 163,
+        "title": "Letter Combinations of Phone Number",
+        "description": "Generate all letter strings represented by a sequence of phone keypad digits.",
+        "difficulty": "MEDIUM",
+        "category": "Backtracking",
+        "concept": "Combinations",
+        "topics": [
+          "backtracking",
+          "strings"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "strings",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Choose one letter for each digit and recurse."
+        ],
+        "constraints": [
+          "0 <= digits <= 4"
+        ],
+        "expectedComplexity": {
+          "time": "O(4^n*n)",
+          "space": "O(n) excluding output"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "digits=23",
+          "expectedOutput": "[ad,ae,af,bd,be,bf,cd,ce,cf]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "digits=\"\"",
+          "expectedOutput": "[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 164,
+        "title": "N-Queens II",
+        "description": "Count the number of distinct ways to place n non-attacking queens.",
+        "difficulty": "HARD",
+        "category": "Backtracking",
+        "concept": "Constraint Counting",
+        "topics": [
+          "backtracking",
+          "recursion",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "backtracking",
+          "recursion",
+          "arrays",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use column and diagonal occupancy sets for constant-time conflict checks."
+        ],
+        "constraints": [
+          "1 <= n <= 14"
+        ],
+        "expectedComplexity": {
+          "time": "O(n!)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "n=4",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "n=1",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 165,
+        "title": "Jump Game",
+        "description": "Determine whether the last index is reachable when each value is the maximum jump length.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Reachability",
+        "topics": [
+          "greedy",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "arrays",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Track the farthest reachable position."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[2,3,1,1,4]",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[3,2,1,0,4]",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 166,
+        "title": "Jump Game II",
+        "description": "Find the minimum number of jumps needed to reach the final index.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Minimum Jumps",
+        "topics": [
+          "greedy",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "arrays",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Expand the current reachable range and count a jump when the range ends."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[2,3,1,1,4]",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[2,3,0,1,4]",
+          "expectedOutput": "2",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 167,
+        "title": "Gas Station",
+        "description": "Find a starting station from which a circular route can be completed, or return -1.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Circular Tour",
+        "topics": [
+          "greedy",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "arrays",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "If total gas is insufficient no solution exists; reset the candidate after a negative running balance."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "gas=[1,2,3,4,5], cost=[3,4,5,1,2]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "gas=[2,3,4], cost=[3,4,3]",
+          "expectedOutput": "-1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 168,
+        "title": "Candy",
+        "description": "Assign at least one candy to each child while respecting higher ratings and minimizing total candies.",
+        "difficulty": "HARD",
+        "category": "Greedy",
+        "concept": "Two Pass",
+        "topics": [
+          "greedy",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "arrays",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use left-to-right and right-to-left constraints."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "ratings=[1,0,2]",
+          "expectedOutput": "5",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "ratings=[1,2,2]",
+          "expectedOutput": "4",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 169,
+        "title": "Assign Cookies",
+        "description": "Maximize satisfied children by assigning at most one cookie per child.",
+        "difficulty": "EASY",
+        "category": "Greedy",
+        "concept": "Sorting",
+        "topics": [
+          "greedy",
+          "sorting",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "two-pointers",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort greed factors and cookie sizes and greedily match the smallest feasible cookie."
+        ],
+        "constraints": [
+          "n,m <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n + m log m)",
+          "space": "O(1) extra"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "g=[1,2,3], s=[1,1]",
+          "expectedOutput": "1",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "g=[1,2], s=[1,2]",
+          "expectedOutput": "2",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 170,
+        "title": "Lemonade Change",
+        "description": "Determine whether every customer can receive correct change when each item costs 5.",
+        "difficulty": "EASY",
+        "category": "Greedy",
+        "concept": "Cash Simulation",
+        "topics": [
+          "greedy",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "arrays",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Prefer larger bills for making 15 change while preserving smaller bills."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "bills=[5,5,5,10,20]",
+          "expectedOutput": "true",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "bills=[5,5,10,10,20]",
+          "expectedOutput": "false",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 171,
+        "title": "Fractional Knapsack",
+        "description": "Maximize value in a capacity-limited knapsack when fractions are allowed.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Value Density",
+        "topics": [
+          "greedy",
+          "sorting",
+          "knapsack"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "knapsack",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Take items in decreasing value-to-weight ratio."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "values=[60,100,120],weights=[10,20,30],capacity=50",
+          "expectedOutput": "240",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "values=[500],weights=[30],capacity=10",
+          "expectedOutput": "166.6667",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 172,
+        "title": "Job Sequencing Problem",
+        "description": "Schedule jobs with deadlines and profits to maximize profit, one job per slot.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Scheduling",
+        "topics": [
+          "greedy",
+          "sorting"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort by profit and place each job in the latest available slot."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n) with efficient slots",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "jobs=[(a,2,100),(b,1,19),(c,2,27),(d,1,25),(e,3,15)]",
+          "expectedOutput": "3 jobs, profit 142",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "jobs=[(a,1,10)]",
+          "expectedOutput": "1 job, profit 10",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 173,
+        "title": "Minimum Platforms",
+        "description": "Find the minimum platforms needed so no train waits.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Sweep Line",
+        "topics": [
+          "greedy",
+          "sorting",
+          "two-pointers"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "two-pointers",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort arrivals and departures and sweep both arrays."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "arr=[900,940,950,1100,1500,1800],dep=[910,1200,1120,1130,1900,2000]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "arr=[1000],dep=[1001]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 174,
+        "title": "N Meetings in One Room",
+        "description": "Select the maximum number of non-overlapping meetings.",
+        "difficulty": "EASY",
+        "category": "Greedy",
+        "concept": "Activity Selection",
+        "topics": [
+          "greedy",
+          "sorting",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "intervals",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Choose compatible meetings by earliest finishing time."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "start=[1,3,0,5,8,5],end=[2,4,6,7,9,9]",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "start=[1],end=[2]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 175,
+        "title": "Maximum Activities",
+        "description": "Choose the largest possible set of mutually compatible activities.",
+        "difficulty": "EASY",
+        "category": "Greedy",
+        "concept": "Activity Selection",
+        "topics": [
+          "greedy",
+          "sorting",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "intervals",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort by finishing time and greedily accept compatible activities."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "start=[1,3,0,5,8,5],finish=[2,4,6,7,9,9]",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "start=[1],finish=[2]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 176,
+        "title": "Find Minimum Number of Coins",
+        "description": "For standard canonical denominations, find the minimum number of coins needed to form an amount.",
+        "difficulty": "EASY",
+        "category": "Greedy",
+        "concept": "Coin Selection",
+        "topics": [
+          "greedy",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "arrays",
+          "easy"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Take the largest denomination that does not exceed the remaining amount."
+        ],
+        "constraints": [
+          "amount <= 10^9"
+        ],
+        "expectedComplexity": {
+          "time": "O(number of selected coins)",
+          "space": "O(1)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "coins=[1,2,5,10,20,50,100,200,500,2000],amount=93",
+          "expectedOutput": "5",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "same coins, amount=0",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 177,
+        "title": "Merge Intervals",
+        "description": "Merge overlapping intervals into disjoint ranges.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Intervals",
+        "topics": [
+          "arrays",
+          "sorting",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "sorting",
+          "intervals",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Sort by start time and extend the current merged interval when overlap exists."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[[1,3],[2,6],[8,10],[15,18]]",
+          "expectedOutput": "[[1,6],[8,10],[15,18]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[1,4],[4,5]]",
+          "expectedOutput": "[[1,5]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 178,
+        "title": "Insert Interval",
+        "description": "Insert a new interval into sorted non-overlapping intervals and merge overlaps.",
+        "difficulty": "MEDIUM",
+        "category": "Arrays",
+        "concept": "Intervals",
+        "topics": [
+          "arrays",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "intervals",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Append intervals before the new interval, merge overlaps, then append the remainder."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "intervals=[[1,3],[6,9]], new=[2,5]",
+          "expectedOutput": "[[1,5],[6,9]]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "intervals=[], new=[2,5]",
+          "expectedOutput": "[[2,5]]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 179,
+        "title": "Non-overlapping Intervals",
+        "description": "Remove the minimum number of intervals so the remainder do not overlap.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Interval Scheduling",
+        "topics": [
+          "greedy",
+          "sorting",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "intervals",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Keep intervals with the earliest finishing times."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "[[1,2],[2,3],[3,4],[1,3]]",
+          "expectedOutput": "1",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "[[1,2],[1,2],[1,2]]",
+          "expectedOutput": "2",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 180,
+        "title": "Meeting Rooms II",
+        "description": "Find the minimum number of rooms needed for all meetings.",
+        "difficulty": "MEDIUM",
+        "category": "Greedy",
+        "concept": "Sweep Line",
+        "topics": [
+          "greedy",
+          "sorting",
+          "heap",
+          "intervals"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "greedy",
+          "sorting",
+          "heap",
+          "intervals",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use sorted starts and ends or a min-heap of active end times."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "meetings=[[0,30],[5,10],[15,20]]",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "meetings=[[7,10],[2,4]]",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 181,
+        "title": "Minimum Window Substring",
+        "description": "Find the shortest substring containing all characters of a target string with required multiplicities.",
+        "difficulty": "HARD",
+        "category": "Sliding Window",
+        "concept": "Frequency Window",
+        "topics": [
+          "strings",
+          "sliding-window",
+          "hashing"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "strings",
+          "sliding-window",
+          "hashing",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Expand until valid, then shrink while preserving validity."
+        ],
+        "constraints": [
+          "Source length <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(alphabet)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "s=ADOBECODEBANC,t=ABC",
+          "expectedOutput": "BANC",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "s=a,t=aa",
+          "expectedOutput": "\"\"",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 182,
+        "title": "Longest Repeating Character Replacement",
+        "description": "Find the longest substring that can be made uniform using at most k replacements.",
+        "difficulty": "MEDIUM",
+        "category": "Sliding Window",
+        "concept": "Frequency Window",
+        "topics": [
+          "strings",
+          "sliding-window",
+          "hashing"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "strings",
+          "sliding-window",
+          "hashing",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Maintain the most frequent character count in the current window."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(alphabet)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "s=AABABBA,k=1",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "s=ABAB,k=2",
+          "expectedOutput": "4",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 183,
+        "title": "Count Number of Nice Subarrays",
+        "description": "Count subarrays containing exactly k odd numbers.",
+        "difficulty": "MEDIUM",
+        "category": "Sliding Window",
+        "concept": "Odd Count",
+        "topics": [
+          "arrays",
+          "sliding-window"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "sliding-window",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use prefix counts or the at-most-k transformation."
+        ],
+        "constraints": [
+          "n <= 50000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[1,1,2,1,1],k=3",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[2,4,6],k=1",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 184,
+        "title": "Subarray with Given XOR",
+        "description": "Count subarrays whose XOR equals a target K.",
+        "difficulty": "MEDIUM",
+        "category": "Hashing",
+        "concept": "Prefix XOR",
+        "topics": [
+          "arrays",
+          "hashing",
+          "prefix-xor"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "hashing",
+          "prefix-xor",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "For each prefix XOR, look for prior prefixXor XOR K."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[4,2,2,6,4],k=6",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[5],k=5",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 185,
+        "title": "Longest Subarray with Sum K",
+        "description": "Find the longest contiguous subarray whose sum equals K.",
+        "difficulty": "MEDIUM",
+        "category": "Hashing",
+        "concept": "Prefix Sum",
+        "topics": [
+          "arrays",
+          "hashing",
+          "prefix-sum"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "hashing",
+          "prefix-sum",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Store the earliest index of each prefix sum."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[1,-1,5,-2,3],k=3",
+          "expectedOutput": "4",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[1,2,3],k=7",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 186,
+        "title": "Count Inversions",
+        "description": "Count pairs i<j where a[i] > a[j].",
+        "difficulty": "HARD",
+        "category": "Divide and Conquer",
+        "concept": "Merge Sort",
+        "topics": [
+          "arrays",
+          "merge-sort",
+          "divide-and-conquer"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "merge-sort",
+          "divide-and-conquer",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Count cross-half inversions during merge."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[2,4,1,3,5]",
+          "expectedOutput": "3",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[1,2,3]",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 187,
+        "title": "Reverse Pairs",
+        "description": "Count pairs i<j where a[i] > 2*a[j].",
+        "difficulty": "HARD",
+        "category": "Divide and Conquer",
+        "concept": "Merge Sort",
+        "topics": [
+          "arrays",
+          "merge-sort",
+          "divide-and-conquer"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "arrays",
+          "merge-sort",
+          "divide-and-conquer",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Count valid cross-half pairs before merging sorted halves."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log n)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[1,3,2,3,1]",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[1]",
+          "expectedOutput": "0",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 188,
+        "title": "Kth Largest Element",
+        "description": "Find the kth largest value in an unsorted array.",
+        "difficulty": "MEDIUM",
+        "category": "Heap",
+        "concept": "Selection",
+        "topics": [
+          "heap",
+          "arrays",
+          "quickselect"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "heap",
+          "arrays",
+          "quickselect",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "A min-heap of size k or quickselect can solve the selection problem."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log k)",
+          "space": "O(k)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[3,2,1,5,6,4],k=2",
+          "expectedOutput": "5",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[1],k=1",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 189,
+        "title": "Top K Frequent Elements",
+        "description": "Return the k most frequent values.",
+        "difficulty": "MEDIUM",
+        "category": "Heap",
+        "concept": "Frequency",
+        "topics": [
+          "heap",
+          "hashing",
+          "arrays"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "heap",
+          "hashing",
+          "arrays",
+          "medium"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Count frequencies and keep the best k values with a heap or buckets."
+        ],
+        "constraints": [
+          "n <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(n log k)",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "nums=[1,1,1,2,2,3],k=2",
+          "expectedOutput": "[1,2]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "nums=[1],k=1",
+          "expectedOutput": "[1]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 1500,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 190,
+        "title": "Merge K Sorted Lists",
+        "description": "Merge k sorted linked lists into one sorted list.",
+        "difficulty": "HARD",
+        "category": "Heap",
+        "concept": "Multiway Merge",
+        "topics": [
+          "heap",
+          "linked-list",
+          "divide-and-conquer"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "heap",
+          "linked-list",
+          "divide-and-conquer",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Use a min-heap containing the current head of each list."
+        ],
+        "constraints": [
+          "Total nodes <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(N log k)",
+          "space": "O(k)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "lists=[[1,4,5],[1,3,4],[2,6]]",
+          "expectedOutput": "[1,1,2,3,4,4,5,6]",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "lists=[]",
+          "expectedOutput": "[]",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    },
+    {
+      "problem": {
+        "problemNumber": 191,
+        "title": "Median of Data Stream",
+        "description": "Support insertion of numbers and retrieval of the median efficiently.",
+        "difficulty": "HARD",
+        "category": "Heap",
+        "concept": "Two Heaps",
+        "topics": [
+          "heap",
+          "data-stream",
+          "design"
+        ],
+        "collections": [
+          "Striver SDE Sheet"
+        ],
+        "tags": [
+          "heap",
+          "data-stream",
+          "design",
+          "hard"
+        ],
+        "starterCode": null,
+        "hints": [
+          "Keep lower values in a max-heap and upper values in a min-heap."
+        ],
+        "constraints": [
+          "Operations <= 100000"
+        ],
+        "expectedComplexity": {
+          "time": "O(log n) insert",
+          "space": "O(n)"
+        },
+        "isGenerated": false,
+        "isApproved": true
+      },
+      "testCases": [
+        {
+          "input": "operations=add 1,2,3; median",
+          "expectedOutput": "2",
+          "category": "public",
+          "orderIndex": 1,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        },
+        {
+          "input": "operations=add 1; median",
+          "expectedOutput": "1",
+          "category": "edge",
+          "orderIndex": 2,
+          "timeLimit": 3000,
+          "memoryLimit": 262144
+        }
+      ]
+    }
+  ]
+}

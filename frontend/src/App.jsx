@@ -70,7 +70,7 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <SocketProvider>
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ErrorBoundary>
               <AppRoutes />
             </ErrorBoundary>
