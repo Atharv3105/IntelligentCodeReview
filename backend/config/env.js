@@ -62,6 +62,17 @@ function validateEnv() {
     }
   }
 
+  // Automatically alias NVIDIA_NIM_API_KEY / NVIDIA_NIM_MODEL if set
+  if (!process.env.AI_API_KEY && process.env.NVIDIA_NIM_API_KEY) {
+    process.env.AI_API_KEY = process.env.NVIDIA_NIM_API_KEY;
+    if (!process.env.AI_PROVIDER || process.env.AI_PROVIDER === "openai") {
+      process.env.AI_PROVIDER = "nvidia";
+    }
+  }
+  if (process.env.AI_PROVIDER === "nvidia" && (!process.env.AI_MODEL || process.env.AI_MODEL === "gpt-4o-mini")) {
+    process.env.AI_MODEL = process.env.NVIDIA_NIM_MODEL || "nvidia/nemotron-3-super-120b-a12b";
+  }
+
   // Warn about missing AI key
   if (!process.env.AI_API_KEY) {
     warnings.push("AI_API_KEY is not set. AI features will be unavailable.");
@@ -123,14 +134,14 @@ function getConfig() {
     },
 
     ai: {
-      provider: process.env.AI_PROVIDER,
-      apiKey: process.env.AI_API_KEY,
-      model: process.env.AI_MODEL,
+      provider: process.env.AI_PROVIDER || (process.env.NVIDIA_NIM_API_KEY ? "nvidia" : "openai"),
+      apiKey: process.env.AI_API_KEY || process.env.NVIDIA_NIM_API_KEY || "",
+      model: process.env.AI_MODEL || process.env.NVIDIA_NIM_MODEL || (process.env.AI_PROVIDER === "nvidia" || process.env.NVIDIA_NIM_API_KEY ? "nvidia/nemotron-3-super-120b-a12b" : "gpt-4o-mini"),
       fallbackProvider: process.env.AI_FALLBACK_PROVIDER || null,
       fallbackApiKey: process.env.AI_FALLBACK_API_KEY || null,
       fallbackModel: process.env.AI_FALLBACK_MODEL || null,
-      maxRequestsPerUserPerHour: parseInt(process.env.AI_MAX_REQUESTS_PER_USER_PER_HOUR, 10),
-      maxTokensPerUserPerDay: parseInt(process.env.AI_MAX_TOKENS_PER_USER_PER_DAY, 10),
+      maxRequestsPerUserPerHour: parseInt(process.env.AI_MAX_REQUESTS_PER_USER_PER_HOUR || "60", 10),
+      maxTokensPerUserPerDay: parseInt(process.env.AI_MAX_TOKENS_PER_USER_PER_DAY || "100000", 10),
     },
 
     judge: {

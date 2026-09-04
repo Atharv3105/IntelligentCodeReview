@@ -24,7 +24,17 @@ exports.initialize = (serverIO) => {
     socket.on("joinSubmission", (submissionId) => {
       socket.join(submissionId);
     });
+    socket.on("interview.join", (sessionId) => {
+      socket.join(`interview:${sessionId}`);
+    });
   });
+};
+
+// Interview events are intentionally emitted by the server after it has
+// persisted the underlying state. The browser only renders these events; it
+// never becomes the authority for an interview session.
+exports.emitInterviewEvent = (sessionId, event, data = {}) => {
+  if (io) io.to(`interview:${sessionId}`).emit(event, { sessionId, ...data, timestamp: new Date().toISOString() });
 };
 
 exports.emitSubmissionUpdate = (id, data) => {

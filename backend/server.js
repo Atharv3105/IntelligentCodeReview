@@ -95,7 +95,9 @@ app.use("/api", apiLimiter);
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 app.use("/api/ai", aiLimiter);
-app.use("/api/interviews", aiLimiter);
+// Transcript autosave is a real-time persistence path, not an AI call. It is
+// covered by the general API limiter below; applying the stricter AI limit to
+// the whole interview router would drop captions during a normal conversation.
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 
