@@ -9,6 +9,7 @@ const protect = require("../middleware/auth.middleware");
 
 router.post("/", protect, controller.createSession);
 router.post("/:id/start", protect, controller.startInterview);
+router.post("/:id/transcripts", protect, controller.appendTranscript);
 router.get("/:id", protect, controller.getSession);
 router.get("/:id/current-question", protect, controller.getCurrentQuestion);
 router.post("/:id/questions/:questionId/answer", protect, controller.submitAnswer);

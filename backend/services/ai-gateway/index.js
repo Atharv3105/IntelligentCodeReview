@@ -50,7 +50,7 @@ class AIGateway {
   }
 
   _ensureInitialized() {
-    if (this._initialized) return;
+    if (this._initialized && this._primary) return;
     const config = getConfig();
     const { ai } = config;
 
@@ -66,7 +66,9 @@ class AIGateway {
 
     this._maxRequestsPerHour = ai.maxRequestsPerUserPerHour;
     this._maxTokensPerDay = ai.maxTokensPerUserPerDay;
-    this._initialized = true;
+    if (this._primary) {
+      this._initialized = true;
+    }
   }
 
   _getProvider() {

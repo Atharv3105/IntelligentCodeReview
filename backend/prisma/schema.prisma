@@ -103,6 +103,7 @@ enum AIProvider {
   openai
   gemini
   groq
+  nvidia
 }
 
 enum AIRequestStatus {

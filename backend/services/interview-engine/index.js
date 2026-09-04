@@ -169,6 +169,12 @@ class InterviewEngine {
     if (question.answer) throw new Error("Question already answered");
 
     const session = await prisma.interviewSession.findUnique({ where: { id: sessionId } });
+    // State changes live here, not in React. A client can disconnect midway
+    // through evaluation and the database still describes the real session.
+    if (session.state === "active") await this.transitionState(sessionId, "listening");
+    if ((await prisma.interviewSession.findUnique({ where: { id: sessionId } })).state === "listening") {
+      await this.transitionState(sessionId, "thinking");
+    }
 
     // Evaluate the answer using AI
     const evaluation = await aiGateway.evaluateInterviewAnswer({
@@ -260,7 +266,7 @@ class InterviewEngine {
       })).userId,
     });
 
-    return prisma.interviewFollowUp.update({
+    const updated = await prisma.interviewFollowUp.update({
       where: { id: followUpId },
       data: {
         answerText,
@@ -268,6 +274,7 @@ class InterviewEngine {
         evaluation: evaluation.data,
       },
     });
+    return updated;
   }
 
   /**

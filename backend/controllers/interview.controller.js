@@ -4,6 +4,7 @@
 
 const interviewEngine = require("../services/interview-engine");
 const prisma = require("../config/prisma");
+const socketService = require("../services/socket.service");
 const { asyncHandler } = require("../middleware/error.middleware");
 
 exports.createSession = asyncHandler(async (req, res) => {
@@ -38,14 +39,33 @@ exports.startInterview = asyncHandler(async (req, res) => {
   }
 
   const result = await interviewEngine.prepareInterview(id);
-  const current = await interviewEngine.getCurrentQuestion(id);
+  const status = await interviewEngine.getCurrentQuestion(id);
+  socketService.emitInterviewEvent(id, "interview.started", { state: "active" });
+  socketService.emitInterviewEvent(id, "interview.question_started", { question: status.currentQuestion, questionIndex: status.questionIndex });
   res.json({
     success: true,
     session: result,
-    question: current.currentQuestion,
-    questionIndex: current.questionIndex,
-    totalQuestions: current.totalQuestions,
+    question: status.currentQuestion,
+    questionIndex: status.questionIndex,
+    totalQuestions: status.totalQuestions,
+    ...status,
   });
+});
+
+// Partial and final captions are durable session records. We keep them in the
+// existing JSON transcript column so an interrupted local session can be
+// restored without relying on browser memory.
+exports.appendTranscript = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { text, speaker = "candidate", status = "partial", questionId = null, timestamp } = req.body;
+  if (!text || typeof text !== "string") return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "Transcript text is required." } });
+  const session = await prisma.interviewSession.findFirst({ where: { id, userId: req.user.id } });
+  if (!session) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Interview session not found." } });
+  const transcript = Array.isArray(session.voiceTranscript) ? session.voiceTranscript : [];
+  const entry = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, text: text.slice(0, 12000), speaker, status, questionId, timestamp: timestamp || new Date().toISOString() };
+  await prisma.interviewSession.update({ where: { id }, data: { voiceTranscript: [...transcript.slice(-300), entry] } });
+  socketService.emitInterviewEvent(id, status === "final" ? "interview.transcript_final" : "interview.transcript_partial", { transcript: entry });
+  res.status(201).json({ success: true, transcript: entry });
 });
 
 exports.getCurrentQuestion = asyncHandler(async (req, res) => {
@@ -70,6 +90,7 @@ exports.submitAnswer = asyncHandler(async (req, res) => {
   }
 
   const result = await interviewEngine.submitAnswer(id, questionId, { answerText, code, codeLanguage });
+  socketService.emitInterviewEvent(id, "interview.evaluation_complete", { questionId, evaluation: result.evaluation });
   res.json({ success: true, ...result });
 });
 
@@ -82,6 +103,7 @@ exports.getFollowUp = asyncHandler(async (req, res) => {
   }
 
   const result = await interviewEngine.generateFollowUp(id, questionId);
+  socketService.emitInterviewEvent(id, "interview.followup", { questionId, followUp: result.followUp });
   res.json({ success: true, ...result });
 });
 
@@ -102,6 +124,7 @@ exports.nextQuestion = asyncHandler(async (req, res) => {
   }
 
   const result = await interviewEngine.nextQuestion(id);
+  socketService.emitInterviewEvent(id, result.isComplete ? "interview.completed" : "interview.next_question", result);
   res.json({ success: true, ...result });
 });
 

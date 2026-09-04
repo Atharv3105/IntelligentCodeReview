@@ -534,5 +534,3 @@ exports.getAIUsage = asyncHandler(async (req, res) => {
     pagination: { total, page, limit, pages: Math.ceil(total / limit) },
   });
 });
-
-
